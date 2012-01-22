@@ -1,8 +1,8 @@
 package com.vaguehope.senkyou.twitter;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -33,11 +33,11 @@ public class TweetCache {
 		this.username = username;
 	}
 	
-	public TweetList getHomeTimeline (int minCount) throws IOException, TwitterException {
+	public TweetList getHomeTimeline (int minCount) throws TwitterException, ExecutionException {
 		return getTweetList(this.username, this.homeTimelineLock, this.homeTimeline, minCount, MAX_CACHE_AGE);
 	}
 	
-	public TweetList getLastTweetHomeTimeline (int serachDepth) throws IOException, TwitterException {
+	public TweetList getLastTweetHomeTimeline (int serachDepth) throws TwitterException, ExecutionException {
 		TweetList source = getHomeTimeline(serachDepth);
 		TweetList target = new TweetList();
 		target.setTime(source.getTime());
@@ -59,7 +59,7 @@ public class TweetCache {
 		}
 	}
 	
-	private static TweetList getTweetList (String username, ReadWriteLock lock, AtomicReference<TweetList> tweetList, int minCount, long maxAge) throws IOException, TwitterException {
+	private static TweetList getTweetList (String username, ReadWriteLock lock, AtomicReference<TweetList> tweetList, int minCount, long maxAge) throws TwitterException, ExecutionException {
 		lock.readLock().lock();
 		try {
 			if (expired(tweetList.get(), maxAge)) {
@@ -83,8 +83,8 @@ public class TweetCache {
 		}
 	}
 	
-	public static TweetList fetchHomeTimeline (String username, int minCount) throws IOException, TwitterException {
-		Twitter t = TwitterHelper.getTwitter(username);
+	public static TweetList fetchHomeTimeline (String username, int minCount) throws TwitterException, ExecutionException {
+		Twitter t = TwitterFactory.getTwitter(username);
 		return fetchHomeTimeline(username, t, minCount);
 	}
 	

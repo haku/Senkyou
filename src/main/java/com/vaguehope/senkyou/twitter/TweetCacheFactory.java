@@ -1,20 +1,29 @@
 package com.vaguehope.senkyou.twitter;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
-public class TweetCacheFactory {
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
+public final class TweetCacheFactory {
 	
-	private static final ConcurrentMap<String, TweetCache> CACHE = new ConcurrentHashMap<String, TweetCache>();
+	private TweetCacheFactory () {/* Static helper. */}
+	
+	private static LoadingCache<String, TweetCache> CACHE = CacheBuilder.newBuilder()
+			.maximumSize(1000)
+			.softValues()
+			.expireAfterAccess(10, TimeUnit.MINUTES)
+			.build(new CacheLoader<String, TweetCache>() {
+				@Override
+				public TweetCache load (String username) throws Exception {
+					return new TweetCache(username);
+				}
+				
+			});
 	
 	public static TweetCache getTweetCache (String username) {
-		TweetCache tc = CACHE.get(username);
-		if (tc == null) {
-			tc = new TweetCache(username);
-			TweetCache prev = CACHE.putIfAbsent(username, tc);
-			if (prev != null) tc = prev;
-		}
-		return tc;
+		return CACHE.getUnchecked(username);
 	}
 	
 }

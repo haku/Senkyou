@@ -1,6 +1,7 @@
 package com.vaguehope.senkyou.servlets;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -31,9 +32,12 @@ public class TweetServlet extends HttpServlet {
 		catch (TwitterException e) {
 			throw new ServletException(e);
 		}
+		catch (ExecutionException e) {
+			throw new ServletException(e);
+		}
 	}
 	
-	private static void procGet (HttpServletRequest req, HttpServletResponse resp) throws IOException, TwitterException, JAXBException {
+	private static void procGet (HttpServletRequest req, HttpServletResponse resp) throws IOException, TwitterException, JAXBException, ExecutionException {
 		String user = req.getParameter("u");
 		String strCount = req.getParameter("n");
 		if (user != null && !user.isEmpty()) {
@@ -55,7 +59,7 @@ public class TweetServlet extends HttpServlet {
 		}
 	}
 	
-	private static void printHomeTimeline (HttpServletResponse resp, String username, int count) throws IOException, TwitterException, JAXBException {
+	private static void printHomeTimeline (HttpServletResponse resp, String username, int count) throws IOException, TwitterException, JAXBException, ExecutionException {
 		TweetCache tweetCache = TweetCacheFactory.getTweetCache(username);
 		TweetList tl = tweetCache.getLastTweetHomeTimeline(count);
 		tl.toXml(resp.getWriter());
