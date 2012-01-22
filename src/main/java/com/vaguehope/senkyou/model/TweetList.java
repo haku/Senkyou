@@ -2,6 +2,7 @@ package com.vaguehope.senkyou.model;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -27,12 +28,16 @@ public class TweetList {
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
+	public long getTime () {
+		return this.time;
+	}
+	
 	public int tweetCount () {
 		return this.tweets.size();
 	}
 	
-	public long getTime () {
-		return this.time;
+	public List<Tweet> getTweets () {
+		return Collections.unmodifiableList(this.tweets);
 	}
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

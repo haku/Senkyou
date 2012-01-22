@@ -32,21 +32,41 @@ public class TweetServlet extends HttpServlet {
 			throw new ServletException(e);
 		}
 	}
-
+	
 	private static void procGet (HttpServletRequest req, HttpServletResponse resp) throws IOException, TwitterException, JAXBException {
-		String user = req.getParameter("user");
+		String user = req.getParameter("u");
+		String strCount = req.getParameter("n");
 		if (user != null && !user.isEmpty()) {
-			printHomeTimeline(resp, user);
+			if (strCount != null && !strCount.isEmpty() && isNumeric(strCount)) {
+				int count = Integer.parseInt(strCount);
+				if (count >= 1) {
+					printHomeTimeline(resp, user, count);
+				}
+				else {
+					ServletHelper.error(resp, HttpServletResponse.SC_BAD_REQUEST, "Param 'n' must be a positive integer.");
+				}
+			}
+			else {
+				ServletHelper.error(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid 'n' param.");
+			}
 		}
 		else {
-			ServletHelper.error(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid 'user' param.");
+			ServletHelper.error(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid 'u' param.");
 		}
 	}
-
-	private static void printHomeTimeline (HttpServletResponse resp, String username) throws IOException, TwitterException, JAXBException {
+	
+	private static void printHomeTimeline (HttpServletResponse resp, String username, int count) throws IOException, TwitterException, JAXBException {
 		TweetCache tweetCache = TweetCacheFactory.getTweetCache(username);
-		TweetList tl = tweetCache.getHomeTimeline(10);
+		TweetList tl = tweetCache.getLastTweetHomeTimeline(count);
 		tl.toXml(resp.getWriter());
+	}
+	
+	private static boolean isNumeric (String str) {
+		if (!Character.isDigit(str.charAt(0)) && str.charAt(0) != '-') return false;
+		for (char c : str.substring(1).toCharArray()) {
+			if (!Character.isDigit(c)) return false;
+		}
+		return true;
 	}
 	
 }

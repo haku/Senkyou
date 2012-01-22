@@ -1,6 +1,8 @@
 package com.vaguehope.senkyou.twitter;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -22,8 +24,8 @@ public class TweetCache {
 	
 	private static final Logger LOG = Logger.getLogger(TweetCache.class.getName());
 	
-	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 	private AtomicReference<TweetList> homeTimeline = new AtomicReference<TweetList>();
+	private final ReadWriteLock homeTimelineLock = new ReentrantReadWriteLock();
 	
 	private final String username;
 
@@ -32,35 +34,59 @@ public class TweetCache {
 	}
 	
 	public TweetList getHomeTimeline (int minCount) throws IOException, TwitterException {
-		this.lock.readLock().lock();
+		return getTweetList(this.username, this.homeTimelineLock, this.homeTimeline, minCount, MAX_CACHE_AGE);
+	}
+	
+	public TweetList getLastTweetHomeTimeline (int serachDepth) throws IOException, TwitterException {
+		TweetList source = getHomeTimeline(serachDepth);
+		TweetList target = new TweetList();
+		target.setTime(source.getTime());
+		copyFirstTweetOfEachUser(source, target);
+		return target;
+	}
+
+//	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//	Static implementation.
+	
+	private static void copyFirstTweetOfEachUser (TweetList source, TweetList target) {
+		Set<String> users = new HashSet<String>();
+		for (Tweet t : source.getTweets()) {
+			String u = t.getUsername();
+			if (!users.contains(u)) {
+				target.addTweet(t);
+				users.add(u);
+			}
+		}
+	}
+	
+	private static TweetList getTweetList (String username, ReadWriteLock lock, AtomicReference<TweetList> tweetList, int minCount, long maxAge) throws IOException, TwitterException {
+		lock.readLock().lock();
 		try {
-			if (expired(this.homeTimeline.get(), MAX_CACHE_AGE)) {
-				this.lock.readLock().unlock();
-				this.lock.writeLock().lock();
+			if (expired(tweetList.get(), maxAge)) {
+				lock.readLock().unlock();
+				lock.writeLock().lock();
 				try {
-					if (expired(this.homeTimeline.get(), MAX_CACHE_AGE)) {
-						TweetList timeline = fetchHomeTimeline(minCount);
-						this.homeTimeline.set(timeline);
+					if (expired(tweetList.get(), maxAge)) {
+						TweetList timeline = fetchHomeTimeline(username, minCount);
+						tweetList.set(timeline);
 					}
 				}
 				finally {
-					this.lock.readLock().lock();
-					this.lock.writeLock().unlock();
+					lock.readLock().lock();
+					lock.writeLock().unlock();
 				}
 			}
-			return this.homeTimeline.get();
+			return tweetList.get();
 		}
 		finally {
-			this.lock.readLock().unlock();
+			lock.readLock().unlock();
 		}
 	}
 	
-	public TweetList fetchHomeTimeline (int minCount) throws IOException, TwitterException {
-		Twitter t = TwitterHelper.getTwitter(this.username);
-		return fetchHomeTimeline(this.username, t, minCount);
+	public static TweetList fetchHomeTimeline (String username, int minCount) throws IOException, TwitterException {
+		Twitter t = TwitterHelper.getTwitter(username);
+		return fetchHomeTimeline(username, t, minCount);
 	}
-	
-//	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
 	private static boolean expired (TweetList list, long maxAge) {
 		return list == null || list.getTime() + maxAge < System.currentTimeMillis();
