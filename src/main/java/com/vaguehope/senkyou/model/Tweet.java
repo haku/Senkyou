@@ -1,5 +1,7 @@
 package com.vaguehope.senkyou.model;
 
+import java.util.Date;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -14,12 +16,17 @@ public class Tweet {
 	private volatile long inReplyId;
 	@XmlElement(name = "user") private volatile String user;
 	@XmlElement(name = "name") private volatile String name;
+	@XmlElement(name = "created") private volatile Date createdAt;
 	@XmlElement(name = "body") private volatile String body;
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
 	public long getId () {
 		return this.id;
+	}
+	
+	public Date getCreatedAt () {
+		return this.createdAt;
 	}
 	
 	public long getInReplyId () {
@@ -44,6 +51,10 @@ public class Tweet {
 		this.id = id;
 	}
 	
+	public void setCreatedAt (Date createdAt) {
+		this.createdAt = createdAt;
+	}
+	
 	public void setInReplyId (long inReplyId) {
 		this.inReplyId = inReplyId;
 	}
@@ -59,6 +70,6 @@ public class Tweet {
 	public void setBody (String body) {
 		this.body = body;
 	}
-	
+
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 }

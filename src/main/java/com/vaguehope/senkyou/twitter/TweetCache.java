@@ -203,6 +203,7 @@ public class TweetCache {
 	private static Tweet convertTweet (Status s) {
 		Tweet t = new Tweet();
 		t.setId(s.getId());
+		t.setCreatedAt(s.getCreatedAt());
 		t.setInReplyId(s.getInReplyToStatusId());
 		t.setUser(s.getUser().getScreenName());
 		t.setName(s.getUser().getName());
