@@ -56,7 +56,7 @@ public class TweetCache {
 				.maximumSize(Config.USER_TWEET_CACHE_COUNT_MAX)
 				.softValues()
 				.expireAfterAccess(Config.USER_TWEET_CACHE_AGE_MAX, TimeUnit.MINUTES)
-				.build(makeTweetLoader(this.twitter));
+				.build(new TweetLoader(this.twitter));
 	}
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -75,7 +75,7 @@ public class TweetCache {
 	
 	/**
 	 * 
-	 * @param searchDepth How fat back in user's timeline to search for tips to threads.
+	 * @param searchDepth How fat back in user's time-line to search for tips to threads.
 	 * @param maxThreads Stop searching after fixing this many threads.
 	 */
 	public ThreadList getThreads (int searchDepth, int maxThreads) throws TwitterException, ExecutionException {
@@ -165,7 +165,8 @@ public class TweetCache {
 	}
 	
 	private static TweetList fetchHomeTimeline (String u, Twitter t, int minCount) throws TwitterException {
-		LOG.info("Fetching home timeline for: " + u);
+		long startTime = System.currentTimeMillis();
+		
 		TweetList ret = new TweetList();
 		int page = 1; // First page is 1.
 		while (ret.tweetCount() < minCount) {
@@ -175,24 +176,22 @@ public class TweetCache {
 			addTweetsToList(ret, timelinePage);
 			page++;
 		}
+		
+		LOG.info("Fetched home timeline for " + u + " in " + (System.currentTimeMillis() - startTime) / 1000 + " seconds.");
 		return ret;
 	}
 	
 	protected static Tweet fetchTweet (Twitter t, long id) throws TwitterException {
+		long startTime = System.currentTimeMillis();
+		
 		Status s = t.showStatus(id);
-		return convertTweet(s);
+		Tweet tweet = convertTweet(s);
+		
+		LOG.info("Fetched tweet " + id + " in " + (System.currentTimeMillis() - startTime) / 1000 + " seconds.");
+		return tweet;
+		
 	}
 	
-	private static CacheLoader<Long, Tweet> makeTweetLoader (final Twitter t) {
-		return new CacheLoader<Long, Tweet>() {
-			@Override
-			public Tweet load (Long id) throws Exception {
-				return fetchTweet(t, id.longValue());
-			}
-		};
-	}
-	
-
 	private static void addTweetsToList (TweetList list, ResponseList<Status> tweets) {
 		for (Status status : tweets) {
 			Tweet tweet = convertTweet(status);
@@ -209,6 +208,21 @@ public class TweetCache {
 		t.setName(s.getUser().getName());
 		t.setBody(s.getText());
 		return t;
+	}
+	
+	private static class TweetLoader extends CacheLoader<Long, Tweet> {
+		
+		private final Twitter t;
+		
+		public TweetLoader (Twitter t) {
+			this.t = t;
+		}
+		
+		@Override
+		public Tweet load (Long id) throws Exception {
+			return fetchTweet(this.t, id.longValue());
+		}
+		
 	}
 	
 }
