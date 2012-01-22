@@ -1,5 +1,7 @@
 package com.vaguehope.senkyou.model;
 
+import static com.vaguehope.senkyou.util.Dates.fixDate;
+
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -26,7 +28,7 @@ public class Tweet {
 	}
 	
 	public Date getCreatedAt () {
-		return this.createdAt;
+		return fixDate(this.createdAt);
 	}
 	
 	public long getInReplyId () {
@@ -52,7 +54,7 @@ public class Tweet {
 	}
 	
 	public void setCreatedAt (Date createdAt) {
-		this.createdAt = createdAt;
+		this.createdAt = fixDate(createdAt);
 	}
 	
 	public void setInReplyId (long inReplyId) {
@@ -70,6 +72,6 @@ public class Tweet {
 	public void setBody (String body) {
 		this.body = body;
 	}
-
+	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 }
