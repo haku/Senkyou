@@ -7,8 +7,9 @@ import javax.xml.bind.Marshaller;
 public final class Model {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
+	// List of top-level data objects.
 	private static Class<?>[] MODEL_CLASSES = new Class<?>[] {
-			TweetList.class
+			ThreadList.class
 	};
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

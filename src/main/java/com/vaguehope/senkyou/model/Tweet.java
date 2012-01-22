@@ -10,11 +10,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Tweet {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
+	private volatile long id;
+	private volatile long inReplyId;
 	@XmlElement(name = "user") private volatile String user;
 	@XmlElement(name = "name") private volatile String name;
 	@XmlElement(name = "body") private volatile String body;
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	
+	public long getId () {
+		return this.id;
+	}
+	
+	public long getInReplyId () {
+		return this.inReplyId;
+	}
 	
 	public String getUser () {
 		return this.user;
@@ -29,6 +39,14 @@ public class Tweet {
 	}
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	
+	public void setId (long id) {
+		this.id = id;
+	}
+	
+	public void setInReplyId (long inReplyId) {
+		this.inReplyId = inReplyId;
+	}
 	
 	public void setUser (String user) {
 		this.user = user;

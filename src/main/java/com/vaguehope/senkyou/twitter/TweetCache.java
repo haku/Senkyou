@@ -1,8 +1,13 @@
 package com.vaguehope.senkyou.twitter;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -14,37 +19,109 @@ import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.vaguehope.senkyou.Config;
+import com.vaguehope.senkyou.model.ThreadList;
 import com.vaguehope.senkyou.model.Tweet;
 import com.vaguehope.senkyou.model.TweetList;
 
 public class TweetCache {
-	
-	private static final int PAGESIZE = 40;
-	private static final long MAX_CACHE_AGE = 30000; // 30 seconds.
+//	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
 	private static final Logger LOG = Logger.getLogger(TweetCache.class.getName());
+	
+//	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//	Cache.
 	
 	private AtomicReference<TweetList> homeTimeline = new AtomicReference<TweetList>();
 	private final ReadWriteLock homeTimelineLock = new ReentrantReadWriteLock();
 	
+	private final LoadingCache<Long, Tweet> tweetCache;
+	
+//	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//	Config.
+	
 	private final String username;
+	protected final Twitter twitter;
+	
+//	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-	public TweetCache (String username) {
+	public TweetCache (String username) throws ExecutionException {
 		this.username = username;
+		this.twitter = TwitterFactory.getTwitter(username);
+		
+		this.tweetCache = CacheBuilder.newBuilder()
+				.maximumSize(Config.USER_TWEET_CACHE_COUNT_MAX)
+				.softValues()
+				.expireAfterAccess(Config.USER_TWEET_CACHE_AGE_MAX, TimeUnit.MINUTES)
+				.build(makeTweetLoader(this.twitter));
 	}
 	
-	public TweetList getHomeTimeline (int minCount) throws TwitterException, ExecutionException {
-		return getTweetList(this.username, this.homeTimelineLock, this.homeTimeline, minCount, MAX_CACHE_AGE);
+//	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	
+	public TweetList getHomeTimeline (int minCount) throws TwitterException {
+		return getTweetList(this.username, this.twitter, this.homeTimelineLock, this.homeTimeline, minCount, Config.MAX_HOME_TIMELINE_AGE);
 	}
 	
-	public TweetList getLastTweetHomeTimeline (int serachDepth) throws TwitterException, ExecutionException {
-		TweetList source = getHomeTimeline(serachDepth);
+	public TweetList getLastTweetHomeTimeline (int searchDepth) throws TwitterException {
+		TweetList source = getHomeTimeline(searchDepth);
 		TweetList target = new TweetList();
 		target.setTime(source.getTime());
 		copyFirstTweetOfEachUser(source, target);
 		return target;
 	}
-
+	
+	/**
+	 * 
+	 * @param searchDepth How fat back in user's timeline to search for tips to threads.
+	 * @param maxThreads Stop searching after fixing this many threads.
+	 */
+	public ThreadList getThreads (int searchDepth, int maxThreads) throws TwitterException, ExecutionException {
+		TweetList timeline = getHomeTimeline(searchDepth);
+		
+		// TODO detect splitting threads.
+		
+		List<Tweet> tips = new LinkedList<Tweet>();
+		for (Tweet t : timeline.getTweets()) {
+			if (t.getInReplyId() > 0) {
+				tips.add(t);
+				if (tips.size() >= maxThreads) break;
+			}
+		}
+		
+		ThreadList ret = new ThreadList();
+		for (Tweet tip : tips) {
+			TweetList thread = getThreadFromTip(tip);
+			ret.addThread(thread);
+		}
+		
+		return ret;
+	}
+	
+	public TweetList getThreadFromTip (Tweet tip) throws ExecutionException {
+		if (tip.getInReplyId() <= 0) throw new IllegalArgumentException("Tip is not a reply.");
+		
+		List<Tweet> thread = new ArrayList<Tweet>(); // TODO right list type?
+		Tweet head = tip;
+		while (head != null) {
+			thread.add(head);
+			long inReplyId = head.getInReplyId();
+			if (inReplyId > 0) {
+				head = this.tweetCache.get(Long.valueOf(inReplyId));
+			}
+			else {
+				break;
+			}
+		}
+		
+		Collections.reverse(thread);
+		TweetList ret = new TweetList();
+		ret.addAdd(thread);
+		return ret;
+	}
+	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //	Static implementation.
 	
@@ -59,16 +136,16 @@ public class TweetCache {
 		}
 	}
 	
-	private static TweetList getTweetList (String username, ReadWriteLock lock, AtomicReference<TweetList> tweetList, int minCount, long maxAge) throws TwitterException, ExecutionException {
+	private static TweetList getTweetList (String u, Twitter t, ReadWriteLock lock, AtomicReference<TweetList> list, int minCount, long maxAge) throws TwitterException {
 		lock.readLock().lock();
 		try {
-			if (expired(tweetList.get(), maxAge)) {
+			if (expired(list.get(), maxAge)) {
 				lock.readLock().unlock();
 				lock.writeLock().lock();
 				try {
-					if (expired(tweetList.get(), maxAge)) {
-						TweetList timeline = fetchHomeTimeline(username, minCount);
-						tweetList.set(timeline);
+					if (expired(list.get(), maxAge)) {
+						TweetList timeline = fetchHomeTimeline(u, t, minCount);
+						list.set(timeline);
 					}
 				}
 				finally {
@@ -76,16 +153,11 @@ public class TweetCache {
 					lock.writeLock().unlock();
 				}
 			}
-			return tweetList.get();
+			return list.get();
 		}
 		finally {
 			lock.readLock().unlock();
 		}
-	}
-	
-	public static TweetList fetchHomeTimeline (String username, int minCount) throws TwitterException, ExecutionException {
-		Twitter t = TwitterFactory.getTwitter(username);
-		return fetchHomeTimeline(username, t, minCount);
 	}
 	
 	private static boolean expired (TweetList list, long maxAge) {
@@ -97,7 +169,7 @@ public class TweetCache {
 		TweetList ret = new TweetList();
 		int page = 1; // First page is 1.
 		while (ret.tweetCount() < minCount) {
-			Paging paging = new Paging(page, PAGESIZE);
+			Paging paging = new Paging(page, Config.TWEET_FETCH_PAGE_SIZE);
 			ResponseList<Status> timelinePage = t.getHomeTimeline(paging);
 			if (timelinePage.size() < 1) break;
 			addTweetsToList(ret, timelinePage);
@@ -105,6 +177,21 @@ public class TweetCache {
 		}
 		return ret;
 	}
+	
+	protected static Tweet fetchTweet (Twitter t, long id) throws TwitterException {
+		Status s = t.showStatus(id);
+		return convertTweet(s);
+	}
+	
+	private static CacheLoader<Long, Tweet> makeTweetLoader (final Twitter t) {
+		return new CacheLoader<Long, Tweet>() {
+			@Override
+			public Tweet load (Long id) throws Exception {
+				return fetchTweet(t, id.longValue());
+			}
+		};
+	}
+	
 
 	private static void addTweetsToList (TweetList list, ResponseList<Status> tweets) {
 		for (Status status : tweets) {
@@ -114,11 +201,13 @@ public class TweetCache {
 	}
 
 	private static Tweet convertTweet (Status s) {
-		Tweet ret = new Tweet();
-		ret.setUser(s.getUser().getScreenName());
-		ret.setName(s.getUser().getName());
-		ret.setBody(s.getText());
-		return ret;
+		Tweet t = new Tweet();
+		t.setId(s.getId());
+		t.setInReplyId(s.getInReplyToStatusId());
+		t.setUser(s.getUser().getScreenName());
+		t.setName(s.getUser().getName());
+		t.setBody(s.getText());
+		return t;
 	}
 	
 }

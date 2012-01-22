@@ -2,7 +2,6 @@ package com.vaguehope.senkyou.model;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -13,17 +12,17 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "tweets")
+@XmlRootElement(name = "threads")
 @XmlAccessorType(XmlAccessType.NONE)
-public class TweetList {
+public class ThreadList {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
 	@XmlAttribute(name = "time") private volatile long time;
-	@XmlElement(name = "tweet") private volatile List<Tweet> tweets = new ArrayList<Tweet>();
+	@XmlElement(name = "thread") private volatile List<TweetList> threads = new ArrayList<TweetList>();
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	public TweetList () {
+	public ThreadList () {
 		this.time = System.currentTimeMillis();
 	}
 	
@@ -33,12 +32,12 @@ public class TweetList {
 		return this.time;
 	}
 	
-	public int tweetCount () {
-		return this.tweets.size();
+	public int threadCount () {
+		return this.threads.size();
 	}
 	
-	public List<Tweet> getTweets () {
-		return Collections.unmodifiableList(this.tweets);
+	public List<TweetList> getThreads () {
+		return Collections.unmodifiableList(this.threads);
 	}
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -47,12 +46,8 @@ public class TweetList {
 		this.time = time;
 	}
 	
-	public void addTweet (Tweet t) {
-		this.tweets.add(t);
-	}
-	
-	public void addAdd (Collection<Tweet> t) {
-		this.tweets.addAll(t);
+	public void addThread (TweetList thread) {
+		this.threads.add(thread);
 	}
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

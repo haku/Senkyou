@@ -10,15 +10,16 @@ import twitter4j.http.AccessToken;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.vaguehope.senkyou.Config;
 
 public final class TwitterFactory {
 	
 	private TwitterFactory () {/* Static helper. */}
 	
-	private static LoadingCache<String, Twitter> CACHE = CacheBuilder.newBuilder()
-			.maximumSize(1000)
+	private static final LoadingCache<String, Twitter> CACHE = CacheBuilder.newBuilder()
+			.maximumSize(Config.USER_COUNT_MAX)
 			.softValues()
-			.expireAfterAccess(10, TimeUnit.MINUTES)
+			.expireAfterAccess(Config.USER_AGE_MAX, TimeUnit.MINUTES)
 			.build(new CacheLoader<String, Twitter>() {
 				@Override
 				public Twitter load (String username) throws Exception {

@@ -14,15 +14,15 @@ import javax.xml.bind.JAXBException;
 
 import twitter4j.TwitterException;
 
-import com.vaguehope.senkyou.model.TweetList;
+import com.vaguehope.senkyou.model.ThreadList;
 import com.vaguehope.senkyou.twitter.TweetCache;
 import com.vaguehope.senkyou.twitter.TweetCacheFactory;
 
-public class TweetServlet extends HttpServlet {
+public class ThreadServlet extends HttpServlet {
 	
-	public static final String CONTEXT = "/feeds/tweets";
+	public static final String CONTEXT = "/feeds/threads";
 	
-	private static final long serialVersionUID = 2124094443981251745L;
+	private static final long serialVersionUID = 7600513438072003737L;
 	
 	@Override
 	protected void doGet (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -44,16 +44,20 @@ public class TweetServlet extends HttpServlet {
 		String user = validateStringParam(req, resp, "u");
 		if (user == null) return;
 		
+		int depth = validatePositiveIntParam(req, resp, "d");
+		if (depth < 1) return;
+		
 		int count = validatePositiveIntParam(req, resp, "n");
 		if (count < 1) return;
 		
-		printHomeTimeline(resp, user, count);
+		printThreads(resp, user, depth, count);
 	}
 	
-	private static void printHomeTimeline (HttpServletResponse resp, String username, int count) throws IOException, TwitterException, JAXBException, ExecutionException {
+	private static void printThreads (HttpServletResponse resp, String username, int searchDepth, int maxThreads) throws IOException, TwitterException, JAXBException, ExecutionException {
 		TweetCache tweetCache = TweetCacheFactory.getTweetCache(username);
-		TweetList tl = tweetCache.getLastTweetHomeTimeline(count);
-		tl.toXml(resp.getWriter());
+		ThreadList threadList = tweetCache.getThreads(searchDepth, maxThreads);
+		threadList.toXml(resp.getWriter());
+		
 	}
 	
 }
