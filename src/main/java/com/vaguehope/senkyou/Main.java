@@ -24,7 +24,7 @@ public class Main {
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	public Main () throws Exception {
+	public Main () throws Exception { // NOSONAR Exception is throw by Server.start().
 		// Servlet container.
 		ServletContextHandler servletHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		servletHandler.setContextPath("/");
@@ -73,7 +73,7 @@ public class Main {
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	public static void main (String[] args) throws Exception {
+	public static void main (String[] args) throws Exception { // NOSONAR Exception is throw by Server.start().
 		Main m = new Main();
 		m.join();
 	}

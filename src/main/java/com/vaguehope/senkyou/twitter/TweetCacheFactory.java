@@ -18,7 +18,7 @@ public final class TweetCacheFactory {
 			.expireAfterAccess(Config.USER_AGE_MAX, TimeUnit.MINUTES)
 			.build(new CacheLoader<String, TweetCache>() {
 				@Override
-				public TweetCache load (String username) throws Exception {
+				public TweetCache load (String username) throws ExecutionException {
 					return new TweetCache(username);
 				}
 				

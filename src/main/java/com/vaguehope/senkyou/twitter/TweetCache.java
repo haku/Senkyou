@@ -44,7 +44,7 @@ public class TweetCache {
 //	Config.
 	
 	private final String username;
-	protected final Twitter twitter;
+	private final Twitter twitter;
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -225,7 +225,7 @@ public class TweetCache {
 		}
 		
 		@Override
-		public Tweet load (Long id) throws Exception {
+		public Tweet load (Long id) throws TwitterException {
 			return fetchTweet(this.t, id.longValue());
 		}
 		

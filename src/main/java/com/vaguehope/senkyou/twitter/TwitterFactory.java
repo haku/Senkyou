@@ -22,7 +22,7 @@ public final class TwitterFactory {
 			.expireAfterAccess(Config.USER_AGE_MAX, TimeUnit.MINUTES)
 			.build(new CacheLoader<String, Twitter>() {
 				@Override
-				public Twitter load (String username) throws Exception {
+				public Twitter load (String username) throws IOException {
 					return makeTwitter(username);
 				}
 			});
