@@ -4,7 +4,11 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
-public class ServletHelper {
+public final class ServletHelper {
+//	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	
+	private ServletHelper () {/* Static helper */}
+	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
 	public static void error (HttpServletResponse resp, int status, String msg) throws IOException {

@@ -9,7 +9,11 @@ import java.util.Properties;
 
 import twitter4j.http.AccessToken;
 
-public class TwitterConfigHelper {
+public final class TwitterConfigHelper {
+//	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	
+	private TwitterConfigHelper () {/* Static helper. */}
+	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
 	private static final String DIR_CONFIG = "/.tweetvault";
