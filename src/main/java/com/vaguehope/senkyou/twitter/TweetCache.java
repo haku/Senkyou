@@ -183,7 +183,7 @@ public class TweetCache {
 			page++;
 		}
 		
-		LOG.info("Fetched home timeline for " + u + " in " + (System.currentTimeMillis() - startTime) / 1000 + " seconds.");
+		LOG.info("Fetched home timeline for " + u + " in " + (System.currentTimeMillis() - startTime) + " millis.");
 		return ret;
 	}
 	
@@ -193,7 +193,7 @@ public class TweetCache {
 		Status s = t.showStatus(id);
 		Tweet tweet = convertTweet(s);
 		
-		LOG.info("Fetched tweet " + id + " in " + (System.currentTimeMillis() - startTime) / 1000 + " seconds.");
+		LOG.info("Fetched tweet " + id + " in " + (System.currentTimeMillis() - startTime) + " millis.");
 		return tweet;
 		
 	}

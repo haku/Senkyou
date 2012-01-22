@@ -16,7 +16,12 @@ import com.vaguehope.senkyou.servlets.TweetServlet;
 public class Main {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	protected static final Logger logger = Logger.getLogger(Main.class.getName());
+	private static final int MAX_IDLE_TIME = 30000; // 30 seconds.
+	private static final int ACCEPTORS = 2;
+	private static final int LOW_RESOURCES_CONNECTIONS = 100;
+	private static final int LOW_RESOURCES_MAX_IDLE_TIME = 5000; // 5 seconds.
+
+	protected static final Logger LOG = Logger.getLogger(Main.class.getName());
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
@@ -52,11 +57,11 @@ public class Main {
 		// Listening connector.
 		String portString = System.getenv("PORT"); // Heroko pattern.
 		SelectChannelConnector connector = new SelectChannelConnector();
-		connector.setMaxIdleTime(30000); // 30 seconds.
-		connector.setAcceptors(2);
+		connector.setMaxIdleTime(MAX_IDLE_TIME);
+		connector.setAcceptors(ACCEPTORS);
 		connector.setStatsOn(false);
-		connector.setLowResourcesConnections(100);
-		connector.setLowResourcesMaxIdleTime(5000); // 5 seconds.
+		connector.setLowResourcesConnections(LOW_RESOURCES_CONNECTIONS);
+		connector.setLowResourcesMaxIdleTime(LOW_RESOURCES_MAX_IDLE_TIME);
 		connector.setPort(Integer.parseInt(portString));
 		
 		// Start server.
@@ -64,7 +69,7 @@ public class Main {
 		this.server.setHandler(handlers);
 		this.server.addConnector(connector);
 		this.server.start();
-		logger.info("Server ready on port " + portString + ".");
+		LOG.info("Server ready on port " + portString + ".");
 	}
 	
 	public void join () throws InterruptedException {

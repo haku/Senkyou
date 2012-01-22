@@ -22,10 +22,8 @@ public final class TwitterConfigHelper {
 		String path = System.getProperty("user.home") + DIR_CONFIG;
 		
 		File f = new File(path);
-		if (!f.exists()) {
-			if (!f.mkdirs()) {
-				throw new UnsupportedOperationException("Failed to create direactory '"+f.getAbsolutePath()+"'.");
-			}
+		if (!f.exists() && !f.mkdirs()) {
+			throw new UnsupportedOperationException("Failed to create direactory '"+f.getAbsolutePath()+"'.");
 		}
 		
 		return path;
@@ -33,18 +31,18 @@ public final class TwitterConfigHelper {
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	private static final String KEY_token = "token";
-	private static final String KEY_tokenSecret = "tokenSecret";
+	private static final String KEY_TOKEN = "token";
+	private static final String KEY_TOKEN_SECRET = "tokenSecret";
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	static public File writeAuthData (String username, AccessToken accessToken) throws IOException {
+	public static File writeAuthData (String username, AccessToken accessToken) throws IOException {
 		String fpath = getConfigDir() + "/" + username + ".properties";
 		File f = new File(fpath);
 		
 		Properties props = new Properties();
-		props.setProperty(KEY_token, accessToken.getToken());
-		props.setProperty(KEY_tokenSecret, accessToken.getTokenSecret());
+		props.setProperty(KEY_TOKEN, accessToken.getToken());
+		props.setProperty(KEY_TOKEN_SECRET, accessToken.getTokenSecret());
 		
 		FileOutputStream fos = null;
 		try {
@@ -58,17 +56,17 @@ public final class TwitterConfigHelper {
 		return f;
 	}
 	
-	static public AccessToken readAppAuthData () throws IOException {
+	public static AccessToken readAppAuthData () throws IOException {
 		String path = getConfigDir() + "/appauth";
 		return readAuthData(path);
 	}
 	
-	static public AccessToken readUserAuthData (String username) throws IOException {
+	public static AccessToken readUserAuthData (String username) throws IOException {
 		String path = getConfigDir() + "/" + username + ".properties";
 		return readAuthData(path);
 	}
 	
-	static private AccessToken readAuthData (String path) throws IOException {
+	private static AccessToken readAuthData (String path) throws IOException {
 		File f = new File(path);
 		if (!f.exists()) throw new FileNotFoundException(path);
 		
@@ -82,8 +80,8 @@ public final class TwitterConfigHelper {
 			if (fis != null) fis.close();
 		}
 		
-		String token = props.getProperty(KEY_token);
-		String tokenSecret = props.getProperty(KEY_tokenSecret);
+		String token = props.getProperty(KEY_TOKEN);
+		String tokenSecret = props.getProperty(KEY_TOKEN_SECRET);
 		
 		return new AccessToken(token, tokenSecret);
 	}
