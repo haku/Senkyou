@@ -10,13 +10,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Tweet {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	@XmlElement(name = "username") private String username;
-	@XmlElement(name = "body") private String body;
+	@XmlElement(name = "user") private volatile String user;
+	@XmlElement(name = "name") private volatile String name;
+	@XmlElement(name = "body") private volatile String body;
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	public String getUsername () {
-		return this.username;
+	public String getUser () {
+		return this.user;
+	}
+	
+	public String getName () {
+		return this.name;
 	}
 	
 	public String getBody () {
@@ -25,8 +30,12 @@ public class Tweet {
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	public void setUsername (String username) {
-		this.username = username;
+	public void setUser (String user) {
+		this.user = user;
+	}
+	
+	public void setName (String name) {
+		this.name = name;
 	}
 	
 	public void setBody (String body) {

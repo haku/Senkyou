@@ -51,7 +51,7 @@ public class TweetCache {
 	private static void copyFirstTweetOfEachUser (TweetList source, TweetList target) {
 		Set<String> users = new HashSet<String>();
 		for (Tweet t : source.getTweets()) {
-			String u = t.getUsername();
+			String u = t.getUser();
 			if (!users.contains(u)) {
 				target.addTweet(t);
 				users.add(u);
@@ -115,7 +115,8 @@ public class TweetCache {
 
 	private static Tweet convertTweet (Status s) {
 		Tweet ret = new Tweet();
-		ret.setUsername(s.getUser().getName());
+		ret.setUser(s.getUser().getScreenName());
+		ret.setName(s.getUser().getName());
 		ret.setBody(s.getText());
 		return ret;
 	}
