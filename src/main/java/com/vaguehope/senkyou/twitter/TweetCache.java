@@ -74,6 +74,7 @@ public class TweetCache {
 	}
 	
 	/**
+	 * TODO Pass in list form last call to reuse tips where needed.
 	 * 
 	 * @param searchDepth How fat back in user's time-line to search for tips to threads.
 	 * @param maxThreads Stop searching after fixing this many threads.
@@ -164,6 +165,9 @@ public class TweetCache {
 		return list == null || list.getTime() + maxAge < System.currentTimeMillis();
 	}
 	
+	/**
+	 * TODO Pass in list form last call to reuse where possible.
+	 */
 	private static TweetList fetchHomeTimeline (String u, Twitter t, int minCount) throws TwitterException {
 		long startTime = System.currentTimeMillis();
 		
