@@ -55,9 +55,9 @@ public class Main {
 		server.setHandler(handlers);
 		server.addConnector(connector);
 		server.start();
+		logger.info("Server ready on port " + portString + ".");
 		
 		// Wait for server thread.
-		logger.info("Server ready on port " + portString + ".");
 		server.join();
 	}
 	
