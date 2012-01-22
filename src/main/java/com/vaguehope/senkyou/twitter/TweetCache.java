@@ -82,6 +82,8 @@ public class TweetCache {
 	public ThreadList getThreads (int searchDepth, int maxThreads) throws TwitterException, ExecutionException {
 		TweetList timeline = getHomeTimeline(searchDepth);
 		
+		// TODO detect overlapping threads.
+		// TODO use mentions feed to find threads.
 		// TODO detect splitting threads.
 		
 		List<Tweet> tips = new LinkedList<Tweet>();
