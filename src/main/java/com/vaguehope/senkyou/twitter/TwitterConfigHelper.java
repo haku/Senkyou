@@ -24,7 +24,7 @@ public final class TwitterConfigHelper {
 		File f = new File(path);
 		if (!f.exists()) {
 			if (!f.mkdirs()) {
-				throw new RuntimeException("Failed to create direactory '"+f.getAbsolutePath()+"'.");
+				throw new UnsupportedOperationException("Failed to create direactory '"+f.getAbsolutePath()+"'.");
 			}
 		}
 		
@@ -85,8 +85,7 @@ public final class TwitterConfigHelper {
 		String token = props.getProperty(KEY_token);
 		String tokenSecret = props.getProperty(KEY_tokenSecret);
 		
-		AccessToken accessToken = new AccessToken(token, tokenSecret);
-		return accessToken;
+		return new AccessToken(token, tokenSecret);
 	}
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

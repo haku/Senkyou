@@ -8,7 +8,7 @@ public final class Model {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
 	// List of top-level data objects.
-	private static Class<?>[] MODEL_CLASSES = new Class<?>[] {
+	private static final Class<?>[] MODEL_CLASSES = new Class<?>[] {
 			ThreadList.class
 	};
 	
@@ -53,8 +53,7 @@ public final class Model {
 				return m;
 			}
 			catch (JAXBException e) {
-				// TODO Auto-generated catch block
-				throw new RuntimeException(e);
+				throw new UnsupportedOperationException(e);
 			}
 		}
 	};

@@ -20,7 +20,11 @@ public class Main {
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	public static void main (String[] args) throws Exception {
+	private final Server server;
+	
+//	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	
+	public Main () throws Exception {
 		// Servlet container.
 		ServletContextHandler servletHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		servletHandler.setContextPath("/");
@@ -51,19 +55,27 @@ public class Main {
 		connector.setMaxIdleTime(30000); // 30 seconds.
 		connector.setAcceptors(2);
 		connector.setStatsOn(false);
-		connector.setLowResourcesConnections(1000);
+		connector.setLowResourcesConnections(100);
 		connector.setLowResourcesMaxIdleTime(5000); // 5 seconds.
 		connector.setPort(Integer.parseInt(portString));
 		
 		// Start server.
-		Server server = new Server();
-		server.setHandler(handlers);
-		server.addConnector(connector);
-		server.start();
+		this.server = new Server();
+		this.server.setHandler(handlers);
+		this.server.addConnector(connector);
+		this.server.start();
 		logger.info("Server ready on port " + portString + ".");
-		
-		// Wait for server thread.
-		server.join();
+	}
+	
+	public void join () throws InterruptedException {
+		this.server.join();
+	}
+	
+//	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	
+	public static void main (String[] args) throws Exception {
+		Main m = new Main();
+		m.join();
 	}
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
