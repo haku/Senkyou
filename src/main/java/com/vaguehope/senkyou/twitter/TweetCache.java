@@ -165,9 +165,9 @@ public class TweetCache {
 		return ret;
 	}
 	
-	private static interface TwitterFeed {
-		public String getName ();
-		public ResponseList<Status> getTweets (Twitter t, Paging paging) throws TwitterException;
+	private interface TwitterFeed {
+		String getName ();
+		ResponseList<Status> getTweets (Twitter t, Paging paging) throws TwitterException;
 	}
 	
 	private static enum TwitterFeeds implements TwitterFeed {
@@ -264,12 +264,10 @@ public class TweetCache {
 			if (t.getInReplyId() > 0) {
 				Long inReplyId = Long.valueOf(t.getInReplyId());
 				Tweet parent = tree.get(inReplyId);
-				if (parent != null) {
-					if (parent.addReply(t)) {
-						n++;
-						if (!tree.containsKey(inReplyId)) {
-							tree.put(inReplyId, t);
-						}
+				if (parent != null && parent.addReply(t)) {
+					n++;
+					if (!tree.containsKey(inReplyId)) {
+						tree.put(inReplyId, t);
 					}
 				}
 			}

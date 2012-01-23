@@ -155,8 +155,11 @@ public class Tweet {
 	
 	private static void printTweet (PrintWriter w, Tweet t, String indent) {
 		w.println(indent + t.toString());
-		if (t.hasReplies()) for (Tweet r : t.getReplies())
-			printTweet(w, r, indent + ">");
+		if (t.hasReplies()) {
+			for (Tweet r : t.getReplies()) {
+				printTweet(w, r, indent + ">");
+			}
+		}
 	}
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

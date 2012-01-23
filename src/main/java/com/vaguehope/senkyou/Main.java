@@ -47,7 +47,7 @@ public class Main {
 		ResourceHandler resourceHandler = new ResourceHandler();
 		resourceHandler.setDirectoriesListed(true);
 		resourceHandler.setWelcomeFiles(new String[] { "index.html" });
-		URL webroot = getClass().getResource("/webroot");
+		URL webroot = Main.class.getResource("/webroot");
 		resourceHandler.setResourceBase(webroot.toExternalForm());
 		
 		// Prepare final handler.
