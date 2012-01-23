@@ -1,5 +1,6 @@
 package com.vaguehope.senkyou;
 
+import java.net.URL;
 import java.util.logging.Logger;
 
 import org.eclipse.jetty.server.Handler;
@@ -20,12 +21,12 @@ public class Main {
 	private static final int ACCEPTORS = 2;
 	private static final int LOW_RESOURCES_CONNECTIONS = 100;
 	private static final int LOW_RESOURCES_MAX_IDLE_TIME = 5000; // 5 seconds.
-
+	
 	protected static final Logger LOG = Logger.getLogger(Main.class.getName());
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	private final Server server;
+	private Server server;
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
@@ -46,9 +47,8 @@ public class Main {
 		ResourceHandler resourceHandler = new ResourceHandler();
 		resourceHandler.setDirectoriesListed(true);
 		resourceHandler.setWelcomeFiles(new String[] { "index.html" });
-		String webrootClass = Main.class.getPackage().getName().replace('.', '/') + "/webroot";
-		String webrootResource = Main.class.getClassLoader().getResource(webrootClass).toExternalForm();
-		resourceHandler.setResourceBase(webrootResource);
+		URL webroot = getClass().getResource("/webroot");
+		resourceHandler.setResourceBase(webroot.toExternalForm());
 		
 		// Prepare final handler.
 		HandlerList handlers = new HandlerList();
