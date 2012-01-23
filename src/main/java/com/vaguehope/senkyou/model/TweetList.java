@@ -1,10 +1,10 @@
 package com.vaguehope.senkyou.model;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -19,7 +19,7 @@ public class TweetList {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
 	@XmlAttribute(name = "time") private volatile long time;
-	@XmlElement(name = "tweet") private volatile List<Tweet> tweets = new ArrayList<Tweet>();
+	@XmlElement(name = "tweet") private volatile Set<Tweet> tweets = Collections.synchronizedSet(new LinkedHashSet<Tweet>());
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
@@ -37,8 +37,8 @@ public class TweetList {
 		return this.tweets.size();
 	}
 	
-	public List<Tweet> getTweets () {
-		return Collections.unmodifiableList(this.tweets);
+	public Set<Tweet> getTweets () {
+		return Collections.unmodifiableSet(this.tweets);
 	}
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

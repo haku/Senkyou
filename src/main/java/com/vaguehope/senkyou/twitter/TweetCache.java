@@ -1,10 +1,7 @@
 package com.vaguehope.senkyou.twitter;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -22,8 +19,9 @@ import twitter4j.TwitterException;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.vaguehope.senkyou.Config;
-import com.vaguehope.senkyou.model.ThreadList;
 import com.vaguehope.senkyou.model.Tweet;
 import com.vaguehope.senkyou.model.TweetList;
 
@@ -79,14 +77,16 @@ public class TweetCache {
 	 * @param searchDepth How fat back in user's time-line to search for tips to threads.
 	 * @param maxThreads Stop searching after fixing this many threads.
 	 */
-	public ThreadList getThreads (int searchDepth, int maxThreads) throws TwitterException, ExecutionException {
-		TweetList timeline = getHomeTimeline(searchDepth);
+	public TweetList getThreads (int searchDepth, int maxThreads) throws TwitterException, ExecutionException {
 		
 		// TODO detect overlapping threads.
 		// TODO use mentions feed to find threads.
 		// TODO detect splitting threads.
 		
-		List<Tweet> tips = new LinkedList<Tweet>();
+		TweetList timeline = getHomeTimeline(searchDepth);
+		
+		// Find tips.
+		Set<Tweet> tips = Sets.newHashSet();
 		for (Tweet t : timeline.getTweets()) {
 			if (t.getInReplyId() > 0) {
 				tips.add(t);
@@ -94,35 +94,42 @@ public class TweetCache {
 			}
 		}
 		
-		ThreadList ret = new ThreadList();
+		// Build tree.
+		Map<Long, Tweet> tree = Maps.newHashMap();
+		Set<Tweet> heads = Sets.newHashSet();
 		for (Tweet tip : tips) {
-			TweetList thread = getThreadFromTip(tip);
-			ret.addThread(thread);
+			tree.put(Long.valueOf(tip.getId()), tip);
+			Tweet tweet = tip;
+			search: while (true) {
+				Tweet parent = findTweet(tweet.getInReplyId(), tree, this.tweetCache);
+				if (parent != null) {
+					parent.addReply(tweet);
+					tweet = parent;
+				}
+				else {
+					heads.add(tweet);
+					break search;
+				}
+			}
 		}
 		
+		for (Tweet t : heads) {
+			t.printTweet(System.out);
+		}
+		
+		TweetList ret = new TweetList();
+		ret.addAdd(heads);
 		return ret;
 	}
 	
-	public TweetList getThreadFromTip (Tweet tip) throws ExecutionException {
-		if (tip.getInReplyId() <= 0) throw new IllegalArgumentException("Tip is not a reply.");
-		
-		List<Tweet> thread = new ArrayList<Tweet>(); // TODO right list type?
-		Tweet head = tip;
-		while (head != null) {
-			thread.add(head);
-			long inReplyId = head.getInReplyId();
-			if (inReplyId > 0) {
-				head = this.tweetCache.get(Long.valueOf(inReplyId));
-			}
-			else {
-				break;
-			}
-		}
-		
-		Collections.reverse(thread);
-		TweetList ret = new TweetList();
-		ret.addAdd(thread);
-		return ret;
+	private static Tweet findTweet(long id, Map<Long, Tweet> tree, LoadingCache<Long, Tweet> cache) throws ExecutionException {
+		if (id < 1) return null;
+		Long lid = Long.valueOf(id);
+		Tweet t = tree.get(lid);
+		if (t != null) return t;
+		t = cache.get(lid);
+		if (t != null) tree.put(lid, t);
+		return t;
 	}
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

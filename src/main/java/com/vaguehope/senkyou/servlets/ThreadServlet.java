@@ -14,7 +14,7 @@ import javax.xml.bind.JAXBException;
 
 import twitter4j.TwitterException;
 
-import com.vaguehope.senkyou.model.ThreadList;
+import com.vaguehope.senkyou.model.TweetList;
 import com.vaguehope.senkyou.twitter.TweetCache;
 import com.vaguehope.senkyou.twitter.TweetCacheFactory;
 
@@ -55,7 +55,7 @@ public class ThreadServlet extends HttpServlet {
 	
 	private static void printThreads (HttpServletResponse resp, String username, int searchDepth, int maxThreads) throws IOException, TwitterException, JAXBException, ExecutionException {
 		TweetCache tweetCache = TweetCacheFactory.getTweetCache(username);
-		ThreadList threadList = tweetCache.getThreads(searchDepth, maxThreads);
+		TweetList threadList = tweetCache.getThreads(searchDepth, maxThreads);
 		threadList.toXml(resp.getWriter());
 		
 	}
