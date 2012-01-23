@@ -97,9 +97,9 @@ public class TweetCache {
 		
 		Map<Long, Tweet> tree = Maps.newHashMap(); // Will contain everything in output.
 		SortedSet<Tweet> tips = Sets.newTreeSet(Tweet.Comp.NEWEST_FIRST);
-		findTips(mentions, tips, maxThreads);
-		findTips(timeline, tips, maxThreads);
-		Set<Tweet> heads = buildTweetTree(tips, tree, this.tweetCache);
+		findTips(mentions, tips);
+		findTips(timeline, tips);
+		Set<Tweet> heads = buildTweetTree(tips, maxThreads, tree, this.tweetCache);
 		attachStrays(tree, mentions);
 		attachStrays(tree, timeline);
 		
@@ -232,22 +232,19 @@ public class TweetCache {
 		return t;
 	}
 	
-	private static void findTips (TweetList timeline, Collection<Tweet> out, int limit) {
+	private static void findTips (TweetList timeline, Collection<Tweet> out) {
 		for (Tweet t : timeline.getTweets()) {
-			if (t.getInReplyId() > 0) {
-				if (out.size() < limit) {
-					out.add(t);
-				}
-			}
+			if (t.getInReplyId() > 0) out.add(t);
 		}
 	}
 	
-	private static Set<Tweet> buildTweetTree (Set<Tweet> tips, Map<Long, Tweet> tree, LoadingCache<Long, Tweet> cache) throws ExecutionException {
+	private static Set<Tweet> buildTweetTree (Set<Tweet> tips, int maxHeads, Map<Long, Tweet> tree, LoadingCache<Long, Tweet> cache) throws ExecutionException {
 		Set<Tweet> heads = Sets.newLinkedHashSet(); // Keep the order they are added in.
 		for (Tweet tip : tips) {
+			if (heads.size() >= maxHeads) break;
 			tree.put(Long.valueOf(tip.getId()), tip);
 			Tweet tweet = tip;
-			search: while (true) {
+			while (true) {
 				Tweet parent = findTweet(tweet.getInReplyId(), tree, cache);
 				if (parent != null) {
 					parent.addReply(tweet);
@@ -255,7 +252,7 @@ public class TweetCache {
 				}
 				else {
 					heads.add(tweet);
-					break search;
+					break;
 				}
 			}
 		}
