@@ -90,11 +90,6 @@ public class TweetCache {
 		TweetList mentions = getMentions(Config.TWEET_FETCH_PAGE_SIZE);
 		TweetList timeline = getHomeTimeline(searchDepth);
 		
-		/* This is not quite right yet.
-		 * Map well end up with less than intended threads.
-		 * Might need to do iterative searches for tips as the tree is built.
-		 */
-		
 		Map<Long, Tweet> tree = Maps.newHashMap(); // Will contain everything in output.
 		SortedSet<Tweet> tips = Sets.newTreeSet(Tweet.Comp.NEWEST_FIRST);
 		findTips(mentions, tips);
