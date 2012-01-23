@@ -5,6 +5,7 @@ import static com.vaguehope.senkyou.util.Dates.fixDate;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -29,7 +30,7 @@ public class Tweet {
 	@XmlAttribute(name = "name") private volatile String name;
 	@XmlAttribute(name = "created") private volatile Date createdAt;
 	@XmlElement(name = "body") private volatile String body;
-	@XmlElement(name = "reply") private volatile Set<Tweet> replies;
+	@XmlElement(name = "tweet") private volatile Set<Tweet> replies;
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
@@ -124,6 +125,24 @@ public class Tweet {
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
+	protected Date getCreatedAtUnsafe () {
+		return this.createdAt;
+	}
+	
+	public enum Comp implements Comparator<Tweet> {
+		NEWEST_FIRST {
+			@Override
+			public int compare (Tweet o1, Tweet o2) {
+				return o2.getCreatedAtUnsafe().compareTo(o1.getCreatedAtUnsafe());
+			}
+		};
+		
+		@Override
+		public abstract int compare (Tweet o1, Tweet o2);
+	}
+	
+//	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	
 	public void printTweet (PrintStream ps) {
 		PrintWriter w = new PrintWriter(ps);
 		printTweet(w);
@@ -136,7 +155,8 @@ public class Tweet {
 	
 	private static void printTweet (PrintWriter w, Tweet t, String indent) {
 		w.println(indent + t.toString());
-		if (t.hasReplies()) for (Tweet r : t.getReplies()) printTweet(w, r, indent + ">");
+		if (t.hasReplies()) for (Tweet r : t.getReplies())
+			printTweet(w, r, indent + ">");
 	}
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
