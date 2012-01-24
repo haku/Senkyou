@@ -38,7 +38,7 @@ public class Main {
 		
 		for (TweetFeed feed : TweetFeeds.values()) {
 			TweetServlet tweetServlet = new TweetServlet(feed);
-			servletHandler.addServlet(new ServletHolder(tweetServlet), "/feeds/" + feed.getContext());
+			servletHandler.addServlet(new ServletHolder(tweetServlet), tweetServlet.getContext());
 		}
 		
 		// Static files on classpath.

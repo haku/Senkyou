@@ -73,8 +73,9 @@ public class TweetCache {
 		return getTweetList(this.username, this.twitter, TwitterFeeds.MENTIONS, this.mentionsTimelineLock, this.mentionsTimeline, minCount, Config.MAX_MENTIONS_AGE);
 	}
 	
-	public TweetList getLastTweetHomeTimeline (int searchDepth) throws TwitterException {
-		TweetList source = getHomeTimeline(searchDepth);
+	public TweetList getLastTweetHomeTimeline (int minCount) throws TwitterException {
+		// TODO keep searching back until minCount reached.
+		TweetList source = getHomeTimeline(minCount);
 		TweetList target = new TweetList();
 		target.setTime(source.getTime());
 		copyFirstTweetOfEachUser(source, target);

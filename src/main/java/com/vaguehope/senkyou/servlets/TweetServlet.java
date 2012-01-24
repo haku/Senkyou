@@ -21,12 +21,18 @@ import com.vaguehope.senkyou.twitter.TweetFeed;
 
 public class TweetServlet extends HttpServlet {
 	
+	private static final String CONTEXT_FEEDS_BASE = "/feeds/";
+
 	private static final long serialVersionUID = 2124094443981251745L;
 
 	private final TweetFeed feed;
 	
 	public TweetServlet (TweetFeed feed) {
 		this.feed = feed;
+	}
+	
+	public String getContext () {
+		return CONTEXT_FEEDS_BASE + this.feed.getContext();
 	}
 	
 	@Override

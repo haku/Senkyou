@@ -16,6 +16,17 @@ public enum TweetFeeds implements TweetFeed {
 			return tc.getHomeTimeline(n);
 		}
 	},
+	HOME_TIMELINE_LAST_ONLY {
+		@Override
+		public String getContext () {
+			return "homelast";
+		}
+		
+		@Override
+		public TweetList getTweets (TweetCache tc, int n) throws TwitterException {
+			return tc.getLastTweetHomeTimeline(n);
+		}
+	},
 	MENTIONS {
 		@Override
 		public String getContext () {
