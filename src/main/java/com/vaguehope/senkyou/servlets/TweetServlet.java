@@ -60,6 +60,7 @@ public class TweetServlet extends HttpServlet {
 		
 		TweetCache tweetCache = TweetCacheFactory.getTweetCache(user);
 		TweetList tl = this.feed.getTweets(tweetCache, count);
+		resp.setContentType("text/xml;charset=UTF-8");
 		tl.toXml(resp.getWriter());
 	}
 	
