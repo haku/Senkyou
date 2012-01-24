@@ -3,7 +3,6 @@ package com.vaguehope.senkyou.twitter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -35,26 +34,6 @@ public final class TwitterConfigHelper {
 	private static final String KEY_TOKEN_SECRET = "tokenSecret";
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	
-	public static File writeAuthData (String username, AccessToken accessToken) throws IOException {
-		String fpath = getConfigDir() + "/" + username + ".properties";
-		File f = new File(fpath);
-		
-		Properties props = new Properties();
-		props.setProperty(KEY_TOKEN, accessToken.getToken());
-		props.setProperty(KEY_TOKEN_SECRET, accessToken.getTokenSecret());
-		
-		FileOutputStream fos = null;
-		try {
-			fos = new FileOutputStream(f);
-			props.store(fos, null);
-		}
-		finally {
-			if (fos != null) fos.close();
-		}
-		
-		return f;
-	}
 	
 	public static AccessToken readAppAuthData () throws IOException {
 		String path = getConfigDir() + "/appauth";
