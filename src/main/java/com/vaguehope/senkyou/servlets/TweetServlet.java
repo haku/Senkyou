@@ -17,12 +17,17 @@ import twitter4j.TwitterException;
 import com.vaguehope.senkyou.model.TweetList;
 import com.vaguehope.senkyou.twitter.TweetCache;
 import com.vaguehope.senkyou.twitter.TweetCacheFactory;
+import com.vaguehope.senkyou.twitter.TweetFeed;
 
 public class TweetServlet extends HttpServlet {
 	
-	public static final String CONTEXT = "/feeds/tweets";
-	
 	private static final long serialVersionUID = 2124094443981251745L;
+
+	private final TweetFeed feed;
+	
+	public TweetServlet (TweetFeed feed) {
+		this.feed = feed;
+	}
 	
 	@Override
 	protected void doGet (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -40,19 +45,15 @@ public class TweetServlet extends HttpServlet {
 		}
 	}
 	
-	private static void procGet (HttpServletRequest req, HttpServletResponse resp) throws IOException, TwitterException, JAXBException, ExecutionException {
+	private void procGet (HttpServletRequest req, HttpServletResponse resp) throws IOException, TwitterException, JAXBException, ExecutionException {
 		String user = validateStringParam(req, resp, "u");
 		if (user == null) return;
 		
 		int count = validatePositiveIntParam(req, resp, "n");
 		if (count < 1) return;
 		
-		printHomeTimeline(resp, user, count);
-	}
-	
-	private static void printHomeTimeline (HttpServletResponse resp, String username, int count) throws IOException, TwitterException, JAXBException, ExecutionException {
-		TweetCache tweetCache = TweetCacheFactory.getTweetCache(username);
-		TweetList tl = tweetCache.getLastTweetHomeTimeline(count);
+		TweetCache tweetCache = TweetCacheFactory.getTweetCache(user);
+		TweetList tl = this.feed.getTweets(tweetCache, count);
 		tl.toXml(resp.getWriter());
 	}
 	

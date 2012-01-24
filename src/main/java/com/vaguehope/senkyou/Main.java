@@ -11,8 +11,9 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-import com.vaguehope.senkyou.servlets.ThreadServlet;
 import com.vaguehope.senkyou.servlets.TweetServlet;
+import com.vaguehope.senkyou.twitter.TweetFeed;
+import com.vaguehope.senkyou.twitter.TweetFeeds;
 
 public class Main {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -35,13 +36,10 @@ public class Main {
 		ServletContextHandler servletHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		servletHandler.setContextPath("/");
 		
-		// Tweet servlet.
-		TweetServlet tweetServlet = new TweetServlet();
-		servletHandler.addServlet(new ServletHolder(tweetServlet), TweetServlet.CONTEXT);
-		
-		// Thread servlet.
-		ThreadServlet threadServlet = new ThreadServlet();
-		servletHandler.addServlet(new ServletHolder(threadServlet), ThreadServlet.CONTEXT);
+		for (TweetFeed feed : TweetFeeds.values()) {
+			TweetServlet tweetServlet = new TweetServlet(feed);
+			servletHandler.addServlet(new ServletHolder(tweetServlet), "/feeds/" + feed.getContext());
+		}
 		
 		// Static files on classpath.
 		ResourceHandler resourceHandler = new ResourceHandler();

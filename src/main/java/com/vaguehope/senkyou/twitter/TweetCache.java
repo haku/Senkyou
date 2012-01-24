@@ -87,9 +87,9 @@ public class TweetCache {
 	 * @param searchDepth How fat back in user's time-line to search for tips to threads.
 	 * @param maxThreads Stop searching after fixing this many threads.
 	 */
-	public TweetList getThreads (int searchDepth, int maxThreads) throws TwitterException, ExecutionException {
+	public TweetList getThreads (int maxThreads) throws TwitterException{
 		TweetList mentions = getMentions(Config.TWEET_FETCH_PAGE_SIZE);
-		TweetList timeline = getHomeTimeline(searchDepth);
+		TweetList timeline = getHomeTimeline(Config.TWEET_FETCH_COUNT);
 		
 		Map<Long, Tweet> tree = Maps.newHashMap(); // Will contain everything in output.
 		SortedSet<Tweet> tips = Sets.newTreeSet(Tweet.Comp.NEWEST_FIRST);
@@ -166,24 +166,6 @@ public class TweetCache {
 		return ret;
 	}
 	
-	private interface TwitterFeed {
-		String getName ();
-		ResponseList<Status> getTweets (Twitter t, Paging paging) throws TwitterException;
-	}
-	
-	private static enum TwitterFeeds implements TwitterFeed {
-		HOME_TIMELINE {
-			@Override public String getName () {return "home timeline"; }
-			@Override public ResponseList<Status> getTweets (Twitter t, Paging paging) throws TwitterException { return t.getHomeTimeline(paging); }
-		},
-		MENTIONS {
-			@Override public String getName () {return "mentions"; }
-			@Override public ResponseList<Status> getTweets (Twitter t, Paging paging) throws TwitterException { return t.getMentions(paging); }
-		};
-		@Override public abstract String getName ();
-		@Override public abstract ResponseList<Status> getTweets (Twitter t, Paging paging) throws TwitterException;
-	}
-	
 	protected static Tweet fetchTweet (Twitter t, long id) throws TwitterException {
 		long startTime = System.currentTimeMillis();
 		
@@ -247,7 +229,7 @@ public class TweetCache {
 		}
 	}
 	
-	private static Set<Tweet> buildTweetTree (Set<Tweet> tips, int maxHeads, Map<Long, Tweet> tree, LoadingCache<Long, Tweet> cache) throws ExecutionException {
+	private static Set<Tweet> buildTweetTree (Set<Tweet> tips, int maxHeads, Map<Long, Tweet> tree, LoadingCache<Long, Tweet> cache) {
 		Set<Tweet> heads = Sets.newLinkedHashSet(); // Keep the order they are added in.
 		for (Tweet tip : tips) {
 			if (heads.size() >= maxHeads) break;
@@ -289,12 +271,12 @@ public class TweetCache {
 		LOG.info("Attached " + n + " strays."); // Does this method even find anything?
 	}
 	
-	private static Tweet findTweet(long id, Map<Long, Tweet> tree, LoadingCache<Long, Tweet> cache) throws ExecutionException {
+	private static Tweet findTweet(long id, Map<Long, Tweet> tree, LoadingCache<Long, Tweet> cache) {
 		if (id < 1) return null;
 		Long lid = Long.valueOf(id);
 		Tweet t = tree.get(lid);
 		if (t != null) return t;
-		t = cache.get(lid);
+		t = cache.getUnchecked(lid);
 		if (t != null) tree.put(lid, t);
 		return t;
 	}

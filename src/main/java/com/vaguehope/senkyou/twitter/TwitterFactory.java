@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import twitter4j.RateLimitStatus;
 import twitter4j.RateLimitStatusEvent;
 import twitter4j.RateLimitStatusListener;
 import twitter4j.Twitter;
@@ -16,11 +17,11 @@ import com.google.common.cache.LoadingCache;
 import com.vaguehope.senkyou.Config;
 
 public final class TwitterFactory {
-
+	
 	protected static final Logger LOG = Logger.getLogger(TwitterFactory.class.getName());
-
+	
 	private TwitterFactory () {/* Static helper. */}
-
+	
 	private static final LoadingCache<String, Twitter> CACHE = CacheBuilder.newBuilder()
 			.maximumSize(Config.USER_COUNT_MAX)
 			.softValues()
@@ -31,28 +32,39 @@ public final class TwitterFactory {
 					return makeTwitter(username);
 				}
 			});
-
+	
 	protected static Twitter makeTwitter (String username) throws IOException {
 		AccessToken appToken = TwitterConfigHelper.readAppAuthData();
 		AccessToken userToken = TwitterConfigHelper.readUserAuthData(username);
 		Twitter t = new twitter4j.TwitterFactory().getOAuthAuthorizedInstance(appToken.getToken(), appToken.getTokenSecret(), userToken);
-
-		t.setRateLimitStatusListener(new RateLimitStatusListener() {
-			@Override
-			public void onRateLimitStatus (RateLimitStatusEvent event) {
-				LOG.info(event.getRateLimitStatus().toString());
-			}
-			@Override
-			public void onRateLimitReached (RateLimitStatusEvent event) {
-				LOG.info(event.getRateLimitStatus().toString());
-			}
-		});
-
+		
+		t.setRateLimitStatusListener(new RateLimitLogger());
+		
 		return t;
 	}
-
+	
 	public static Twitter getTwitter (String username) throws ExecutionException {
 		return CACHE.get(username);
 	}
+	
+	private static class RateLimitLogger implements RateLimitStatusListener {
+		
+		public RateLimitLogger () {}
 
+		@Override
+		public void onRateLimitStatus (RateLimitStatusEvent event) {
+			logRate(event.getRateLimitStatus());
+		}
+		
+		@Override
+		public void onRateLimitReached (RateLimitStatusEvent event) {
+			logRate(event.getRateLimitStatus());
+		}
+		
+		private static void logRate (RateLimitStatus r) {
+			LOG.info("Rate: " + r.getRemainingHits() + "/" + r.getHourlyLimit());
+		}
+		
+	}
+	
 }
