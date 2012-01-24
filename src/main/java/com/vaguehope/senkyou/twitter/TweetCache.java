@@ -1,6 +1,7 @@
 package com.vaguehope.senkyou.twitter;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -59,7 +60,7 @@ public class TweetCache {
 				.maximumSize(Config.USER_TWEET_CACHE_COUNT_MAX)
 				.softValues()
 				.expireAfterAccess(Config.USER_TWEET_CACHE_AGE_MAX, TimeUnit.MINUTES)
-				.build(new TweetLoader(this.twitter));
+				.build(new TweetFetcher(this.twitter));
 	}
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -194,17 +195,22 @@ public class TweetCache {
 		
 	}
 	
-	private static class TweetLoader extends CacheLoader<Long, Tweet> {
+	private static class TweetFetcher extends CacheLoader<Long, Tweet> {
 		
 		private final Twitter t;
 		
-		public TweetLoader (Twitter t) {
+		public TweetFetcher (Twitter t) {
 			this.t = t;
 		}
 		
 		@Override
-		public Tweet load (Long id) throws TwitterException {
-			return fetchTweet(this.t, id.longValue());
+		public Tweet load (Long id) {
+			try {
+				return fetchTweet(this.t, id.longValue());
+			}
+			catch (TwitterException e) {
+				return deadTweet(id.longValue(), e.getMessage());
+			}
 		}
 		
 	}
@@ -224,6 +230,14 @@ public class TweetCache {
 		t.setUser(s.getUser().getScreenName());
 		t.setName(s.getUser().getName());
 		t.setBody(s.getText());
+		return t;
+	}
+	
+	protected static Tweet deadTweet (long id, String msg) {
+		Tweet t = new Tweet();
+		t.setId(id);
+		t.setCreatedAt(new Date());
+		t.setBody(msg);
 		return t;
 	}
 	
