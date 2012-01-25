@@ -2,28 +2,17 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <script type="text/javascript" src="vendor/jquery-1.6.2.js"></script>
+<script type="text/javascript" src="util.js"></script>
 <script type="text/javascript" src="main.js"></script>
 <link href="layout.css" type="text/css" rel="stylesheet">
 <link href="colours.css" type="text/css" rel="stylesheet">
 
 <script type="text/javascript">
-	function getUrlVars () {
-		var vars = [], hash;
-		var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-		for ( var i = 0; i < hashes.length; i++) {
-			hash = hashes[i].split('=');
-			vars.push(hash[0]);
-			vars[hash[0]] = hash[1];
-		}
-		return vars;
-	}
-
 	$(document).ready(function () {
 		var user = getUrlVars()['user'];
 		if (user != null && user.length > 0) {
 			$('#user').text('User: ' + user + '.');
-			var n = parseInt(getUrlVars()['n'], 10);
-			if (!(n)) n = 5; else if (n < 1) n = 1; else if (n > 20) n = 20;
+			var n = parseArgToInt('n', 5, 1, 20);
 			fetchThreadFeed(user, n);
 		}
 		else {
@@ -40,129 +29,8 @@
 
 	<h2 id="user"></h2>
 	<p id="statbar"></p>
-	<div id="threads">
-		<div class="tweet">
-			<p>
-				<span class="user">user: </span><span class="msg">Lorem ipsum
-					dolor sit amet, consectetur adipiscing elit. Cras ultrices odio vel
-					magna feugiat sed adipiscing sapien tincidunt. Suspendisse aliquam
-					sagittis lorem.</span>
-			</p>
-		</div>
-		<div class="tweet">
-			<p>
-				<span class="user">user: </span><span class="msg">Lorem ipsum
-					dolor sit amet, consectetur adipiscing elit. Cras ultrices odio vel
-					magna feugiat sed adipiscing sapien tincidunt. Suspendisse aliquam
-					sagittis lorem.</span>
-			</p>
-			<div class="tweet">
-				<p>
-					<span class="user">user: </span><span class="msg">Lorem
-						ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
-						odio vel magna feugiat sed adipiscing sapien tincidunt.
-						Suspendisse aliquam sagittis lorem.</span>
-				</p>
-			</div>
-			<div class="tweet">
-				<p>
-					<span class="user">user: </span><span class="msg">Lorem
-						ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
-						odio vel magna feugiat sed adipiscing sapien tincidunt.
-						Suspendisse aliquam sagittis lorem.</span>
-				</p>
-			</div>
-		</div>
-		<div class="tweet">
-			<p>
-				<span class="user">user: </span><span class="msg">Lorem ipsum
-					dolor sit amet, consectetur adipiscing elit. Cras ultrices odio vel
-					magna feugiat sed adipiscing sapien tincidunt. Suspendisse aliquam
-					sagittis lorem.</span>
-			</p>
-			<div class="tweet">
-				<p>
-					<span class="user">user: </span><span class="msg">Lorem
-						ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
-						odio vel magna feugiat sed adipiscing sapien tincidunt.
-						Suspendisse aliquam sagittis lorem.</span>
-				</p>
-				<div class="tweet">
-					<p>
-						<span class="user">user: </span><span class="msg">Lorem
-							ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
-							odio vel magna feugiat sed adipiscing sapien tincidunt.
-							Suspendisse aliquam sagittis lorem.</span>
-					</p>
-				</div>
-			</div>
-		</div>
-		<div class="tweet">
-			<p>
-				<span class="user">user: </span><span class="msg">Lorem ipsum
-					dolor sit amet, consectetur adipiscing elit. Cras ultrices odio vel
-					magna feugiat sed adipiscing sapien tincidunt. Suspendisse aliquam
-					sagittis lorem.</span>
-			</p>
-			<div class="tweet">
-				<p>
-					<span class="user">user: </span><span class="msg">Lorem
-						ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
-						odio vel magna feugiat sed adipiscing sapien tincidunt.
-						Suspendisse aliquam sagittis lorem.</span>
-				</p>
-				<div class="tweet">
-					<p>
-						<span class="user">user: </span><span class="msg">Lorem
-							ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
-							odio vel magna feugiat sed adipiscing sapien tincidunt.
-							Suspendisse aliquam sagittis lorem.</span>
-					</p>
-				</div>
-				<div class="tweet">
-					<p>
-						<span class="user">user: </span><span class="msg">Lorem
-							ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
-							odio vel magna feugiat sed adipiscing sapien tincidunt.
-							Suspendisse aliquam sagittis lorem.</span>
-					</p>
-				</div>
-			</div>
-			<div class="tweet">
-				<p>
-					<span class="user">user: </span><span class="msg">Lorem
-						ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
-						odio vel magna feugiat sed adipiscing sapien tincidunt.
-						Suspendisse aliquam sagittis lorem.</span>
-				</p>
-			</div>
-		</div>
-		<div class="tweet">
-			<p>
-				<span class="user">user: </span><span class="msg">Lorem ipsum
-					dolor sit amet, consectetur adipiscing elit. Cras ultrices odio vel
-					magna feugiat sed adipiscing sapien tincidunt. Suspendisse aliquam
-					sagittis lorem.</span>
-			</p>
-			<div class="tweet">
-				<p>
-					<span class="user">user: </span><span class="msg">Lorem
-						ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
-						odio vel magna feugiat sed adipiscing sapien tincidunt.
-						Suspendisse aliquam sagittis lorem.</span>
-				</p>
-				<div class="tweet">
-					<p>
-						<span class="user">user: </span><span class="msg">Lorem
-							ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
-							odio vel magna feugiat sed adipiscing sapien tincidunt.
-							Suspendisse aliquam sagittis lorem.</span>
-					</p>
-				</div>
-			</div>
-		</div>
+	<div id="threads"></div>
 
-	</div>
 	<div id="footer"></div>
 </body>
 </html>
