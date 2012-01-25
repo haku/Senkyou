@@ -38,13 +38,16 @@ body {
 	color: #8380E6;
 }
 
-#threads > .tweet { /* Top-level tweets. */
-	border-top: 1px solid #494780;
-	border-left: 1px solid #494780;
-	border-radius: 10px;
+.tweet {
 	color: #8380E6;
 }
 
 .tweet .user {
 	color: #5383CC;
+}
+
+#threads > .tweet { /* Top-level tweets. */
+	border-top: 1px solid #494780;
+	border-left: 1px solid #494780;
+	border-radius: 10px;
 }
