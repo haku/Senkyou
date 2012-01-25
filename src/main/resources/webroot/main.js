@@ -33,14 +33,40 @@ function fetchThreadFeed (user) {
 
 function _processThreadFeed (xml) {
 	var threadContainer = $('#threads');
-
-	var xmlDoc = $(xml);
-	xmlDoc.find('tweets').children('tweet').each(function () { // For each head tweet.
-		var head = $(this);
-
-		var tweet = $('<div>');
-		var text = $('<p>').text(head.attr('user') + ': ' + head.children('body').text());
-		tweet.append(text);
-		threadContainer.append(tweet);
-	});
+	threadContainer.html("");
+	$(xml).find('tweets').find('tweet').each(function () {
+		var tweetXml = $(this);
+		var parentXml = tweetXml.parent();
+		var tweetE = tweetElement(tweetXml);
+		var parentE = parentXml[0].tagName == 'tweets' ? threadContainer : $('#t' + parentXml.attr('id'));
+		parentE.append(tweetE);
+	})
 }
+
+function tweetElement (tweetXml) {
+	var tweetDiv = $('<div class="tweet">');
+	tweetDiv.attr('id', 't' + tweetXml.attr('id'));
+	var text = $('<p>').text(tweetXml.attr('user') + ': ' + tweetXml.children('body').text());
+	tweetDiv.append(text);
+	return tweetDiv;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,4 @@
+#threads > .tweet { /* Top-level tweets. */
+	border: 1px solid;
+	border-radius: 10px;
+}
