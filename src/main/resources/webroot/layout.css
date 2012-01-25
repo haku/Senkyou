@@ -1,3 +1,29 @@
+/* ~~~ background ~~~ */
+
+body {
+ margin: 0;
+ padding: 0;
+}
+
+#background0, #background1 {
+ position: fixed;
+ width: 100%;
+ z-index: -1;
+}
+
+#background0 {
+ top: 0;
+ height: 70%;
+}
+
+#background1 {
+ top: 80%;
+ height: 20%;
+ margin: -1px;
+}
+
+/* ~~~ content ~~~ */
+
 #user {
 	margin: 0.25em 0.5em 0 0.5em;
 	display: inline-block;
@@ -24,4 +50,10 @@
 
 .tweet > .tweet { /* Child tweets. */
 	margin-left: 1em;
+}
+
+#footer {
+	height: 20%;
+	float: left;
+	clear: both;
 }

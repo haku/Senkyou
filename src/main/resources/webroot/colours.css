@@ -1,4 +1,46 @@
+/*
+sky-dark:  #000000 [black]
+sky-light: #2E2336 [dark-purple]
+horizon:   #294166
+sea-light: #1A2940
+sea-dark:  #000000 [black]
+title: #8380E6 [lylac]
+links: #B080E6 [light-purple]
+float: #211B25 [grey-purple]
+*/
+
+/* ~~~ background ~~~ */
+
+body {
+	background: #2E2336; /* sky-light */
+	font-family: Arial, sans-serif;
+}
+
+#background0 { /* sky-dark -> sky-light */
+ background-image:-moz-linear-gradient(top, #000000 0%, #2E2336 100%);
+ background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(0%, #000000), color-stop(100%, #2E2336));
+ background-image:linear-gradient(top, #000000 0%, #2E2336 100%);
+}
+#background1 { /* horizon, sea-light -> sea-dark */
+ border-top: solid 1px #294166;
+ background-image:-moz-linear-gradient(top, #1A2940 0%, #000000 100%);
+ background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(0%, #1A2940), color-stop(100%, #000000));
+ background-image:linear-gradient(top, #1A2940 0%, #000000 100%);
+}
+
+/* ~~~ content ~~~ */
+
+#user {
+	color: #8380E6;
+}
+
+#statbar {
+	color: #8380E6;
+}
+
 #threads > .tweet { /* Top-level tweets. */
-	border: 1px solid;
+	border-top: 1px solid #494780;
+	border-left: 1px solid #494780;
 	border-radius: 10px;
+	color: #8380E6;
 }

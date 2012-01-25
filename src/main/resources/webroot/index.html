@@ -21,17 +21,21 @@
 	$(document).ready(function () {
 		var user = getUrlVars()['user'];
 		if (user != null && user.length > 0) {
-			$('#user').text("User: " + user + ".");
+			$('#user').text('User: ' + user + '.');
 			fetchThreadFeed(user);
 		}
 		else {
-			$('#user').text("User not specified.");
+			$('#user').text('User not specified.');
+			$('#statbar').text('offline.');
 		}
 	});
 </script>
 
 </head>
 <body>
+	<div id="background0"></div>
+	<div id="background1"></div>
+
 	<h2 id="user"></h2>
 	<p id="statbar"></p>
 	<div id="threads">
@@ -112,5 +116,6 @@
 		</div>
 
 	</div>
+	<div id="footer"></div>
 </body>
 </html>

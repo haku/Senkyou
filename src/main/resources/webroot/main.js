@@ -3,7 +3,7 @@ function fetchThreadFeed (user) {
 	$.ajax({
 	type : 'GET',
 	cache : 'false',
-	url : '/feeds/threads?u=' + user + '&n=5',
+	url : '/feeds/threads?u=' + user + '&n=8',
 	dataType : 'xml',
 	beforeSend : function () {
 		statbar.text('updating...');
@@ -50,23 +50,3 @@ function tweetElement (tweetXml) {
 	tweetDiv.append(text);
 	return tweetDiv;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
