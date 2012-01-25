@@ -1,6 +1,7 @@
 package com.vaguehope.senkyou.twitter;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -38,7 +39,7 @@ public final class TwitterFactory {
 		AccessToken userToken = TwitterConfigHelper.readUserAuthData(username);
 		Twitter t = new twitter4j.TwitterFactory().getOAuthAuthorizedInstance(appToken.getToken(), appToken.getTokenSecret(), userToken);
 		
-		t.setRateLimitStatusListener(new RateLimitLogger());
+		t.setRateLimitStatusListener(new RateLimitLogger(username));
 		
 		return t;
 	}
@@ -49,8 +50,12 @@ public final class TwitterFactory {
 	
 	private static class RateLimitLogger implements RateLimitStatusListener {
 		
-		public RateLimitLogger () {}
-
+		private final String username;
+		
+		public RateLimitLogger (String username) {
+			this.username = username;
+		}
+		
 		@Override
 		public void onRateLimitStatus (RateLimitStatusEvent event) {
 			logRate(event.getRateLimitStatus());
@@ -61,8 +66,9 @@ public final class TwitterFactory {
 			logRate(event.getRateLimitStatus());
 		}
 		
-		private static void logRate (RateLimitStatus r) {
-			LOG.info("Rate: " + r.getRemainingHits() + "/" + r.getHourlyLimit());
+		@SuppressWarnings("boxing")
+		private void logRate (RateLimitStatus r) {
+			LOG.info(MessageFormat.format("{0}: rate={1}/{2} (reset in {3} seconds)", this.username, r.getRemainingHits(), r.getHourlyLimit(), r.getSecondsUntilReset()));
 		}
 		
 	}
