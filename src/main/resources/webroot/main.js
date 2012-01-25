@@ -1,16 +1,24 @@
+function fetchHomeFeed (user, number) {
+	_fetchFeed(user, number, 'homelast', _processHomeFeed);
+}
+
 function fetchThreadFeed (user, number) {
+	_fetchFeed(user, number, 'threads', _processThreadFeed);
+}
+
+function _fetchFeed (user, number, feed, procFnc) {
 	var statbar = $('#statbar');
 	$.ajax({
 	type : 'GET',
 	cache : 'false',
-	url : '/feeds/threads?u=' + user + '&n=' + number,
+	url : '/feeds/' + feed + '?u=' + user + '&n=' + number,
 	dataType : 'xml',
 	beforeSend : function () {
 		statbar.text('updating...');
 	},
 	success : function (xml) {
 		try {
-			_processThreadFeed(xml);
+			procFnc(xml);
 			statbar.text('updated.');
 		}
 		catch (e) {
@@ -32,25 +40,36 @@ function fetchThreadFeed (user, number) {
 }
 
 function _processThreadFeed (xml) {
-	var threadContainer = $('#threads');
-	threadContainer.html("");
+	var container = $('#threads');
+	container.html("");
 	$(xml).find('tweets').find('tweet').each(function () {
 		var tweetXml = $(this);
 		var parentXml = tweetXml.parent();
 		var tweetE = tweetElement(tweetXml);
-		var parentE = parentXml[0].tagName == 'tweets' ? threadContainer : $('#t' + parentXml.attr('id'));
+		var parentE = parentXml[0].tagName == 'tweets' ? container : $('#t' + parentXml
+				.attr('id'));
 		parentE.append(tweetE);
-	})
+	});
+}
+
+function _processHomeFeed (xml) {
+	var container = $('#footer');
+	container.html("");
+	$(xml).find('tweets').find('tweet').each(function () {
+		var tweetXml = $(this);
+		var tweetE = tweetElement(tweetXml);
+		container.append(tweetE);
+	});
 }
 
 function tweetElement (tweetXml) {
 	var userSpan = $('<span class="user">').text(tweetXml.attr('user') + ': ');
 	var msgSpan = $('<span class="msg">').text(tweetXml.children('body').text());
-	
+
 	var text = $('<p>');
 	text.append(userSpan);
 	text.append(msgSpan);
-	
+
 	var tweetDiv = $('<div class="tweet">');
 	tweetDiv.attr('id', 't' + tweetXml.attr('id'));
 	tweetDiv.append(text);

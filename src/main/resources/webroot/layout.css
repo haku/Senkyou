@@ -1,37 +1,43 @@
-/* ~~~ background ~~~ */
-
+/* ~~~ background ~~~
+*/
 body {
- margin: 0;
- padding: 0;
+	margin: 0;
+	padding: 0;
 }
 
-#background0, #background1 {
- position: fixed;
- width: 100%;
- z-index: -1;
+#container {
+	position: relative;
+	min-height: 100%;
+	height: 100%;
+}
+
+#background0,#background1 {
+	position: fixed;
+	width: 100%;
 }
 
 #background0 {
- top: 0;
- height: 70%;
+	top: 0;
+	height: 70%;
+	z-index: -1;
 }
 
 #background1 {
- top: 80%;
- height: 20%;
- margin: -1px;
+	bottom: 0;
+	margin: -1px;
+	height: 9em;
 }
 
-/* ~~~ content ~~~ */
-
+/* ~~~ content ~~~
+*/
 #user {
-	margin: 0.25em 0.5em 0 0.5em;
 	display: inline-block;
+	margin: 0.25em 0.5em 0 0.5em;
 }
 
 #statbar {
-	margin: 0 0 0 0.5em;
 	display: inline-block;
+	margin: 0 0 0 0.5em;
 }
 
 .tweet { /* All tweets. */
@@ -42,18 +48,37 @@ body {
 	margin: 0.5em;
 }
 
-#threads > .tweet { /* Top-level tweets. */
+#threads>.tweet { /* Top-level tweets. */
 	float: left;
 	width: 20em;
 	margin: 0.5em;
 }
 
-.tweet > .tweet { /* Child tweets. */
+.tweet>.tweet { /* Child tweets. */
 	margin-left: 1em;
 }
 
-#footer {
-	height: 20%;
+#clearfooter { /* Empty space to make main area scroll above footer. */
 	float: left;
 	clear: both;
+	height: 9em;
+}
+
+#footerouter {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	height: 9em;
+	overflow: auto;
+}
+
+#footer { /* Horizontal scrolling hack. */
+	float: left;
+	margin-right: -30000px;
+}
+
+#footer .tweet { /* Tweets inside the footer. */
+	float: left;
+	width: 20em;
+	margin: 0.5em;
 }

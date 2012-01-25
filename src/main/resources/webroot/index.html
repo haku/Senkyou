@@ -12,6 +12,7 @@
 		var user = getUrlVars()['user'];
 		if (user != null && user.length > 0) {
 			$('#user').text('User: ' + user + '.');
+			fetchHomeFeed(user, 20);
 			var n = parseArgToInt('n', 5, 1, 20);
 			fetchThreadFeed(user, n);
 		}
@@ -27,10 +28,16 @@
 	<div id="background0"></div>
 	<div id="background1"></div>
 
-	<h2 id="user"></h2>
-	<p id="statbar"></p>
-	<div id="threads"></div>
+	<div id="content">
+		<h2 id="user"></h2>
+		<p id="statbar"></p>
 
-	<div id="footer"></div>
+		<div id="threads"></div>
+
+		<div id="clearfooter"></div>
+		<div id="footerouter">
+			<div id="footer"></div>
+		</div>
+	</div>
 </body>
 </html>
