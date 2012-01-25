@@ -22,7 +22,9 @@
 		var user = getUrlVars()['user'];
 		if (user != null && user.length > 0) {
 			$('#user').text('User: ' + user + '.');
-			fetchThreadFeed(user);
+			var n = parseInt(getUrlVars()['n'], 10);
+			if (!(n)) n = 5; else if (n < 1) n = 1; else if (n > 20) n = 20;
+			fetchThreadFeed(user, n);
 		}
 		else {
 			$('#user').text('User not specified.');
@@ -40,77 +42,122 @@
 	<p id="statbar"></p>
 	<div id="threads">
 		<div class="tweet">
-			<p>user: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-				Cras ultrices odio vel magna feugiat sed adipiscing sapien
-				tincidunt. Suspendisse aliquam sagittis lorem.</p>
+			<p>
+				<span class="user">user: </span><span class="msg">Lorem ipsum
+					dolor sit amet, consectetur adipiscing elit. Cras ultrices odio vel
+					magna feugiat sed adipiscing sapien tincidunt. Suspendisse aliquam
+					sagittis lorem.</span>
+			</p>
 		</div>
 		<div class="tweet">
-			<p>user: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-				Cras ultrices odio vel magna feugiat sed adipiscing sapien
-				tincidunt. Suspendisse aliquam sagittis lorem.</p>
+			<p>
+				<span class="user">user: </span><span class="msg">Lorem ipsum
+					dolor sit amet, consectetur adipiscing elit. Cras ultrices odio vel
+					magna feugiat sed adipiscing sapien tincidunt. Suspendisse aliquam
+					sagittis lorem.</span>
+			</p>
 			<div class="tweet">
-				<p>user: Lorem ipsum dolor sit amet, consectetur adipiscing
-					elit. Cras ultrices odio vel magna feugiat sed adipiscing sapien
-					tincidunt. Suspendisse aliquam sagittis lorem.</p>
+				<p>
+					<span class="user">user: </span><span class="msg">Lorem
+						ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
+						odio vel magna feugiat sed adipiscing sapien tincidunt.
+						Suspendisse aliquam sagittis lorem.</span>
+				</p>
 			</div>
 			<div class="tweet">
-				<p>user: Lorem ipsum dolor sit amet, consectetur adipiscing
-					elit. Cras ultrices odio vel magna feugiat sed adipiscing sapien
-					tincidunt. Suspendisse aliquam sagittis lorem.</p>
+				<p>
+					<span class="user">user: </span><span class="msg">Lorem
+						ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
+						odio vel magna feugiat sed adipiscing sapien tincidunt.
+						Suspendisse aliquam sagittis lorem.</span>
+				</p>
 			</div>
 		</div>
 		<div class="tweet">
-			<p>user: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-				Cras ultrices odio vel magna feugiat sed adipiscing sapien
-				tincidunt. Suspendisse aliquam sagittis lorem.</p>
+			<p>
+				<span class="user">user: </span><span class="msg">Lorem ipsum
+					dolor sit amet, consectetur adipiscing elit. Cras ultrices odio vel
+					magna feugiat sed adipiscing sapien tincidunt. Suspendisse aliquam
+					sagittis lorem.</span>
+			</p>
 			<div class="tweet">
-				<p>user: Lorem ipsum dolor sit amet, consectetur adipiscing
-					elit. Cras ultrices odio vel magna feugiat sed adipiscing sapien
-					tincidunt. Suspendisse aliquam sagittis lorem.</p>
+				<p>
+					<span class="user">user: </span><span class="msg">Lorem
+						ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
+						odio vel magna feugiat sed adipiscing sapien tincidunt.
+						Suspendisse aliquam sagittis lorem.</span>
+				</p>
 				<div class="tweet">
-					<p>user: Lorem ipsum dolor sit amet, consectetur adipiscing
-						elit. Cras ultrices odio vel magna feugiat sed adipiscing sapien
-						tincidunt. Suspendisse aliquam sagittis lorem.</p>
+					<p>
+						<span class="user">user: </span><span class="msg">Lorem
+							ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
+							odio vel magna feugiat sed adipiscing sapien tincidunt.
+							Suspendisse aliquam sagittis lorem.</span>
+					</p>
 				</div>
 			</div>
 		</div>
 		<div class="tweet">
-			<p>user: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-				Cras ultrices odio vel magna feugiat sed adipiscing sapien
-				tincidunt. Suspendisse aliquam sagittis lorem.</p>
+			<p>
+				<span class="user">user: </span><span class="msg">Lorem ipsum
+					dolor sit amet, consectetur adipiscing elit. Cras ultrices odio vel
+					magna feugiat sed adipiscing sapien tincidunt. Suspendisse aliquam
+					sagittis lorem.</span>
+			</p>
 			<div class="tweet">
-				<p>user: Lorem ipsum dolor sit amet, consectetur adipiscing
-					elit. Cras ultrices odio vel magna feugiat sed adipiscing sapien
-					tincidunt. Suspendisse aliquam sagittis lorem.</p>
+				<p>
+					<span class="user">user: </span><span class="msg">Lorem
+						ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
+						odio vel magna feugiat sed adipiscing sapien tincidunt.
+						Suspendisse aliquam sagittis lorem.</span>
+				</p>
 				<div class="tweet">
-					<p>user: Lorem ipsum dolor sit amet, consectetur adipiscing
-						elit. Cras ultrices odio vel magna feugiat sed adipiscing sapien
-						tincidunt. Suspendisse aliquam sagittis lorem.</p>
+					<p>
+						<span class="user">user: </span><span class="msg">Lorem
+							ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
+							odio vel magna feugiat sed adipiscing sapien tincidunt.
+							Suspendisse aliquam sagittis lorem.</span>
+					</p>
 				</div>
 				<div class="tweet">
-					<p>user: Lorem ipsum dolor sit amet, consectetur adipiscing
-						elit. Cras ultrices odio vel magna feugiat sed adipiscing sapien
-						tincidunt. Suspendisse aliquam sagittis lorem.</p>
+					<p>
+						<span class="user">user: </span><span class="msg">Lorem
+							ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
+							odio vel magna feugiat sed adipiscing sapien tincidunt.
+							Suspendisse aliquam sagittis lorem.</span>
+					</p>
 				</div>
 			</div>
 			<div class="tweet">
-				<p>user: Lorem ipsum dolor sit amet, consectetur adipiscing
-					elit. Cras ultrices odio vel magna feugiat sed adipiscing sapien
-					tincidunt. Suspendisse aliquam sagittis lorem.</p>
+				<p>
+					<span class="user">user: </span><span class="msg">Lorem
+						ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
+						odio vel magna feugiat sed adipiscing sapien tincidunt.
+						Suspendisse aliquam sagittis lorem.</span>
+				</p>
 			</div>
 		</div>
 		<div class="tweet">
-			<p>user: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-				Cras ultrices odio vel magna feugiat sed adipiscing sapien
-				tincidunt. Suspendisse aliquam sagittis lorem.</p>
+			<p>
+				<span class="user">user: </span><span class="msg">Lorem ipsum
+					dolor sit amet, consectetur adipiscing elit. Cras ultrices odio vel
+					magna feugiat sed adipiscing sapien tincidunt. Suspendisse aliquam
+					sagittis lorem.</span>
+			</p>
 			<div class="tweet">
-				<p>user: Lorem ipsum dolor sit amet, consectetur adipiscing
-					elit. Cras ultrices odio vel magna feugiat sed adipiscing sapien
-					tincidunt. Suspendisse aliquam sagittis lorem.</p>
+				<p>
+					<span class="user">user: </span><span class="msg">Lorem
+						ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
+						odio vel magna feugiat sed adipiscing sapien tincidunt.
+						Suspendisse aliquam sagittis lorem.</span>
+				</p>
 				<div class="tweet">
-					<p>user: Lorem ipsum dolor sit amet, consectetur adipiscing
-						elit. Cras ultrices odio vel magna feugiat sed adipiscing sapien
-						tincidunt. Suspendisse aliquam sagittis lorem.</p>
+					<p>
+						<span class="user">user: </span><span class="msg">Lorem
+							ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices
+							odio vel magna feugiat sed adipiscing sapien tincidunt.
+							Suspendisse aliquam sagittis lorem.</span>
+					</p>
 				</div>
 			</div>
 		</div>

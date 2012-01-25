@@ -1,9 +1,9 @@
-function fetchThreadFeed (user) {
+function fetchThreadFeed (user, number) {
 	var statbar = $('#statbar');
 	$.ajax({
 	type : 'GET',
 	cache : 'false',
-	url : '/feeds/threads?u=' + user + '&n=8',
+	url : '/feeds/threads?u=' + user + '&n=' + number,
 	dataType : 'xml',
 	beforeSend : function () {
 		statbar.text('updating...');
@@ -11,7 +11,7 @@ function fetchThreadFeed (user) {
 	success : function (xml) {
 		try {
 			_processThreadFeed(xml);
-			statbar.text('updated ' + new Date());
+			statbar.text('updated.');
 		}
 		catch (e) {
 			console.log('error: processing feed: ' + e.message);
@@ -44,9 +44,15 @@ function _processThreadFeed (xml) {
 }
 
 function tweetElement (tweetXml) {
+	var userSpan = $('<span class="user">').text(tweetXml.attr('user') + ': ');
+	var msgSpan = $('<span class="msg">').text(tweetXml.children('body').text());
+	
+	var text = $('<p>');
+	text.append(userSpan);
+	text.append(msgSpan);
+	
 	var tweetDiv = $('<div class="tweet">');
 	tweetDiv.attr('id', 't' + tweetXml.attr('id'));
-	var text = $('<p>').text(tweetXml.attr('user') + ': ' + tweetXml.children('body').text());
 	tweetDiv.append(text);
 	return tweetDiv;
 }

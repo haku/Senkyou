@@ -44,3 +44,7 @@ body {
 	border-radius: 10px;
 	color: #8380E6;
 }
+
+.tweet .user {
+	color: #5383CC;
+}
