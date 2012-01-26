@@ -23,9 +23,8 @@ import com.google.common.primitives.Longs;
 public class Tweet {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	private volatile long inReplyId;
-	
 	@XmlAttribute(name = "id") private volatile long id;
+	@XmlAttribute(name = "rid") private volatile long inReplyId;
 	@XmlAttribute(name = "user") private volatile String user;
 	@XmlAttribute(name = "name") private volatile String name;
 	@XmlAttribute(name = "created") private volatile Date createdAt;
@@ -77,7 +76,7 @@ public class Tweet {
 	}
 	
 	public void setInReplyId (long inReplyId) {
-		this.inReplyId = inReplyId;
+		this.inReplyId = inReplyId > 0 ? inReplyId : 0;
 	}
 	
 	public void setUser (String user) {
