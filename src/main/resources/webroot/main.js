@@ -1,48 +1,58 @@
-var _isFetchHomeFeed = false;
+var _fetchCount = 0;
 
-function fetchHomeFeed (user, number) {
-	if (_isFetchHomeFeed) {
-		console.log('Already fetching home feed.');
+function fetchFeeds (user, number) {
+	if (_fetchCount > 0) {
+		console.log('fetchers in progress', _fetchCount);
 		return;
 	}
 	
-	_isFetchHomeFeed = true;
-	_fetchFeed(user, number, 'homelast', _processHomeFeed);
+	_fetchCount++;
+	_fetchFeed(user, number, 'homelast', _processFeed);
 }
 
 function fetchThreadFeed (user, number) {
+	_fetchCount++;
 	_fetchFeed(user, number, 'threads', _processThreadFeed);
 }
 
+function _updateStatus (errMsg) {
+	if (errMsg) console.log('errMsg', errMsg);
+	
+	var msg;
+	if (_fetchCount > 0) {
+		msg = _fetchCount + " running...";
+	}
+	else {
+		msg = "updated.";
+	}
+	$('#statbar').text(msg);
+}
+
 function _fetchFeed (user, number, feed, procFnc) {
-	var statbar = $('#statbar');
 	$.ajax({
 	type : 'GET',
 	cache : 'false',
 	url : '/feeds/' + feed + '?u=' + user + '&n=' + number,
 	dataType : 'xml',
 	beforeSend : function () {
-		statbar.text('updating...');
+		_updateStatus();
 	},
 	success : function (xml) {
 		try {
 			procFnc(xml);
-			statbar.text('updated.');
+			_updateStatus();
 		}
 		catch (e) {
-			console.log('error: processing feed: ' + e.message);
-			statbar.text('error: ' + e.message);
+			_updateStatus('error: ' + e.message);
 		}
 	},
 	statusCode : {
 		304 : function () {
-			console.log('error: request blocked by browser cache (HTTP 304).');
-			statbar.text('error: request blocked by browser cache.');
+			_updateStatus('error: request blocked by browser cache.');
 		}
 	},
 	error : function (xhr) {
-		console.log('error: fetching feed: ' + e.message);
-		statbar.text('error: ' + xhr.statusText);
+		_updateStatus('error: fetching feed: ' + e.message);
 	}
 	});
 }
@@ -58,19 +68,29 @@ function _processThreadFeed (xml) {
 				.attr('id'));
 		parentE.append(tweetE);
 	});
+	_fetchCount--;
 }
 
-function _processHomeFeed (xml) {
+function _processFeed (xml) {
 	var container = $('#footer');
 	container.html("");
 	$($(xml).find('tweets').find('tweet').get().reverse()).each(function () {
-		var tweetXml = $(this);
-		if ($('#' + _tweetId(tweetXml)).length < 1) {
-			var tweetE = _tweetElement(tweetXml);
+		_insertTweet(container, $(this));
+	});
+	_fetchCount--;
+}
+
+function _insertTweet (container, tweetXml) {
+	if ($('#' + _tweetId(tweetXml)).length < 1) {
+		var tweetE = _tweetElement(tweetXml);
+		var parentE = $('#' + _tweetRid(tweetXml));
+		if (parentE.length > 0) {
+			parentE.append(tweetE);
+		}
+		else {
 			container.prepend(tweetE);
 		}
-	});
-	_isFetchHomeFeed = false;
+	}
 }
 
 function _tweetElement (tweetXml) {
@@ -89,4 +109,8 @@ function _tweetElement (tweetXml) {
 
 function _tweetId (tweetXml) {
 	return 't' + tweetXml.attr('id');
+}
+
+function _tweetRid (tweetXml) {
+	return 't' + tweetXml.attr('rid');
 }
