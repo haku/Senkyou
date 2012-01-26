@@ -19,7 +19,7 @@ function _updateStatus (errMsg) {
 	if (errMsg) console.log('errMsg', errMsg);
 	
 	var msg;
-	if (_fetchCount > 0) {
+	if (_fetchCount != 0) {
 		msg = _fetchCount + " running...";
 	}
 	else {
@@ -58,26 +58,34 @@ function _fetchFeed (user, number, feed, procFnc) {
 }
 
 function _processThreadFeed (xml) {
-	var container = $('#threads');
-	container.html("");
-	$(xml).find('tweets').find('tweet').each(function () {
-		var tweetXml = $(this);
-		var parentXml = tweetXml.parent();
-		var tweetE = _tweetElement(tweetXml);
-		var parentE = parentXml[0].tagName == 'tweets' ? container : $('#t' + parentXml
-				.attr('id'));
-		parentE.append(tweetE);
-	});
-	_fetchCount--;
+	try {
+		var container = $('#threads');
+		container.html("");
+		$(xml).find('tweets').find('tweet').each(function () {
+			var tweetXml = $(this);
+			var parentXml = tweetXml.parent();
+			var tweetE = _tweetElement(tweetXml);
+			var parentE = parentXml[0].tagName == 'tweets' ? container : $('#t' + parentXml
+					.attr('id'));
+			parentE.append(tweetE);
+		});
+	}
+	finally {
+		_fetchCount--;
+	}
 }
 
 function _processFeed (xml) {
-	var container = $('#footer');
-	container.html("");
-	$($(xml).find('tweets').find('tweet').get().reverse()).each(function () {
-		_insertTweet(container, $(this));
-	});
-	_fetchCount--;
+	try {
+		var container = $('#footer');
+		container.html("");
+		$($(xml).find('tweets').find('tweet').get().reverse()).each(function () {
+			_insertTweet(container, $(this));
+		});
+	}
+	finally {
+		_fetchCount--;
+	}
 }
 
 function _insertTweet (container, tweetXml) {
