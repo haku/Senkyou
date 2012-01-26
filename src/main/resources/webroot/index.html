@@ -12,7 +12,12 @@
 		var user = getUrlVars()['user'];
 		if (user != null && user.length > 0) {
 			$('#user').text('User: ' + user + '.');
+
 			fetchHomeFeed(user, 20);
+			setInterval(function () {
+				fetchHomeFeed(user, 20);
+			}, 60000);
+
 			var n = parseArgToInt('n', 5, 1, 20);
 			fetchThreadFeed(user, n);
 		}

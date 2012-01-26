@@ -1,4 +1,12 @@
+var _isFetchHomeFeed = false;
+
 function fetchHomeFeed (user, number) {
+	if (_isFetchHomeFeed) {
+		console.log('Already fetching home feed.');
+		return;
+	}
+	
+	_isFetchHomeFeed = true;
 	_fetchFeed(user, number, 'homelast', _processHomeFeed);
 }
 
@@ -45,7 +53,7 @@ function _processThreadFeed (xml) {
 	$(xml).find('tweets').find('tweet').each(function () {
 		var tweetXml = $(this);
 		var parentXml = tweetXml.parent();
-		var tweetE = tweetElement(tweetXml);
+		var tweetE = _tweetElement(tweetXml);
 		var parentE = parentXml[0].tagName == 'tweets' ? container : $('#t' + parentXml
 				.attr('id'));
 		parentE.append(tweetE);
@@ -55,14 +63,17 @@ function _processThreadFeed (xml) {
 function _processHomeFeed (xml) {
 	var container = $('#footer');
 	container.html("");
-	$(xml).find('tweets').find('tweet').each(function () {
+	$($(xml).find('tweets').find('tweet').get().reverse()).each(function () {
 		var tweetXml = $(this);
-		var tweetE = tweetElement(tweetXml);
-		container.append(tweetE);
+		if ($('#' + _tweetId(tweetXml)).length < 1) {
+			var tweetE = _tweetElement(tweetXml);
+			container.prepend(tweetE);
+		}
 	});
+	_isFetchHomeFeed = false;
 }
 
-function tweetElement (tweetXml) {
+function _tweetElement (tweetXml) {
 	var userSpan = $('<span class="user">').text(tweetXml.attr('user') + ': ');
 	var msgSpan = $('<span class="msg">').text(tweetXml.children('body').text());
 
@@ -71,7 +82,11 @@ function tweetElement (tweetXml) {
 	text.append(msgSpan);
 
 	var tweetDiv = $('<div class="tweet">');
-	tweetDiv.attr('id', 't' + tweetXml.attr('id'));
+	tweetDiv.attr('id', _tweetId(tweetXml));
 	tweetDiv.append(text);
 	return tweetDiv;
+}
+
+function _tweetId (tweetXml) {
+	return 't' + tweetXml.attr('id');
 }
