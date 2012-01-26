@@ -60,7 +60,6 @@ function _fetchFeed (user, number, feed, procFnc) {
 function _processThreadFeed (xml) {
 	try {
 		var container = $('#threads');
-		container.html("");
 		$(xml).find('tweets').find('tweet').each(function () {
 			var tweetXml = $(this);
 			var parentXml = tweetXml.parent();
@@ -79,7 +78,6 @@ function _processThreadFeed (xml) {
 function _processFeed (xml) {
 	try {
 		var container = $('#footer');
-		container.html("");
 		$($(xml).find('tweets').find('tweet').get().reverse()).each(function () {
 			_insertTweet(container, $(this));
 		});
