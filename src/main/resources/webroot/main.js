@@ -43,7 +43,7 @@ function _fetchFeed (user, number, feed, procFnc) {
 			_updateStatus();
 		}
 		catch (e) {
-			_updateStatus('error: ' + e.message);
+			_updateStatus(e);
 		}
 	},
 	statusCode : {
@@ -68,6 +68,7 @@ function _processThreadFeed (xml) {
 			var parentE = parentXml[0].tagName == 'tweets' ? container : $('#t' + parentXml
 					.attr('id'));
 			parentE.append(tweetE);
+			tweetE.show('slow');
 		});
 	}
 	finally {
@@ -98,6 +99,7 @@ function _insertTweet (container, tweetXml) {
 		else {
 			container.prepend(tweetE);
 		}
+		tweetE.show('slow');
 	}
 }
 
@@ -109,7 +111,7 @@ function _tweetElement (tweetXml) {
 	text.append(userSpan);
 	text.append(msgSpan);
 
-	var tweetDiv = $('<div class="tweet">');
+	var tweetDiv = $('<div class="tweet" style="display: none">');
 	tweetDiv.attr('id', _tweetId(tweetXml));
 	tweetDiv.append(text);
 	return tweetDiv;
