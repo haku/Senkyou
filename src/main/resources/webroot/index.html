@@ -11,7 +11,7 @@
 	$(document).ready(function () {
 		var user = getUrlVars()['user'];
 		if (user != null && user.length > 0) {
-			$('#user').text('User: ' + user + '.');
+			$('#user').text('@' + user);
 
 			fetchFeeds(user, 20);
 			setInterval(function () {

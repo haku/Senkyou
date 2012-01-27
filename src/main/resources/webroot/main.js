@@ -23,7 +23,7 @@ function _updateStatus (errMsg) {
 		msg = _fetchCount + " running...";
 	}
 	else {
-		msg = "updated.";
+		msg = "idle.";
 	}
 	$('#statbar').text(msg);
 }
