@@ -91,6 +91,8 @@ function _insertTweet (container, tweetXml) {
 		tweetE = _tweetElement(tweetXml);
 	}
 	
+	// TODO if parentId is a valid ID and its not in the DOM, fetch it.
+	
 	var parentId = _tweetParentId(tweetXml);
 	var parentE = $('#' + parentId);
 	if (parentE.length > 0 && !tweetE.is(parentE.children())) {
