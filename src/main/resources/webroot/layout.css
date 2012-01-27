@@ -74,7 +74,7 @@ body {
 
 #footer { /* Horizontal scrolling hack. */
 	float: left;
-	margin-right: -30000px;
+	margin-right: -50000px;
 }
 
 #footer .tweet { /* Tweets inside the footer. */
