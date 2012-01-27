@@ -22,3 +22,9 @@ function parseArgToInt (arg, deft, lower, upper) {
 	}
 	return n;
 }
+
+function parseDate (dateString) {
+	// 2012-01-27T21:47:00Z
+	var parts = dateString.match(/\d+/g);
+	return new Date(Date.UTC(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], 0));
+}

@@ -9,14 +9,20 @@
 
 <script type="text/javascript">
 	$(document).ready(function () {
-		var user = getUrlVars()['user'];
+		var user = getUrlVars()['u'];
 		if (user != null && user.length > 0) {
 			$('#user').text('@' + user);
 
-			fetchFeeds(user, 20);
+			var depth = parseArgToInt('d', 40, 10, 100);
+			fetchFeeds(user, depth);
 			setInterval(function () {
-				fetchFeeds(user, 20);
+				fetchFeeds(user, depth);
 			}, 60000);
+
+			$('#statbar').click(function (e) {
+				e.preventDefault();
+				fetchFeeds(user, depth);
+			});
 
 			var n = parseArgToInt('n', 5, 1, 20);
 			fetchThreadFeed(user, n);
