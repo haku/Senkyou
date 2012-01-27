@@ -5,19 +5,25 @@ function fetchFeeds (user, number) {
 		console.log('fetchers in progress', _fetchCount);
 		return;
 	}
-	
+
 	_fetchCount++;
-	_fetchFeed(user, number, 'home', _processFeed);
+	_fetchFeed(user, number, 'home', _processFeed, function () {
+		_fetchCount--;
+		_updateStatus();
+	});
 }
 
 function fetchThreadFeed (user, number) {
 	_fetchCount++;
-	_fetchFeed(user, number, 'threads', _processThreadFeed);
+	_fetchFeed(user, number, 'threads', _processThreadFeed, function () {
+		_fetchCount--;
+		_updateStatus();
+	});
 }
 
 function _updateStatus (errMsg) {
 	if (errMsg) console.log('errMsg', errMsg);
-	
+
 	var msg;
 	if (_fetchCount != 0) {
 		msg = _fetchCount + " running...";
@@ -28,7 +34,7 @@ function _updateStatus (errMsg) {
 	$('#statbar').text(msg);
 }
 
-function _fetchFeed (user, number, feed, procFnc) {
+function _fetchFeed (user, number, feed, procFnc, afterFnc) {
 	$.ajax({
 	type : 'GET',
 	cache : 'false',
@@ -40,47 +46,35 @@ function _fetchFeed (user, number, feed, procFnc) {
 	success : function (xml) {
 		try {
 			procFnc(xml);
-			_updateStatus();
 		}
 		catch (e) {
 			_updateStatus(e);
 		}
-	},
-	statusCode : {
-		304 : function () {
-			_updateStatus('error: request blocked by browser cache.');
+		finally {
+			afterFnc();
 		}
 	},
-	error : function (xhr) {
+	error : function (e) {
 		_updateStatus('error: fetching feed: ' + e.message);
+		afterFnc();
 	}
 	});
 }
 
 function _processThreadFeed (xml) {
-	try {
-		var container = $('#threads');
-		$(xml).find('tweet').each(function () {
-			_insertTweet(container, $(this));
-		});
-		_sortThreads();
-	}
-	finally {
-		_fetchCount--;
-	}
+	var container = $('#threads');
+	$(xml).find('tweet').each(function () {
+		_insertTweet(container, $(this));
+	});
+	_sortThreads();
 }
 
 function _processFeed (xml) {
-	try {
-		var container = $('#footer');
-		$($(xml).find('tweet').get().reverse()).each(function () {
-			_insertTweet(container, $(this));
-		});
-		_sortThreads();
-	}
-	finally {
-		_fetchCount--;
-	}
+	var container = $('#footer');
+	$($(xml).find('tweet').get().reverse()).each(function () {
+		_insertTweet(container, $(this));
+	});
+	_sortThreads();
 }
 
 function _insertTweet (container, tweetXml) {
@@ -90,9 +84,9 @@ function _insertTweet (container, tweetXml) {
 		fresh = true;
 		tweetE = _tweetElement(tweetXml);
 	}
-	
+
 	// TODO if parentId is a valid ID and its not in the DOM, fetch it.
-	
+
 	var parentId = _tweetParentId(tweetXml);
 	var parentE = $('#' + parentId);
 	if (parentE.length > 0 && !tweetE.is(parentE.children())) {
@@ -124,11 +118,11 @@ function _sortThreads () {
 	threads.sort(_sortThreadAlpha).appendTo('#threads');
 }
 
-function _sortThreadAlpha(a, b){
+function _sortThreadAlpha (a, b) {
 	return $(a).data('sortDate') > $(b).data('sortDate') ? -1 : 1;
 };
 
-function _dateThread(headTweet) {
+function _dateThread (headTweet) {
 	var retDate;
 	$('.tweet', headTweet).each(function () {
 		var date = $(this).data('date');
