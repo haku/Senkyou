@@ -1,32 +1,39 @@
-var _fetchCount = 0;
+var _jobCount = 0;
 
-function fetchFeeds (user, number) {
-	if (_fetchCount > 0) {
-		console.log('fetchers in progress', _fetchCount);
+function fetchThreadFeed (user, number) {
+	_fetchFeed(user, number, 'threads', _processThreadFeed);
+}
+
+function fetchFeeds (user) {
+	if (_jobCount > 0) {
+		console.log('fetchers in progress', _jobCount);
 		return;
 	}
 
-	_fetchCount++;
-	_fetchFeed(user, number, 'home', _processFeed, function () {
-		_fetchCount--;
-		_updateStatus();
-	});
+	_fetchFeed(user, 40, 'home', _processFeed);
+	_fetchFeed(user, 10, 'mentions', _processThreadFeed);
 }
 
-function fetchThreadFeed (user, number) {
-	_fetchCount++;
-	_fetchFeed(user, number, 'threads', _processThreadFeed, function () {
-		_fetchCount--;
-		_updateStatus();
-	});
+function fetchTweet (user, tweetId, childDivId) {
+	_fetchFeed(user, tweetId, 'tweet', _processTweet, childDivId);
+}
+
+function _startJob () {
+	_jobCount++;
+	_updateStatus();
+}
+
+function _finishJob (errMsg) {
+	_jobCount--;
+	_updateStatus(errMsg);
 }
 
 function _updateStatus (errMsg) {
 	if (errMsg) console.log('errMsg', errMsg);
 
 	var msg;
-	if (_fetchCount != 0) {
-		msg = _fetchCount + " running...";
+	if (_jobCount != 0) {
+		msg = _jobCount + " running...";
 	}
 	else {
 		msg = "idle.";
@@ -34,71 +41,89 @@ function _updateStatus (errMsg) {
 	$('#statbar').text(msg);
 }
 
-function _fetchFeed (user, number, feed, procFnc, afterFnc) {
+function _fetchFeed (user, number, feed, procFnc, arg) {
 	$.ajax({
 	type : 'GET',
 	cache : 'false',
 	url : '/feeds/' + feed + '?u=' + user + '&n=' + number,
 	dataType : 'xml',
 	beforeSend : function () {
-		_updateStatus();
+		_startJob();
 	},
 	success : function (xml) {
 		try {
-			procFnc(xml);
+			if (arg) {
+				procFnc(user, xml, arg);
+			}
+			else {
+				procFnc(user, xml);
+			}
 		}
 		catch (e) {
 			_updateStatus(e);
 		}
 		finally {
-			afterFnc();
+			_finishJob();
 		}
 	},
 	error : function (e) {
-		_updateStatus('error: fetching feed: ' + e.message);
-		afterFnc();
+		_finishJob('error: fetching feed: ' + e.message);
 	}
 	});
 }
 
-function _processThreadFeed (xml) {
+function _processThreadFeed (user, xml) {
 	var container = $('#threads');
 	$(xml).find('tweet').each(function () {
-		_insertTweet(container, $(this));
+		_insertTweet(user, container, $(this));
 	});
 	_sortThreads();
 }
 
-function _processFeed (xml) {
+function _processFeed (user, xml) {
 	var container = $('#footer');
 	$($(xml).find('tweet').get().reverse()).each(function () {
-		_insertTweet(container, $(this));
+		_insertTweet(user, container, $(this));
 	});
 	_sortThreads();
 }
 
-function _insertTweet (container, tweetXml) {
-	var tweetE = $('#' + _tweetId(tweetXml));
+function _processTweet (user, xml, childDivId) {
+	var container = $('#threads');
+	$(xml).find('tweet').each(function () {
+		var tweetDiv = _insertTweet(user, container, $(this));
+		var childDiv = $('#' + childDivId);
+		tweetDiv.append(childDiv);
+	});
+	_sortThreads();
+}
+
+function _insertTweet (user, container, tweetXml) {
+	var tweetDivId = _tweetDivId(tweetXml);
+	var tweetE = $('#' + tweetDivId);
 	var fresh = false;
 	if (tweetE.length < 1) {
 		fresh = true;
 		tweetE = _tweetElement(tweetXml);
 	}
-
-	// TODO if parentId is a valid ID and its not in the DOM, fetch it.
-
-	var parentId = _tweetParentId(tweetXml);
-	var parentE = $('#' + parentId);
-	if (parentE.length > 0 && !tweetE.is(parentE.children())) {
+	
+	var parentDivId = _tweetParentDivId(tweetXml);
+	var parentE = parentDivId != null ? $('#' + parentDivId) : null;
+	if (parentE != null && parentE.length > 0 && !tweetE.is(parentE.children())) {
 		parentE.append(tweetE);
-		tweetE.data('replyId', parentId);
-		_promoteTweet(parentId, parentE);
+		tweetE.data('replyId', parentDivId);
+		_promoteTweet(parentDivId, parentE);
 		tweetE.show('slow');
 	}
 	else if (fresh) {
 		container.prepend(tweetE);
 		tweetE.show('slow');
+		
+		if (parentDivId != null) {
+			fetchTweet(user, _tweetParentId(tweetXml), tweetDivId);
+		}
 	}
+	return tweetE;
 }
 
 function _promoteTweet (tweetId, tweetE) {
@@ -123,7 +148,7 @@ function _sortThreadAlpha (a, b) {
 };
 
 function _dateThread (headTweet) {
-	var retDate;
+	var retDate = headTweet.data('date');
 	$('.tweet', headTweet).each(function () {
 		var date = $(this).data('date');
 		if (!(retDate) || date.getTime() > retDate.getTime()) {
@@ -143,18 +168,24 @@ function _tweetElement (tweetXml) {
 	text.append(msgSpan);
 
 	var tweetDiv = $('<div class="tweet" style="display: none">');
-	tweetDiv.attr('id', _tweetId(tweetXml));
+	tweetDiv.attr('id', _tweetDivId(tweetXml));
 	tweetDiv.data('date', _tweetDate(tweetXml));
 	tweetDiv.append(text);
 	return tweetDiv;
 }
 
-function _tweetId (tweetXml) {
+function _tweetDivId (tweetXml) {
 	return 't' + tweetXml.attr('id');
 }
 
+function _tweetParentDivId (tweetXml) {
+	var id = _tweetParentId(tweetXml);
+	if (id == '0') return null;
+	return 't' + id;
+}
+
 function _tweetParentId (tweetXml) {
-	return 't' + tweetXml.attr('rid');
+	return tweetXml.attr('rid');
 }
 
 function _tweetDate (tweetXml) {

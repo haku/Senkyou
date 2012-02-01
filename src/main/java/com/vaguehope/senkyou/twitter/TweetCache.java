@@ -161,9 +161,10 @@ public class TweetCache {
 		long startTime = System.currentTimeMillis();
 		
 		TweetList ret = new TweetList();
+		int pageSize = Math.min(minCount, Config.TWEET_FETCH_PAGE_SIZE);
 		int page = 1; // First page is 1.
 		while (ret.tweetCount() < minCount) {
-			Paging paging = new Paging(page, Config.TWEET_FETCH_PAGE_SIZE);
+			Paging paging = new Paging(page, pageSize);
 			ResponseList<Status> timelinePage = feed.getTweets(t, paging);
 			if (timelinePage.size() < 1) break;
 			addTweetsToList(ret, timelinePage);

@@ -13,19 +13,18 @@
 		if (user != null && user.length > 0) {
 			$('#user').text('@' + user);
 
-			var depth = parseArgToInt('d', 40, 10, 100);
-			fetchFeeds(user, depth);
+			fetchFeeds(user);
 			setInterval(function () {
-				fetchFeeds(user, depth);
+				fetchFeeds(user);
 			}, 60000);
 
 			$('#statbar').click(function (e) {
 				e.preventDefault();
-				fetchFeeds(user, depth);
+				fetchFeeds(user);
 			});
 
-			var n = parseArgToInt('n', 5, 1, 20);
-			fetchThreadFeed(user, n);
+			//var n = parseArgToInt('n', 5, 1, 20);
+			//fetchThreadFeed(user, n);
 		}
 		else {
 			$('#user').text('User not specified.');
