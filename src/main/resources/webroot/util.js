@@ -24,7 +24,7 @@ function parseArgToInt (arg, deft, lower, upper) {
 }
 
 function parseDate (dateString) {
-	// 2012-01-27T21:47:00Z
-	var parts = dateString.match(/\d+/g);
-	return new Date(Date.UTC(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], 0));
+	var parts = dateString.match(/\d+/g); // 2012-01-27T21:47:00Z
+	// month is 0 to 11.
+	return new Date(Date.UTC(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5], 0));
 }
