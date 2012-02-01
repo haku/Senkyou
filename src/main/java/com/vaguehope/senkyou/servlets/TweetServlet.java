@@ -1,6 +1,6 @@
 package com.vaguehope.senkyou.servlets;
 
-import static com.vaguehope.senkyou.servlets.ServletHelper.validatePositiveIntParam;
+import static com.vaguehope.senkyou.servlets.ServletHelper.validatePositiveLongParam;
 import static com.vaguehope.senkyou.servlets.ServletHelper.validateStringParam;
 
 import java.io.IOException;
@@ -55,7 +55,7 @@ public class TweetServlet extends HttpServlet {
 		String user = validateStringParam(req, resp, "u");
 		if (user == null) return;
 		
-		int count = validatePositiveIntParam(req, resp, "n");
+		long count = validatePositiveLongParam(req, resp, "n");
 		if (count < 1) return;
 		
 		TweetCache tweetCache = TweetCacheFactory.getTweetCache(user);

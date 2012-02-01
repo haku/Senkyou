@@ -104,6 +104,13 @@ public class TweetCache {
 		limitedCopy(heads, ret, maxThreads);
 		return ret;
 	}
+	
+	public TweetList getTweet (long n) {
+		Tweet tweet = this.tweetCache.getUnchecked(Long.valueOf(n));
+		TweetList ret = new TweetList();
+		ret.addTweet(tweet);
+		return ret;
+	}
 
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //	Static implementation.

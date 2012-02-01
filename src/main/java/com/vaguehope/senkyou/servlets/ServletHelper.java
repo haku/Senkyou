@@ -23,12 +23,12 @@ public final class ServletHelper {
 		return null;
 	}
 	
-	public static int validatePositiveIntParam (HttpServletRequest req, HttpServletResponse resp, String param) throws IOException {
+	public static long validatePositiveLongParam (HttpServletRequest req, HttpServletResponse resp, String param) throws IOException {
 		String p = req.getParameter(param);
 		if (p != null && !p.isEmpty() && isNumeric(p)) {
-			int i = Integer.parseInt(p);
-			if (i > 0) {
-				return i;
+			long n = Long.parseLong(p);
+			if (n > 0) {
+				return n;
 			}
 			error(resp, HttpServletResponse.SC_BAD_REQUEST, "Param '" + param + "' not positive.");
 			return 0;

@@ -8,6 +8,6 @@ public interface TweetFeed {
 	
 	String getContext ();
 	
-	TweetList getTweets (TweetCache tc, int n) throws TwitterException;
+	TweetList getTweets (TweetCache tc, long n) throws TwitterException;
 	
 }

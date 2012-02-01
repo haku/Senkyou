@@ -5,6 +5,17 @@ import twitter4j.TwitterException;
 import com.vaguehope.senkyou.model.TweetList;
 
 public enum TweetFeeds implements TweetFeed {
+	TWEET {
+		@Override
+		public String getContext () {
+			return "tweet";
+		}
+		
+		@Override
+		public TweetList getTweets (TweetCache tc, long n) throws TwitterException {
+			return tc.getTweet(n);
+		}
+	},
 	HOME_TIMELINE {
 		@Override
 		public String getContext () {
@@ -12,8 +23,8 @@ public enum TweetFeeds implements TweetFeed {
 		}
 		
 		@Override
-		public TweetList getTweets (TweetCache tc, int n) throws TwitterException {
-			return tc.getHomeTimeline(n);
+		public TweetList getTweets (TweetCache tc, long n) throws TwitterException {
+			return tc.getHomeTimeline((int) n);
 		}
 	},
 	HOME_TIMELINE_LAST_ONLY {
@@ -23,8 +34,8 @@ public enum TweetFeeds implements TweetFeed {
 		}
 		
 		@Override
-		public TweetList getTweets (TweetCache tc, int n) throws TwitterException {
-			return tc.getLastTweetHomeTimeline(n);
+		public TweetList getTweets (TweetCache tc, long n) throws TwitterException {
+			return tc.getLastTweetHomeTimeline((int) n);
 		}
 	},
 	MENTIONS {
@@ -34,8 +45,8 @@ public enum TweetFeeds implements TweetFeed {
 		}
 		
 		@Override
-		public TweetList getTweets (TweetCache tc, int n) throws TwitterException {
-			return tc.getMentions(n);
+		public TweetList getTweets (TweetCache tc, long n) throws TwitterException {
+			return tc.getMentions((int) n);
 		}
 	},
 	THREADS {
@@ -45,8 +56,8 @@ public enum TweetFeeds implements TweetFeed {
 		}
 		
 		@Override
-		public TweetList getTweets (TweetCache tc, int n) throws TwitterException {
-			return tc.getThreads(n);
+		public TweetList getTweets (TweetCache tc, long n) throws TwitterException {
+			return tc.getThreads((int) n);
 		}
 	};
 	
@@ -54,6 +65,6 @@ public enum TweetFeeds implements TweetFeed {
 	public abstract String getContext ();
 	
 	@Override
-	public abstract TweetList getTweets (TweetCache tc, int n) throws TwitterException;
+	public abstract TweetList getTweets (TweetCache tc, long n) throws TwitterException;
 	
 }
