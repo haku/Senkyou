@@ -22,8 +22,6 @@ public class AuthServlet extends HttpServlet {
 
 	public static final String CONTEXT = "/auth";
 	
-	private static final String APP_ROOT = "/";
-	
 	private static final String PARAM_ACTION = "a";
 	private static final String ACTION_SIGNIN = "signin";
 	private static final String ACTION_CALLBACK = "callback";
@@ -67,12 +65,16 @@ public class AuthServlet extends HttpServlet {
 	}
 	
 	private static void callback (HttpServletRequest req, HttpServletResponse resp) throws IOException, TwitterException {
+		LOG.info("Callback...");
+		
 		Twitter twitter = getTwitterOrSetError(req, resp);
 		RequestToken requestToken = (RequestToken) req.getSession().getAttribute(SESSION_REQUEST_TOKEN);
 		String verifier = req.getParameter("oauth_verifier");
 		twitter.getOAuthAccessToken(requestToken, verifier);
 		req.getSession().removeAttribute(SESSION_REQUEST_TOKEN);
-		resp.sendRedirect(APP_ROOT);
+		
+		resp.sendRedirect(req.getContextPath() + "/");
+		
 		LOG.info("Auth compelte.");
 	}
 
