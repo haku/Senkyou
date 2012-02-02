@@ -5,10 +5,9 @@ function fetchUsername () {
 }
 
 function _processUser (xml) {
-	var user = $($(xml).find('screenname').text();
+	var user = $(xml).find('screenname').text();
 	$('#user').text(user);
 }
-
 
 function fetchThreadFeed (number) {
 	_fetchFeed(number, 'threads', _processThreadFeed);
