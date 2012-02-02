@@ -9,14 +9,14 @@
 
 <script type="text/javascript">
 	$(document).ready(function () {
-		fetchFeeds(user);
+		fetchFeeds();
 		setInterval(function () {
-			fetchFeeds(user);
+			fetchFeeds();
 		}, 60000);
 
 		$('#statbar').click(function (e) {
 			e.preventDefault();
-			fetchFeeds(user);
+			fetchFeeds();
 		});
 	});
 </script>
