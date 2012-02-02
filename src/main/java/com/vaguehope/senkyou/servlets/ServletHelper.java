@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 public final class ServletHelper {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -41,7 +42,13 @@ public final class ServletHelper {
 		resp.reset();
 		resp.setStatus(status);
 		resp.setContentType("text/plain");
-		resp.getWriter().println("HTTP Error "+status+": " + msg);
+		resp.getWriter().println("HTTP Error " + status + ": " + msg);
+	}
+	
+	public static void resetSession (HttpServletRequest req) {
+		HttpSession session = req.getSession(false);
+		if (session != null) session.invalidate();
+		req.getSession(true);
 	}
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

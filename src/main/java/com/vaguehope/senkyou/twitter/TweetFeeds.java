@@ -28,17 +28,6 @@ public enum TweetFeeds implements TweetFeed {
 			return tc.getHomeTimeline(t, (int) n);
 		}
 	},
-	HOME_TIMELINE_LAST_ONLY {
-		@Override
-		public String getContext () {
-			return "homelast";
-		}
-		
-		@Override
-		public TweetList getTweets (Twitter t, TweetCache tc, long n) throws TwitterException {
-			return tc.getLastTweetHomeTimeline(t, (int) n);
-		}
-	},
 	MENTIONS {
 		@Override
 		public String getContext () {
@@ -50,17 +39,7 @@ public enum TweetFeeds implements TweetFeed {
 			return tc.getMentions(t, (int) n);
 		}
 	},
-	THREADS {
-		@Override
-		public String getContext () {
-			return "threads";
-		}
-		
-		@Override
-		public TweetList getTweets (Twitter t, TweetCache tc, long n) throws TwitterException {
-			return tc.getThreads(t, (int) n);
-		}
-	};
+	;
 	
 	@Override
 	public abstract String getContext ();

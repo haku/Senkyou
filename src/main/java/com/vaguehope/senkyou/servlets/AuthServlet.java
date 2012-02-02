@@ -52,6 +52,8 @@ public class AuthServlet extends HttpServlet {
 	}
 	
 	private static void signin (HttpServletRequest req, HttpServletResponse resp) throws TwitterException, IOException {
+		ServletHelper.resetSession(req);
+		
 		Twitter twitter = TwitterConfigHelper.getTwitter();
 		req.getSession().setAttribute(SESSION_TWITTER, twitter);
 		
