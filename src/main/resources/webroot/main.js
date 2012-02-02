@@ -51,7 +51,7 @@ function _updateStatus (errMsg) {
 }
 
 function _fetchFeed (number, feed, procFnc, arg) {
-	_fetchAajx('/feeds/' + feed + '&n=' + number, procFnc, arg);
+	_fetchAajx('/feeds/' + feed + '?n=' + number, procFnc, arg);
 }
 
 function _fetchAajx (url, procFnc, arg) {
