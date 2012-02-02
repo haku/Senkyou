@@ -5,7 +5,7 @@ function fetchUsername () {
 }
 
 function _processUser (xml) {
-	var user = $(xml).find('screenname').text();
+	var user = $(xml).find('user').attr('screenname');
 	$('#user').text(user);
 }
 
