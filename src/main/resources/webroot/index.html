@@ -9,27 +9,18 @@
 
 <script type="text/javascript">
 	$(document).ready(function () {
-		var user = getUrlVars()['u'];
-		if (user != null && user.length > 0) {
-			$('#user').text('@' + user);
-
+		fetchFeeds(user);
+		setInterval(function () {
 			fetchFeeds(user);
-			setInterval(function () {
-				fetchFeeds(user);
-			}, 60000);
+		}, 60000);
 
-			$('#statbar').click(function (e) {
-				e.preventDefault();
-				fetchFeeds(user);
-			});
+		$('#statbar').click(function (e) {
+			e.preventDefault();
+			fetchFeeds(user);
+		});
 
-			//var n = parseArgToInt('n', 5, 1, 20);
-			//fetchThreadFeed(user, n);
-		}
-		else {
-			$('#user').text('User not specified.');
-			$('#statbar').text('offline.');
-		}
+		//var n = parseArgToInt('n', 5, 1, 20);
+		//fetchThreadFeed(user, n);
 	});
 </script>
 

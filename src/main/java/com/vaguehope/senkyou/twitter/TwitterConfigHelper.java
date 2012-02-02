@@ -1,12 +1,7 @@
 package com.vaguehope.senkyou.twitter;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Properties;
-
-import twitter4j.http.AccessToken;
+import twitter4j.Twitter;
+import twitter4j.TwitterFactory;
 
 public final class TwitterConfigHelper {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -15,54 +10,21 @@ public final class TwitterConfigHelper {
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	private static final String DIR_CONFIG = "/.tweetvault";
-	
-	public static String getConfigDir () {
-		String path = System.getProperty("user.home") + DIR_CONFIG;
-		
-		File f = new File(path);
-		if (!f.exists() && !f.mkdirs()) {
-			throw new UnsupportedOperationException("Failed to create direactory '"+f.getAbsolutePath()+"'.");
-		}
-		
-		return path;
-	}
+	private static final String PARAM_CONSUMER_KEY = "consumerKey";
+	private static final String PARAM_CONSUMER_SECRET = "consumerSecret";
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	private static final String KEY_TOKEN = "token";
-	private static final String KEY_TOKEN_SECRET = "tokenSecret";
-	
-//	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	
-	public static AccessToken readAppAuthData () throws IOException {
-		String path = getConfigDir() + "/appauth";
-		return readAuthData(path);
-	}
-	
-	public static AccessToken readUserAuthData (String username) throws IOException {
-		String path = getConfigDir() + "/" + username + ".properties";
-		return readAuthData(path);
-	}
-	
-	private static AccessToken readAuthData (String path) throws IOException {
-		File f = new File(path);
-		if (!f.exists()) throw new FileNotFoundException(path);
+	public static Twitter getTwitter () {
+		String consumerKey = System.getenv(PARAM_CONSUMER_KEY);
+		String consumerSecret = System.getenv(PARAM_CONSUMER_SECRET);
 		
-		Properties props = new Properties();
-		FileInputStream fis = null;
-		try {
-			fis = new FileInputStream(f);
-			props.load(fis);
-		}
-		finally {
-			if (fis != null) fis.close();
-		}
+		if (consumerKey == null || consumerKey.isEmpty()) throw new IllegalStateException("consumerKey not configured.");
+		if (consumerSecret == null || consumerSecret.isEmpty()) throw new IllegalStateException("consumerSecret not configured.");
 		
-		String token = props.getProperty(KEY_TOKEN);
-		String tokenSecret = props.getProperty(KEY_TOKEN_SECRET);
-		
-		return new AccessToken(token, tokenSecret);
+		Twitter t = new TwitterFactory().getInstance();
+		t.setOAuthConsumer(consumerKey, consumerSecret);
+		return t;
 	}
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

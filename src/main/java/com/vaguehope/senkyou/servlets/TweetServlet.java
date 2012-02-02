@@ -1,7 +1,6 @@
 package com.vaguehope.senkyou.servlets;
 
 import static com.vaguehope.senkyou.servlets.ServletHelper.validatePositiveLongParam;
-import static com.vaguehope.senkyou.servlets.ServletHelper.validateStringParam;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -12,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
 
+import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
 import com.vaguehope.senkyou.model.TweetList;
@@ -52,14 +52,14 @@ public class TweetServlet extends HttpServlet {
 	}
 	
 	private void procGet (HttpServletRequest req, HttpServletResponse resp) throws IOException, TwitterException, JAXBException, ExecutionException {
-		String user = validateStringParam(req, resp, "u");
-		if (user == null) return;
+		Twitter twitter = AuthServlet.getTwitterOrSetError(req, resp);
+		if (twitter == null) return;
 		
 		long count = validatePositiveLongParam(req, resp, "n");
 		if (count < 1) return;
 		
-		TweetCache tweetCache = TweetCacheFactory.getTweetCache(user);
-		TweetList tl = this.feed.getTweets(tweetCache, count);
+		TweetCache tweetCache = TweetCacheFactory.getTweetCache(twitter);
+		TweetList tl = this.feed.getTweets(twitter, tweetCache, count);
 		resp.setContentType("text/xml;charset=UTF-8");
 		tl.toXml(resp.getWriter());
 	}

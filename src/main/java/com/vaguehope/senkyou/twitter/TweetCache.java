@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -19,11 +20,11 @@ import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.vaguehope.senkyou.Config;
 import com.vaguehope.senkyou.model.Tweet;
 import com.vaguehope.senkyou.model.TweetList;
@@ -34,48 +35,44 @@ public class TweetCache {
 	private static final Logger LOG = Logger.getLogger(TweetCache.class.getName());
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-//	Cache.
 	
-	private AtomicReference<TweetList> homeTimeline = new AtomicReference<TweetList>();
+	private final Long twitterId;
+	
+	private final Cache<Long, Tweet> tweetCache = CacheBuilder.newBuilder()
+			.maximumSize(Config.USER_TWEET_CACHE_COUNT_MAX)
+			.softValues()
+			.expireAfterAccess(Config.USER_TWEET_CACHE_AGE_MAX, TimeUnit.MINUTES)
+			.build();
+	
+	private final AtomicReference<TweetList> homeTimeline = new AtomicReference<TweetList>();
 	private final ReadWriteLock homeTimelineLock = new ReentrantReadWriteLock();
 	
-	private AtomicReference<TweetList> mentionsTimeline = new AtomicReference<TweetList>();
+	private final AtomicReference<TweetList> mentionsTimeline = new AtomicReference<TweetList>();
 	private final ReadWriteLock mentionsTimelineLock = new ReentrantReadWriteLock();
 	
-	private final LoadingCache<Long, Tweet> tweetCache;
-	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-//	Config.
 	
-	private final String username;
-	private final Twitter twitter;
-	
-//	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-	public TweetCache (String username) throws ExecutionException {
-		this.username = username;
-		this.twitter = TwitterFactory.getTwitter(username);
-		
-		this.tweetCache = CacheBuilder.newBuilder()
-				.maximumSize(Config.USER_TWEET_CACHE_COUNT_MAX)
-				.softValues()
-				.expireAfterAccess(Config.USER_TWEET_CACHE_AGE_MAX, TimeUnit.MINUTES)
-				.build(new TweetFetcher(this.twitter));
+	public TweetCache (Long id) {
+		this.twitterId = id;
 	}
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	public TweetList getHomeTimeline (int minCount) throws TwitterException {
-		return getTweetList(this.username, this.twitter, TwitterFeeds.HOME_TIMELINE, this.homeTimelineLock, this.homeTimeline, minCount, Config.MAX_HOME_TIMELINE_AGE);
+	public Long getTwitterId () {
+		return this.twitterId;
 	}
 	
-	public TweetList getMentions (int minCount) throws TwitterException {
-		return getTweetList(this.username, this.twitter, TwitterFeeds.MENTIONS, this.mentionsTimelineLock, this.mentionsTimeline, minCount, Config.MAX_MENTIONS_AGE);
+	public TweetList getHomeTimeline (Twitter t, int minCount) throws TwitterException {
+		return getTweetList(t, TwitterFeeds.HOME_TIMELINE, this.homeTimelineLock, this.homeTimeline, minCount, Config.MAX_HOME_TIMELINE_AGE);
 	}
 	
-	public TweetList getLastTweetHomeTimeline (int minCount) throws TwitterException {
+	public TweetList getMentions (Twitter t, int minCount) throws TwitterException {
+		return getTweetList(t, TwitterFeeds.MENTIONS, this.mentionsTimelineLock, this.mentionsTimeline, minCount, Config.MAX_MENTIONS_AGE);
+	}
+	
+	public TweetList getLastTweetHomeTimeline (Twitter t, int minCount) throws TwitterException {
 		// TODO keep searching back until minCount reached.
-		TweetList source = getHomeTimeline(minCount);
+		TweetList source = getHomeTimeline(t, minCount);
 		TweetList target = new TweetList();
 		target.setTime(source.getTime());
 		copyFirstTweetOfEachUser(source, target);
@@ -85,18 +82,21 @@ public class TweetCache {
 	/**
 	 * TODO Pass in list form last call to reuse tips where needed.
 	 * 
-	 * @param searchDepth How fat back in user's time-line to search for tips to threads.
-	 * @param maxThreads Stop searching after fixing this many threads.
+	 * @param searchDepth
+	 *            How fat back in user's time-line to search for tips to
+	 *            threads.
+	 * @param maxThreads
+	 *            Stop searching after fixing this many threads.
 	 */
-	public TweetList getThreads (int maxThreads) throws TwitterException{
-		TweetList mentions = getMentions(Config.TWEET_FETCH_PAGE_SIZE);
-		TweetList timeline = getHomeTimeline(Config.TWEET_FETCH_COUNT);
+	public TweetList getThreads (Twitter t, int maxThreads) throws TwitterException {
+		TweetList mentions = getMentions(t, Config.TWEET_FETCH_PAGE_SIZE);
+		TweetList timeline = getHomeTimeline(t, Config.TWEET_FETCH_COUNT);
 		
 		Map<Long, Tweet> tree = Maps.newHashMap(); // Will contain everything in output.
 		SortedSet<Tweet> tips = Sets.newTreeSet(Tweet.Comp.NEWEST_FIRST);
 		findTips(mentions, tips);
 		findTips(timeline, tips);
-		Set<Tweet> heads = buildTweetTree(tips, maxThreads, tree, this.tweetCache);
+		Set<Tweet> heads = buildTweetTree(t, tips, maxThreads, tree, this.tweetCache);
 		attachStrays(tree, mentions);
 		attachStrays(tree, timeline);
 		
@@ -105,13 +105,13 @@ public class TweetCache {
 		return ret;
 	}
 	
-	public TweetList getTweet (long n) {
-		Tweet tweet = this.tweetCache.getUnchecked(Long.valueOf(n));
+	public TweetList getTweet (Twitter t, long n) {
+		Tweet tweet = fetchTweetViaCache(t, Long.valueOf(n), this.tweetCache);
 		TweetList ret = new TweetList();
 		ret.addTweet(tweet);
 		return ret;
 	}
-
+	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //	Static implementation.
 	
@@ -126,7 +126,7 @@ public class TweetCache {
 		}
 	}
 	
-	private static TweetList getTweetList (String u, Twitter t, TwitterFeeds feed, ReadWriteLock lock, AtomicReference<TweetList> list, int minCount, long maxAge) throws TwitterException {
+	private static TweetList getTweetList (Twitter t, TwitterFeeds feed, ReadWriteLock lock, AtomicReference<TweetList> list, int minCount, long maxAge) throws TwitterException {
 		lock.readLock().lock();
 		try {
 			if (expired(list.get(), maxAge)) {
@@ -134,7 +134,7 @@ public class TweetCache {
 				lock.writeLock().lock();
 				try {
 					if (expired(list.get(), maxAge)) {
-						TweetList timeline = fetchTwitterFeed(u, t, feed, minCount);
+						TweetList timeline = fetchTwitterFeed(t, feed, minCount);
 						list.set(timeline);
 					}
 				}
@@ -157,7 +157,7 @@ public class TweetCache {
 	/**
 	 * TODO Pass in list form last call to reuse where possible.
 	 */
-	private static TweetList fetchTwitterFeed (String u, Twitter t, TwitterFeed feed, int minCount) throws TwitterException {
+	private static TweetList fetchTwitterFeed (Twitter t, TwitterFeed feed, int minCount) throws TwitterException {
 		long startTime = System.currentTimeMillis();
 		
 		TweetList ret = new TweetList();
@@ -171,7 +171,7 @@ public class TweetCache {
 			page++;
 		}
 		
-		LOG.info("Fetched " + feed.getName() + " for " + u + " in " + (System.currentTimeMillis() - startTime) + " millis.");
+		LOG.info("Fetched " + feed.getName() + " for " + t.getScreenName() + " in " + (System.currentTimeMillis() - startTime) + " millis.");
 		return ret;
 	}
 	
@@ -186,33 +186,13 @@ public class TweetCache {
 		
 	}
 	
-	private static class TweetFetcher extends CacheLoader<Long, Tweet> {
-		
-		private final Twitter t;
-		
-		public TweetFetcher (Twitter t) {
-			this.t = t;
-		}
-		
-		@Override
-		public Tweet load (Long id) {
-			try {
-				return fetchTweet(this.t, id.longValue());
-			}
-			catch (TwitterException e) {
-				return deadTweet(id.longValue(), e.getMessage());
-			}
-		}
-		
-	}
-	
 	private static void addTweetsToList (TweetList list, ResponseList<Status> tweets) {
 		for (Status status : tweets) {
 			Tweet tweet = convertTweet(status);
 			list.addTweet(tweet);
 		}
 	}
-
+	
 	private static Tweet convertTweet (Status s) {
 		Tweet t = new Tweet();
 		t.setId(s.getId());
@@ -238,14 +218,14 @@ public class TweetCache {
 		}
 	}
 	
-	private static Set<Tweet> buildTweetTree (Set<Tweet> tips, int maxHeads, Map<Long, Tweet> tree, LoadingCache<Long, Tweet> cache) {
+	private static Set<Tweet> buildTweetTree (Twitter twitter, Set<Tweet> tips, int maxHeads, Map<Long, Tweet> tree, Cache<Long, Tweet> cache) {
 		Set<Tweet> heads = Sets.newLinkedHashSet(); // Keep the order they are added in.
 		for (Tweet tip : tips) {
 			if (heads.size() >= maxHeads) break;
 			tree.put(Long.valueOf(tip.getId()), tip);
 			Tweet tweet = tip;
 			while (true) {
-				Tweet parent = findTweet(tweet.getInReplyId(), tree, cache);
+				Tweet parent = findTweet(twitter, tweet.getInReplyId(), tree, cache);
 				if (parent != null) {
 					parent.addReply(tweet);
 					tweet = parent;
@@ -260,8 +240,8 @@ public class TweetCache {
 	}
 	
 	/**
-	 * I have no idea if this is actually useful.
-	 * But it sort of makes sense at the moment.
+	 * I have no idea if this is actually useful. But it sort of makes sense at
+	 * the moment.
 	 */
 	private static void attachStrays (Map<Long, Tweet> tree, TweetList list) {
 		int n = 0;
@@ -280,14 +260,35 @@ public class TweetCache {
 		LOG.info("Attached " + n + " strays."); // Does this method even find anything?
 	}
 	
-	private static Tweet findTweet(long id, Map<Long, Tweet> tree, LoadingCache<Long, Tweet> cache) {
+	private static Tweet findTweet (final Twitter twitter, final long id, Map<Long, Tweet> tree, Cache<Long, Tweet> cache) {
 		if (id < 1) return null;
 		Long lid = Long.valueOf(id);
 		Tweet t = tree.get(lid);
 		if (t != null) return t;
-		t = cache.getUnchecked(lid);
+		
+		t = fetchTweetViaCache(twitter, lid, cache);
+		
 		if (t != null) tree.put(lid, t);
 		return t;
+	}
+
+	private static Tweet fetchTweetViaCache (final Twitter twitter, final Long lid, Cache<Long, Tweet> cache) {
+		try {
+			return cache.get(lid, new Callable<Tweet>() {
+				@Override
+				public Tweet call () throws Exception {
+					try {
+						return fetchTweet(twitter, lid.longValue());
+					}
+					catch (TwitterException e) {
+						return deadTweet(lid.longValue(), e.getMessage());
+					}
+				}
+			});
+		}
+		catch (ExecutionException e) {
+			throw new UncheckedExecutionException(e);
+		}
 	}
 	
 	private static void limitedCopy (Set<Tweet> heads, TweetList ret, int max) {

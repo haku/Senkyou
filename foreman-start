@@ -1,3 +1,5 @@
 #!/bin/sh
 export REPO=$HOME/.m2/repository
+. $HOME/.senkyou
+( [ -n "$consumerKey" ] && [ -n "$consumerSecret" ] ) || exit 1
 mvn install && foreman start

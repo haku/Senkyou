@@ -1,5 +1,6 @@
 package com.vaguehope.senkyou.twitter;
 
+import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
 import com.vaguehope.senkyou.model.TweetList;
@@ -12,8 +13,8 @@ public enum TweetFeeds implements TweetFeed {
 		}
 		
 		@Override
-		public TweetList getTweets (TweetCache tc, long n) throws TwitterException {
-			return tc.getTweet(n);
+		public TweetList getTweets (Twitter t, TweetCache tc, long n) throws TwitterException {
+			return tc.getTweet(t, n);
 		}
 	},
 	HOME_TIMELINE {
@@ -23,8 +24,8 @@ public enum TweetFeeds implements TweetFeed {
 		}
 		
 		@Override
-		public TweetList getTweets (TweetCache tc, long n) throws TwitterException {
-			return tc.getHomeTimeline((int) n);
+		public TweetList getTweets (Twitter t, TweetCache tc, long n) throws TwitterException {
+			return tc.getHomeTimeline(t, (int) n);
 		}
 	},
 	HOME_TIMELINE_LAST_ONLY {
@@ -34,8 +35,8 @@ public enum TweetFeeds implements TweetFeed {
 		}
 		
 		@Override
-		public TweetList getTweets (TweetCache tc, long n) throws TwitterException {
-			return tc.getLastTweetHomeTimeline((int) n);
+		public TweetList getTweets (Twitter t, TweetCache tc, long n) throws TwitterException {
+			return tc.getLastTweetHomeTimeline(t, (int) n);
 		}
 	},
 	MENTIONS {
@@ -45,8 +46,8 @@ public enum TweetFeeds implements TweetFeed {
 		}
 		
 		@Override
-		public TweetList getTweets (TweetCache tc, long n) throws TwitterException {
-			return tc.getMentions((int) n);
+		public TweetList getTweets (Twitter t, TweetCache tc, long n) throws TwitterException {
+			return tc.getMentions(t, (int) n);
 		}
 	},
 	THREADS {
@@ -56,8 +57,8 @@ public enum TweetFeeds implements TweetFeed {
 		}
 		
 		@Override
-		public TweetList getTweets (TweetCache tc, long n) throws TwitterException {
-			return tc.getThreads((int) n);
+		public TweetList getTweets (Twitter t, TweetCache tc, long n) throws TwitterException {
+			return tc.getThreads(t, (int) n);
 		}
 	};
 	
@@ -65,6 +66,6 @@ public enum TweetFeeds implements TweetFeed {
 	public abstract String getContext ();
 	
 	@Override
-	public abstract TweetList getTweets (TweetCache tc, long n) throws TwitterException;
+	public abstract TweetList getTweets (Twitter t, TweetCache tc, long n) throws TwitterException;
 	
 }
