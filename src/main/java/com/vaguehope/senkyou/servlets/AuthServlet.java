@@ -70,6 +70,8 @@ public class AuthServlet extends HttpServlet {
 		LOG.info("Callback...");
 		
 		Twitter twitter = getTwitterOrSetError(req, resp);
+		if (twitter == null) return;
+		
 		RequestToken requestToken = (RequestToken) req.getSession().getAttribute(SESSION_REQUEST_TOKEN);
 		String verifier = req.getParameter("oauth_verifier");
 		twitter.getOAuthAccessToken(requestToken, verifier);

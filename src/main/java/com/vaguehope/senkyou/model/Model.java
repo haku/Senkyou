@@ -10,7 +10,8 @@ public final class Model {
 	// List of top-level data objects.
 	private static final Class<?>[] MODEL_CLASSES = new Class<?>[] {
 			TweetList.class,
-			Tweet.class
+			Tweet.class,
+			User.class
 	};
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

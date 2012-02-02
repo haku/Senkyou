@@ -1,21 +1,31 @@
 var _jobCount = 0;
 
-function fetchThreadFeed (user, number) {
-	_fetchFeed(user, number, 'threads', _processThreadFeed);
+function fetchUsername () {
+	_fetchAajx('/user', _processUser);
 }
 
-function fetchFeeds (user) {
+function _processUser (xml) {
+	var user = $($(xml).find('screenname').text();
+	$('#user').text(user);
+}
+
+
+function fetchThreadFeed (number) {
+	_fetchFeed(number, 'threads', _processThreadFeed);
+}
+
+function fetchFeeds () {
 	if (_jobCount > 0) {
 		console.log('fetchers in progress', _jobCount);
 		return;
 	}
 
-	_fetchFeed(user, 40, 'home', _processFeed);
-	_fetchFeed(user, 10, 'mentions', _processThreadFeed);
+	_fetchFeed(40, 'home', _processFeed);
+	_fetchFeed(10, 'mentions', _processThreadFeed);
 }
 
-function fetchTweet (user, tweetId, childDivId) {
-	_fetchFeed(user, tweetId, 'tweet', _processTweet, childDivId);
+function fetchTweet (tweetId, childDivId) {
+	_fetchFeed(tweetId, 'tweet', _processTweet, childDivId);
 }
 
 function _startJob () {
@@ -41,64 +51,68 @@ function _updateStatus (errMsg) {
 	$('#statbar').text(msg);
 }
 
-function _fetchFeed (user, number, feed, procFnc, arg) {
+function _fetchFeed (number, feed, procFnc, arg) {
+	_fetchAajx('/feeds/' + feed + '&n=' + number, procFnc, arg);
+}
+
+function _fetchAajx (url, procFnc, arg) {
 	$.ajax({
-	type : 'GET',
-	cache : 'false',
-	url : '/feeds/' + feed + '?u=' + user + '&n=' + number,
-	dataType : 'xml',
-	beforeSend : function () {
-		_startJob();
-	},
-	success : function (xml) {
-		try {
-			if (arg) {
-				procFnc(user, xml, arg);
+		type : 'GET',
+		cache : 'false',
+		url : url,
+		dataType : 'xml',
+		beforeSend : function () {
+			_startJob();
+		},
+		success : function (xml) {
+			try {
+				if (arg) {
+					procFnc(xml, arg);
+				}
+				else {
+					procFnc(xml);
+				}
 			}
-			else {
-				procFnc(user, xml);
+			catch (e) {
+				_updateStatus(e);
 			}
+			finally {
+				_finishJob();
+			}
+		},
+		error : function (e) {
+			_finishJob('error: fetching feed: ' + e.message);
 		}
-		catch (e) {
-			_updateStatus(e);
-		}
-		finally {
-			_finishJob();
-		}
-	},
-	error : function (e) {
-		_finishJob('error: fetching feed: ' + e.message);
-	}
 	});
 }
 
-function _processThreadFeed (user, xml) {
+function _processThreadFeed (xml) {
 	var container = $('#threads');
 	$(xml).find('tweet').each(function () {
-		_insertTweet(user, container, $(this));
+		_insertTweet(container, $(this));
 	});
 	_sortThreads();
 }
 
-function _processFeed (user, xml) {
+function _processFeed (xml) {
 	var container = $('#footer');
 	$($(xml).find('tweet').get().reverse()).each(function () {
-		_insertTweet(user, container, $(this));
+		_insertTweet(container, $(this));
 	});
 	_sortThreads();
 }
 
-function _processTweet (user, xml, childDivId) {
+function _processTweet (xml, childDivId) {
 	var container = $('#threads');
 	$(xml).find('tweet').each(function () {
-		var tweetDiv = _insertTweet(user, container, $(this));
+		var tweetDiv = _insertTweet(container, $(this));
 		var childDiv = $('#' + childDivId);
 		tweetDiv.append(childDiv);
 	});
 	_sortThreads();
 }
 
-function _insertTweet (user, container, tweetXml) {
+function _insertTweet (container, tweetXml) {
 	var tweetDivId = _tweetDivId(tweetXml);
 	var tweetE = $('#' + tweetDivId);
 	var fresh = false;
@@ -120,7 +134,7 @@ function _insertTweet (user, container, tweetXml) {
 		tweetE.show('slow');
 		
 		if (parentDivId != null) {
-			fetchTweet(user, _tweetParentId(tweetXml), tweetDivId);
+			fetchTweet(_tweetParentId(tweetXml), tweetDivId);
 		}
 	}
 	return tweetE;
