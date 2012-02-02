@@ -3,6 +3,7 @@ package com.vaguehope.senkyou.servlets;
 import static com.vaguehope.senkyou.servlets.ServletHelper.error;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -30,6 +31,7 @@ public class AuthServlet extends HttpServlet {
 	private static final String SESSION_TWITTER = "twitter";
 	private static final String SESSION_REQUEST_TOKEN = "requestToken";
 	
+	protected static final Logger LOG = Logger.getLogger(AuthServlet.class.getName());
 	private static final long serialVersionUID = 8329372619000823417L;
 	
 	@Override
@@ -61,6 +63,7 @@ public class AuthServlet extends HttpServlet {
 		RequestToken token = twitter.getOAuthRequestToken(url.toString());
 		req.getSession().setAttribute(SESSION_REQUEST_TOKEN, token);
 		resp.sendRedirect(token.getAuthenticationURL());
+		LOG.info("Redirecting: " + token.getAuthenticationURL());
 	}
 	
 	private static void callback (HttpServletRequest req, HttpServletResponse resp) throws IOException, TwitterException {
@@ -70,6 +73,7 @@ public class AuthServlet extends HttpServlet {
 		twitter.getOAuthAccessToken(requestToken, verifier);
 		req.getSession().removeAttribute(SESSION_REQUEST_TOKEN);
 		resp.sendRedirect(APP_ROOT);
+		LOG.info("Auth compelte.");
 	}
 
 	public static Twitter getTwitterOrSetError (HttpServletRequest req, HttpServletResponse resp) throws IOException {
