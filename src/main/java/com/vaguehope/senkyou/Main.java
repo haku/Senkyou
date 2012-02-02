@@ -13,6 +13,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.vaguehope.senkyou.servlets.AuthServlet;
 import com.vaguehope.senkyou.servlets.TweetServlet;
+import com.vaguehope.senkyou.servlets.UserServlet;
 import com.vaguehope.senkyou.twitter.TweetFeed;
 import com.vaguehope.senkyou.twitter.TweetFeeds;
 
@@ -39,6 +40,7 @@ public class Main {
 		
 		// Servlets.
 		servletHandler.addServlet(new ServletHolder(new AuthServlet()), AuthServlet.CONTEXT);
+		servletHandler.addServlet(new ServletHolder(new UserServlet()), UserServlet.CONTEXT);
 		for (TweetFeed feed : TweetFeeds.values()) {
 			TweetServlet tweetServlet = new TweetServlet(feed);
 			servletHandler.addServlet(new ServletHolder(tweetServlet), tweetServlet.getContext());
