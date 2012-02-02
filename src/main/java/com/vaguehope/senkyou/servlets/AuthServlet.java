@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.http.HttpStatus;
-
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.auth.RequestToken;
@@ -43,7 +41,7 @@ public class AuthServlet extends HttpServlet {
 				callback(req, resp);
 			}
 			else {
-				error(resp, HttpStatus.BAD_REQUEST_400, "invalid action.");
+				error(resp, HttpServletResponse.SC_BAD_REQUEST, "invalid action.");
 			}
 		}
 		catch (TwitterException e) {
@@ -89,7 +87,7 @@ public class AuthServlet extends HttpServlet {
 			return (Twitter) rawTwitter;
 		}
 		
-		error(resp, HttpStatus.UNAUTHORIZED_401, "Not signed into Twitter.");
+		error(resp, HttpServletResponse.SC_UNAUTHORIZED, "Not signed into Twitter.");
 		return null;
 	}
 	
