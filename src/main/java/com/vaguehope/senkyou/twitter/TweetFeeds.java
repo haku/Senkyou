@@ -25,7 +25,7 @@ public enum TweetFeeds implements TweetFeed {
 		
 		@Override
 		public TweetList getTweets (Twitter t, TweetCache tc, long n) throws TwitterException {
-			return tc.getHomeTimeline(t, (int) n);
+			return tc.getHomeTimeline(t, 40); // FIXME extract constant.
 		}
 	},
 	MENTIONS {
@@ -36,7 +36,7 @@ public enum TweetFeeds implements TweetFeed {
 		
 		@Override
 		public TweetList getTweets (Twitter t, TweetCache tc, long n) throws TwitterException {
-			return tc.getMentions(t, (int) n);
+			return tc.getMentions(t, 10); // FIXME extract constant.
 		}
 	},
 	;
