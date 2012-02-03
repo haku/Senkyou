@@ -9,22 +9,18 @@ function _processUser (xml) {
 	$('#user').text(user);
 }
 
-function fetchThreadFeed (number) {
-	_fetchFeed(number, 'threads', _processThreadFeed);
-}
-
 function fetchFeeds () {
 	if (_jobCount > 0) {
 		console.log('fetchers in progress', _jobCount);
 		return;
 	}
 
-	_fetchFeed(40, 'home', _processFeed);
-	_fetchFeed(10, 'mentions', _processThreadFeed);
+	_fetchAajx('/feeds/home', _processFeed);
+	_fetchAajx('/feeds/mentions', _processThreadFeed);
 }
 
 function fetchTweet (tweetId, childDivId) {
-	_fetchFeed(tweetId, 'tweet', _processTweet, childDivId);
+	_fetchAajx('/feeds/tweet?n=' + tweetId, _processTweet, childDivId);
 }
 
 function _startJob () {
@@ -48,10 +44,6 @@ function _updateStatus (errMsg) {
 		msg = "idle.";
 	}
 	$('#statbar').text(msg);
-}
-
-function _fetchFeed (number, feed, procFnc, arg) {
-	_fetchAajx('/feeds/' + feed + '?n=' + number, procFnc, arg);
 }
 
 function _fetchAajx (url, procFnc, arg) {

@@ -12,10 +12,10 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.vaguehope.senkyou.servlets.AuthServlet;
-import com.vaguehope.senkyou.servlets.TweetServlet;
+import com.vaguehope.senkyou.servlets.HttpProcessor;
+import com.vaguehope.senkyou.servlets.ProcessorServlet;
+import com.vaguehope.senkyou.servlets.TweetFeeds;
 import com.vaguehope.senkyou.servlets.UserServlet;
-import com.vaguehope.senkyou.twitter.TweetFeed;
-import com.vaguehope.senkyou.twitter.TweetFeeds;
 
 public class Main {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -41,8 +41,8 @@ public class Main {
 		// Servlets.
 		servletHandler.addServlet(new ServletHolder(new AuthServlet()), AuthServlet.CONTEXT);
 		servletHandler.addServlet(new ServletHolder(new UserServlet()), UserServlet.CONTEXT);
-		for (TweetFeed feed : TweetFeeds.values()) {
-			TweetServlet tweetServlet = new TweetServlet(feed);
+		for (HttpProcessor proc : TweetFeeds.values()) {
+			ProcessorServlet tweetServlet = new ProcessorServlet(proc);
 			servletHandler.addServlet(new ServletHolder(tweetServlet), tweetServlet.getContext());
 		}
 		

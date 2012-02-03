@@ -52,21 +52,24 @@ public class AuthServlet extends HttpServlet {
 	private static void signin (HttpServletRequest req, HttpServletResponse resp) throws TwitterException, IOException {
 		ServletHelper.resetSession(req);
 		
-		Twitter twitter = TwitterConfigHelper.getTwitter();
+		Twitter twitter = TwitterConfigHelper.getLocalUser();
+		if (twitter == null) {
+			twitter = TwitterConfigHelper.getTwitter();
+			StringBuffer url = req.getRequestURL();
+			url.append("?").append(PARAM_ACTION).append("=").append(ACTION_CALLBACK);
+			
+			RequestToken token = twitter.getOAuthRequestToken(url.toString());
+			req.getSession().setAttribute(SESSION_REQUEST_TOKEN, token);
+			resp.sendRedirect(token.getAuthenticationURL());
+		}
+		else {
+			resp.sendRedirect(req.getContextPath() + "/");
+		}
+		
 		req.getSession().setAttribute(SESSION_TWITTER, twitter);
-		
-		StringBuffer url = req.getRequestURL();
-		url.append("?").append(PARAM_ACTION).append("=").append(ACTION_CALLBACK);
-		
-		RequestToken token = twitter.getOAuthRequestToken(url.toString());
-		req.getSession().setAttribute(SESSION_REQUEST_TOKEN, token);
-		resp.sendRedirect(token.getAuthenticationURL());
-		LOG.info("Redirecting: " + token.getAuthenticationURL());
 	}
 	
 	private static void callback (HttpServletRequest req, HttpServletResponse resp) throws IOException, TwitterException {
-		LOG.info("Callback...");
-		
 		Twitter twitter = getTwitterOrSetError(req, resp);
 		if (twitter == null) return;
 		
@@ -76,8 +79,6 @@ public class AuthServlet extends HttpServlet {
 		req.getSession().removeAttribute(SESSION_REQUEST_TOKEN);
 		
 		resp.sendRedirect(req.getContextPath() + "/");
-		
-		LOG.info("Auth compelte.");
 	}
 
 	public static Twitter getTwitterOrSetError (HttpServletRequest req, HttpServletResponse resp) throws IOException {

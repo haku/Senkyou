@@ -39,9 +39,9 @@ public class TweetCache {
 	private final Long twitterId;
 	
 	private final Cache<Long, Tweet> tweetCache = CacheBuilder.newBuilder()
-			.maximumSize(Config.USER_TWEET_CACHE_COUNT_MAX)
+			.maximumSize(Config.TWEET_CACHE_MAX_COUNT)
 			.softValues()
-			.expireAfterAccess(Config.USER_TWEET_CACHE_AGE_MAX, TimeUnit.MINUTES)
+			.expireAfterAccess(Config.TWEET_CACHE_MAX_AGE, TimeUnit.MINUTES)
 			.build();
 	
 	private final AtomicReference<TweetList> homeTimeline = new AtomicReference<TweetList>();
@@ -63,11 +63,11 @@ public class TweetCache {
 	}
 	
 	public TweetList getHomeTimeline (Twitter t, int minCount) throws TwitterException {
-		return getTweetList(t, TwitterFeeds.HOME_TIMELINE, this.homeTimelineLock, this.homeTimeline, minCount, Config.MAX_HOME_TIMELINE_AGE);
+		return getTweetList(t, TwitterFeeds.HOME_TIMELINE, this.homeTimelineLock, this.homeTimeline, minCount, Config.HOME_TIMELINE_MAX_AGE);
 	}
 	
 	public TweetList getMentions (Twitter t, int minCount) throws TwitterException {
-		return getTweetList(t, TwitterFeeds.MENTIONS, this.mentionsTimelineLock, this.mentionsTimeline, minCount, Config.MAX_MENTIONS_AGE);
+		return getTweetList(t, TwitterFeeds.MENTIONS, this.mentionsTimelineLock, this.mentionsTimeline, minCount, Config.MENTIONS_MAX_AGE);
 	}
 	
 	public TweetList getLastTweetHomeTimeline (Twitter t, int minCount) throws TwitterException {
