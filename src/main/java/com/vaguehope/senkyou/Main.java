@@ -16,6 +16,7 @@ import com.vaguehope.senkyou.servlets.HttpProcessor;
 import com.vaguehope.senkyou.servlets.ProcessorServlet;
 import com.vaguehope.senkyou.servlets.TweetFeeds;
 import com.vaguehope.senkyou.servlets.UserServlet;
+import com.vaguehope.senkyou.util.JvmReporter;
 
 public class Main {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -82,6 +83,9 @@ public class Main {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
 	public static void main (String[] args) throws Exception { // NOSONAR Exception is throw by Server.start().
+		JvmReporter reporter = new JvmReporter();
+		reporter.start();
+		
 		Main m = new Main();
 		m.join();
 	}
