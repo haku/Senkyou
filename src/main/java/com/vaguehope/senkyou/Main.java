@@ -25,11 +25,11 @@ public class Main {
 	private static final int LOW_RESOURCES_CONNECTIONS = 100;
 	private static final int LOW_RESOURCES_MAX_IDLE_TIME = 5000; // 5 seconds.
 	
-	protected static final Logger LOG = Logger.getLogger(Main.class.getName());
+	private static final Logger LOG = Logger.getLogger(Main.class.getName());
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	private Server server;
+	private final Server server;
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
