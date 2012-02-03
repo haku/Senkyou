@@ -124,7 +124,7 @@ public class TweetCache {
 		try {
 			return cache.get(lid, new Callable<Tweet>() {
 				@Override
-				public Tweet call () throws Exception {
+				public Tweet call () throws TwitterException {
 					try {
 						return fetchTweet(twitter, lid.longValue());
 					}
