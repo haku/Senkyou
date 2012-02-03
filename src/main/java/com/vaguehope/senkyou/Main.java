@@ -20,7 +20,7 @@ import com.vaguehope.senkyou.servlets.UserServlet;
 public class Main {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	private static final int MAX_IDLE_TIME = 30000; // 30 seconds.
+	private static final int MAX_IDLE_TIME = 25000; // 25 seconds.
 	private static final int ACCEPTORS = 2;
 	private static final int LOW_RESOURCES_CONNECTIONS = 100;
 	private static final int LOW_RESOURCES_MAX_IDLE_TIME = 5000; // 5 seconds.
