@@ -39,11 +39,11 @@ body {
 }
 
 .tweet {
-	color: #8380E6;
+	color: #B5B3FF;
 }
 
 .tweet .user {
-	color: #5383CC;
+	color: #8CD5FF;
 }
 
 #threads > .tweet { /* Top-level tweets. */
