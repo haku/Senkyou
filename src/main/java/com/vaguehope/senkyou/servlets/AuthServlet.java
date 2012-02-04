@@ -25,7 +25,6 @@ public class AuthServlet extends HttpServlet {
 
 	private static final String HOME_PAGE = "/";
 
-	private static final String ACTION_SIGNIN = "signin";
 	private static final String ACTION_CALLBACK = "callback";
 
 	private static final String SESSION_TWITTER = "twitter";
@@ -38,14 +37,11 @@ public class AuthServlet extends HttpServlet {
 	protected void doGet (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String path = requestSubPath(req, CONTEXT_BASE);
 		try {
-			if (ACTION_SIGNIN.equals(path)) {
-				signin(req, resp);
-			}
-			else if (ACTION_CALLBACK.equals(path)) {
+			if (ACTION_CALLBACK.equals(path)) {
 				callback(req, resp);
 			}
 			else {
-				error(resp, HttpServletResponse.SC_BAD_REQUEST, "invalid action.");
+				signin(req, resp);
 			}
 		}
 		catch (TwitterException e) {
@@ -59,9 +55,10 @@ public class AuthServlet extends HttpServlet {
 		Twitter twitter = TwitterConfigHelper.getLocalUser();
 		if (twitter == null) {
 			twitter = TwitterConfigHelper.getTwitter();
-			String callbackUrl = req.getContextPath() + CONTEXT_BASE + '/' + ACTION_CALLBACK;
+			StringBuffer url = req.getRequestURL();
+			url.append('/').append(ACTION_CALLBACK);
 
-			RequestToken token = twitter.getOAuthRequestToken(callbackUrl);
+			RequestToken token = twitter.getOAuthRequestToken(url.toString());
 			req.getSession().setAttribute(SESSION_REQUEST_TOKEN, token);
 			resp.sendRedirect(token.getAuthenticationURL());
 		}
