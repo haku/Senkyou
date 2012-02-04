@@ -49,10 +49,10 @@ function _updateStatus (errMsg) {
 
 	var msg;
 	if (_jobCount != 0) {
-		msg = _jobCount + " running...";
+		msg = Array(_jobCount + 1).join('+');
 	}
 	else {
-		msg = "idle.";
+		msg = '';
 	}
 	$('#statbar').text(msg);
 }
