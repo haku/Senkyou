@@ -1,5 +1,13 @@
 var _jobCount = 0;
 
+function _showPromptSignin () {
+	if ($('#signin').length < 1) {
+		$('#threads').append($('<div class="menu-holder">')
+				.append($('<div id="signin" class="menu-box">').append($('<p>')
+						.append($('<a href="/auth">').text("sign in")))));
+	}
+}
+
 function fetchUsername () {
 	_fetchAajx('/user', _processUser);
 }
@@ -51,32 +59,37 @@ function _updateStatus (errMsg) {
 
 function _fetchAajx (url, procFnc, arg) {
 	$.ajax({
-		type : 'GET',
-		cache : 'false',
-		url : url,
-		dataType : 'xml',
-		beforeSend : function () {
-			_startJob();
-		},
-		success : function (xml) {
-			try {
-				if (arg) {
-					procFnc(xml, arg);
-				}
-				else {
-					procFnc(xml);
-				}
+	type : 'GET',
+	cache : 'false',
+	url : url,
+	dataType : 'xml',
+	beforeSend : function () {
+		_startJob();
+	},
+	success : function (xml) {
+		try {
+			if (arg) {
+				procFnc(xml, arg);
 			}
-			catch (e) {
-				_updateStatus(e);
+			else {
+				procFnc(xml);
 			}
-			finally {
-				_finishJob();
-			}
-		},
-		error : function (e) {
-			_finishJob('error: fetching feed: ' + e.message);
 		}
+		catch (e) {
+			_updateStatus(e);
+		}
+		finally {
+			_finishJob();
+		}
+	},
+	statusCode : {
+		401 : function () {
+			_showPromptSignin();
+		}
+	},
+	error : function (e) {
+		_finishJob('error: fetching feed: ' + e.message);
+	}
 	});
 }
 
@@ -111,7 +124,7 @@ function _insertTweet (container, tweetXml) {
 		fresh = true;
 		tweetE = _tweetElement(tweetXml);
 	}
-	
+
 	var parentDivId = _tweetParentDivId(tweetXml);
 	var parentE = parentDivId != null ? $('#' + parentDivId) : null;
 	if (parentE != null && parentE.length > 0 && !tweetE.is(parentE.children())) {
@@ -123,7 +136,7 @@ function _insertTweet (container, tweetXml) {
 	else if (fresh) {
 		container.prepend(tweetE);
 		tweetE.stop().delay(500).show('slow');
-		
+
 		if (parentDivId != null) {
 			fetchTweet(_tweetParentId(tweetXml), tweetDivId);
 		}

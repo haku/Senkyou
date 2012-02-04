@@ -40,6 +40,21 @@ body {
 	margin: 0 0 0 0.5em;
 }
 
+.menu-holder {
+	text-align: center;
+	width: 100%;
+	padding: 5em;
+}
+
+.menu-box {
+	display: inline-block;
+	margin: 0 auto; /* Make div centre. */
+	text-align: center;
+	padding: 0.25em 3em;
+	border-radius: 10px;
+	opacity: 0.9;
+}
+
 .tweet { /* All tweets. */
 	padding: 0em;
 }
