@@ -31,6 +31,9 @@ function _startJob () {
 function _finishJob (errMsg) {
 	_jobCount--;
 	_updateStatus(errMsg);
+	if (_jobCount <= 0) {
+		_sortThreads();
+	}
 }
 
 function _updateStatus (errMsg) {
@@ -82,7 +85,6 @@ function _processThreadFeed (xml) {
 	$(xml).find('tweet').each(function () {
 		_insertTweet(container, $(this));
 	});
-	_sortThreads();
 }
 
 function _processFeed (xml) {
@@ -90,7 +92,6 @@ function _processFeed (xml) {
 	$($(xml).find('tweet').get().reverse()).each(function () {
 		_insertTweet(container, $(this));
 	});
-	_sortThreads();
 }
 
 function _processTweet (xml, childDivId) {
@@ -100,7 +101,6 @@ function _processTweet (xml, childDivId) {
 		var childDiv = $('#' + childDivId);
 		tweetDiv.append(childDiv);
 	});
-	_sortThreads();
 }
 
 function _insertTweet (container, tweetXml) {
@@ -122,7 +122,7 @@ function _insertTweet (container, tweetXml) {
 	}
 	else if (fresh) {
 		container.prepend(tweetE);
-		tweetE.show('slow');
+		tweetE.stop().delay(500).show('slow');
 		
 		if (parentDivId != null) {
 			fetchTweet(_tweetParentId(tweetXml), tweetDivId);
