@@ -54,7 +54,7 @@ public class Main {
 		sessionManager.addEventListener(sessionReporter);
 
 		// Servlets.
-		servletHandler.addServlet(new ServletHolder(new AuthServlet()), AuthServlet.CONTEXT);
+		servletHandler.addServlet(new ServletHolder(new AuthServlet()), AuthServlet.CONTEXT_SPEC);
 		servletHandler.addServlet(new ServletHolder(new UserServlet()), UserServlet.CONTEXT);
 		for (HttpProcessor proc : TweetFeeds.values()) {
 			ProcessorServlet tweetServlet = new ProcessorServlet(proc);
