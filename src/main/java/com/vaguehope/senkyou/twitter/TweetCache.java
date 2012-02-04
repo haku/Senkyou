@@ -129,7 +129,14 @@ public class TweetCache {
 						return fetchTweet(twitter, lid.longValue());
 					}
 					catch (TwitterException e) {
-						return deadTweet(lid.longValue(), e.getMessage());
+						String msg;
+						if (e.getStatusCode() == 404) {
+							msg = "[deleted]";
+						}
+						else {
+							msg = e.getMessage();
+						}
+						return deadTweet(lid.longValue(), "[unknown]", msg);
 					}
 				}
 			});
@@ -154,11 +161,12 @@ public class TweetCache {
 		return t;
 	}
 
-	protected static Tweet deadTweet (long id, String msg) {
+	protected static Tweet deadTweet (long id, String user, String msg) {
 		Tweet t = new Tweet();
 		t.setId(id);
 		t.setCreatedAt(new Date());
 		t.setBody(msg);
+		t.setUser(user);
 		return t;
 	}
 }
