@@ -8,6 +8,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import javax.servlet.http.HttpServletResponse;
+
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -130,7 +132,7 @@ public class TweetCache {
 					}
 					catch (TwitterException e) {
 						String msg;
-						if (e.getStatusCode() == 404) {
+						if (e.getStatusCode() == HttpServletResponse.SC_NOT_FOUND) {
 							msg = "[deleted]";
 						}
 						else {

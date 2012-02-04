@@ -58,8 +58,7 @@ public final class ServletHelper {
 	public static String requestSubPath (HttpServletRequest req, String baseContext) {
 		String requestURI = req.getRequestURI();
 		String reqPath = requestURI.startsWith(baseContext) ? requestURI.substring(baseContext.length()) : requestURI;
-		String path = reqPath.startsWith(ROOTPATH) ? reqPath.substring(ROOTPATH.length()) : reqPath;
-		return path;
+		return reqPath.startsWith(ROOTPATH) ? reqPath.substring(ROOTPATH.length()) : reqPath;
 	}
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
