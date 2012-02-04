@@ -59,10 +59,9 @@ public class AuthServlet extends HttpServlet {
 		Twitter twitter = TwitterConfigHelper.getLocalUser();
 		if (twitter == null) {
 			twitter = TwitterConfigHelper.getTwitter();
-			StringBuffer url = req.getRequestURL();
-			url.append('/').append(ACTION_CALLBACK);
+			String callbackUrl = req.getContextPath() + CONTEXT_BASE + '/' + ACTION_CALLBACK;
 
-			RequestToken token = twitter.getOAuthRequestToken(url.toString());
+			RequestToken token = twitter.getOAuthRequestToken(callbackUrl);
 			req.getSession().setAttribute(SESSION_REQUEST_TOKEN, token);
 			resp.sendRedirect(token.getAuthenticationURL());
 		}
