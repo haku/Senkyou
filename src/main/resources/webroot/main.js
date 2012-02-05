@@ -1,8 +1,18 @@
 var _jobCount = 0;
 
+var pStatusBar;
+var divThreads;
+var divFooter;
+
+function initMain () {
+	pStatusBar = $('#statbar');
+	divThreads = $('#threads');
+	divFooter = $('#footer');
+}
+
 function _showPromptSignin () {
 	if ($('#signin').length < 1) {
-		$('#threads').prepend($('<div class="menu-holder">')
+		divThreads.prepend($('<div class="menu-holder">')
 				.append($('<div id="signin" class="menu-box">').append($('<p>')
 						.append($('<a href="/signin">').text("sign in")))));
 	}
@@ -27,8 +37,8 @@ function fetchFeeds () {
 	_fetchAajx('/feeds/mentions', _processThreadFeed);
 }
 
-function fetchTweet (tweetId, childDivId) {
-	_fetchAajx('/feeds/tweet?n=' + tweetId, _processTweet, childDivId);
+function fetchTweet (tweetId, childDiv) {
+	_fetchAajx('/feeds/tweet?n=' + tweetId, _processTweet, childDiv);
 }
 
 function _startJob () {
@@ -39,9 +49,6 @@ function _startJob () {
 function _finishJob (errMsg) {
 	_jobCount--;
 	_updateStatus(errMsg);
-	if (_jobCount <= 0) {
-		_sortThreads();
-	}
 }
 
 function _updateStatus (errMsg) {
@@ -54,7 +61,7 @@ function _updateStatus (errMsg) {
 	else {
 		msg = '';
 	}
-	$('#statbar').text(msg);
+	pStatusBar.text(msg);
 }
 
 function _fetchAajx (url, procFnc, arg) {
@@ -94,60 +101,61 @@ function _fetchAajx (url, procFnc, arg) {
 }
 
 function _processThreadFeed (xml) {
-	var container = $('#threads');
 	$(xml).find('tweet').each(function () {
-		_insertTweet(container, $(this));
+		_insertTweet($(this), _addThread);
 	});
 }
 
 function _processFeed (xml) {
-	var container = $('#footer');
 	$($(xml).find('tweet').get().reverse()).each(function () {
-		_insertTweet(container, $(this));
+		_insertTweet($(this), _addFish);
 	});
 }
 
-function _processTweet (xml, childDivId) {
-	var container = $('#threads');
+function _processTweet (xml, childDiv) {
 	$(xml).find('tweet').each(function () {
-		var tweetDiv = _insertTweet(container, $(this));
-		var childDiv = $('#' + childDivId);
+		var tweetDiv = _insertTweet($(this), _addThread);
 		tweetDiv.append(childDiv);
 	});
 }
 
-function _insertTweet (container, tweetXml) {
-	var tweetDivId = _tweetDivId(tweetXml);
-	var tweetE = $('#' + tweetDivId);
-	var fresh = false;
-	if (tweetE.length < 1) {
-		fresh = true;
-		tweetE = _tweetElement(tweetXml);
-	}
+function _insertTweet (tweetXml, addFnc) {
+	var tweetE = _existingTweetElement(_tweetId(tweetXml));
+	var fresh = tweetE ? false : true;
+	if (fresh) tweetE = _newTweetElement(tweetXml);
 
-	var parentDivId = _tweetParentDivId(tweetXml);
-	var parentE = parentDivId != null ? $('#' + parentDivId) : null;
+	var parentId = _tweetParentId(tweetXml);
+	var parentE = parentId != null ? _existingTweetElement(parentId) : null;
 	if (parentE != null && parentE.length > 0 && !tweetE.is(parentE.children())) {
 		parentE.append(tweetE);
-		tweetE.data('replyId', parentDivId);
-		_promoteTweet(parentDivId, parentE);
+		tweetE.data('replyId', parentId);
+		_promoteTweet(parentId, parentE);
 		tweetE.show('slow', _layoutThreads);
 	}
 	else if (fresh) {
-		container.prepend(tweetE);
+		addFnc(tweetE);
 		tweetE.stop().delay(500).show('slow', _layoutThreads);
 
-		if (parentDivId != null) {
-			fetchTweet(_tweetParentId(tweetXml), tweetDivId);
+		if (parentId != null) {
+			fetchTweet(_tweetParentId(tweetXml), tweetE);
 		}
 	}
 	return tweetE;
 }
 
+function _addThread (tweetE) { // Add to thread area.
+	tweetE.data('inThread', true);
+	divThreads.prepend(tweetE);
+}
+
+function _addFish (tweetE) { // Add to footer / sea area.
+	divFooter.prepend(tweetE);
+}
+
 function _promoteTweet (tweetId, tweetE) {
-	if (!(tweetE.data('replyId')) && $('#threads #' + tweetId).length < 1) {
+	if (!(tweetE.data('replyId')) && !(tweetE.data('inThread'))) {
 		tweetE.hide('slow', function () {
-			$('#threads').prepend(tweetE);
+			_addThread(tweetE);
 			tweetE.show('slow', _layoutThreads);
 		});
 	}
@@ -156,15 +164,17 @@ function _promoteTweet (tweetId, tweetE) {
 function _layoutThreads () {
 	// Only fire masonry when we have finished other animations.
 	// Lowest count gets in 1, not 0.
-	// TODO use Modernizr to allow fall-back to jquery animation?
+	if ($(".tweet:animated").length !== 1) return;
+	
+	_sortThreads();
+	
 	if (!getUrlVars()['masonry']) return;
-	if ($(".tweet:animated").length === 1) {
-		$(function () {
-			$('#threads').masonry({
-				itemSelector : '#threads>.tweet'
-			});
+	// TODO use Modernizr to allow fall-back to jquery animation?
+	$(function () {
+		divThreads.masonry({
+			itemSelector : '#threads>.tweet'
 		});
-	}
+	});
 }
 
 function _sortThreads () {
@@ -191,7 +201,13 @@ function _dateThread (headTweet) {
 	return retDate;
 }
 
-function _tweetElement (tweetXml) {
+var _allTweetElements = {};
+
+function _existingTweetElement (tweetId) {
+	return _allTweetElements[tweetId];
+}
+
+function _newTweetElement (tweetXml) {
 	var userSpan = $('<span class="user">').text(tweetXml.attr('user') + ': ');
 	var msgSpan = $('<span class="msg">').text(tweetXml.children('body').text());
 
@@ -203,21 +219,29 @@ function _tweetElement (tweetXml) {
 	tweetDiv.attr('id', _tweetDivId(tweetXml));
 	tweetDiv.data('date', _tweetDate(tweetXml));
 	tweetDiv.append(text);
+
+	_allTweetElements[_tweetId(tweetXml)] = tweetDiv;
 	return tweetDiv;
 }
 
 function _tweetDivId (tweetXml) {
-	return 't' + tweetXml.attr('id');
+	return 't' + _tweetId(tweetXml);
+}
+
+function _tweetId (tweetXml) {
+	return tweetXml.attr('id');
 }
 
 function _tweetParentDivId (tweetXml) {
 	var id = _tweetParentId(tweetXml);
-	if (id == '0') return null;
+	if (id == null) return null;
 	return 't' + id;
 }
 
 function _tweetParentId (tweetXml) {
-	return tweetXml.attr('rid');
+	var id = tweetXml.attr('rid');
+	if (id == '0') return null;
+	return id;
 }
 
 function _tweetDate (tweetXml) {
