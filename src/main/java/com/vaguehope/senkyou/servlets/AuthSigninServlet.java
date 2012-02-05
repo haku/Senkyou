@@ -1,7 +1,5 @@
 package com.vaguehope.senkyou.servlets;
 
-import static com.vaguehope.senkyou.servlets.ServletHelper.resetSession;
-
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -24,7 +22,9 @@ public class AuthSigninServlet extends AuthServlet {
 
 	@Override
 	protected void doGet (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resetSession(req);
+//		resetSession(req);
+		req.getSession().setAttribute(SESSION_TWITTER, null);
+		req.getSession().setAttribute(SESSION_REQUEST_TOKEN, null);
 
 		Twitter twitter = TwitterConfigHelper.getLocalUser();
 		if (twitter == null) {
@@ -37,7 +37,9 @@ public class AuthSigninServlet extends AuthServlet {
 			try {
 				RequestToken token = twitter.getOAuthRequestToken(callbackUrl.toString());
 				req.getSession().setAttribute(SESSION_REQUEST_TOKEN, token);
-				resp.sendRedirect(token.getAuthenticationURL());
+				String authenticationURL = token.getAuthenticationURL();
+				LOG.info("Redirecting to: " + authenticationURL);
+				resp.sendRedirect(authenticationURL);
 			}
 			catch (TwitterException e) {
 				throw new ServletException(e);
