@@ -28,3 +28,8 @@ function parseDate (dateString) {
 	// month is 0 to 11.
 	return new Date(Date.UTC(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5], 0));
 }
+
+function em (input) {
+	var emSize = parseFloat($("body").css("font-size"));
+	return (emSize * input);
+}

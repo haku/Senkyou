@@ -1,10 +1,12 @@
 var _jobCount = 0;
 
+var columnMinWidth;
 var pStatusBar;
 var divThreads;
 var divFooter;
 
 function initMain () {
+	columnMinWidth = em(21);
 	pStatusBar = $('#statbar');
 	divThreads = $('#threads');
 	divFooter = $('#footer');
@@ -169,9 +171,12 @@ function _layoutThreads () {
 	_sortThreads();
 
 	if (!getUrlVars()['masonry']) return;
-	$(function () { // Is this needed every time?
+	$(function () { // TODO Is this needed every time?
 		divThreads.masonry({
-			itemSelector : '#threads>.tweet'
+		itemSelector : '#threads>.tweet',
+		columnWidth : function (containerWidth) {
+			return Math.floor(containerWidth / Math.floor(containerWidth / columnMinWidth));
+		}
 		// TODO use Modernizr to allow fall-back to jquery animation?
 		});
 	});
