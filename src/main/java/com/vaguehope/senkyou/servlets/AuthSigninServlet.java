@@ -37,7 +37,11 @@ public class AuthSigninServlet extends AuthServlet {
 			try {
 				RequestToken token = twitter.getOAuthRequestToken(callbackUrl.toString());
 				req.getSession().setAttribute(SESSION_REQUEST_TOKEN, token);
+				
 				String authenticationURL = token.getAuthenticationURL();
+				if (authenticationURL.toLowerCase().startsWith("http://")) {
+					authenticationURL = authenticationURL.replaceFirst("http", "https");
+				}
 				LOG.info("Redirecting to: " + authenticationURL);
 				resp.sendRedirect(authenticationURL);
 			}
