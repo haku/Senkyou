@@ -101,6 +101,8 @@ public class Main {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	public static void main (String[] args) throws Exception { // NOSONAR Exception is throw by Server.start().
+		System.setProperty("twitter4j.http.useSSL", "true");
+		
 		Main m = new Main();
 		m.join();
 	}

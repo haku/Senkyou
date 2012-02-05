@@ -75,7 +75,7 @@ public enum TweetFeeds implements HttpProcessor, TweetFeed {
 	private static final String CONTEXT_FEEDS_BASE = "/feeds/";
 	
 	void procFeed (TweetFeed feed, long count, HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-		Twitter twitter = AuthServlet.getTwitterOrSetError(req, resp);
+		Twitter twitter = AuthServlet.getSessionTwitterOrSetError(req, resp);
 		if (twitter == null) return;
 		
 		try {

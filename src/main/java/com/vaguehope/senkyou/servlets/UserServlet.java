@@ -21,7 +21,7 @@ public class UserServlet extends HttpServlet {
 	
 	@Override
 	protected void doGet (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		Twitter twitter = AuthServlet.getTwitterOrSetError(req, resp);
+		Twitter twitter = AuthServlet.getSessionTwitterOrSetError(req, resp);
 		if (twitter == null) return;
 		
 		try {

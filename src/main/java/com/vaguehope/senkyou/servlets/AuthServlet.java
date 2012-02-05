@@ -9,17 +9,39 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import twitter4j.Twitter;
+import twitter4j.auth.RequestToken;
 
 public abstract class AuthServlet extends HttpServlet {
 
-	protected static final String SESSION_TWITTER = "twitter";
-	protected static final String SESSION_REQUEST_TOKEN = "requestToken";
+	private static final String SESSION_TWITTER = "twitter";
+	private static final String SESSION_REQUEST_TOKEN = "requestToken";
 
 	protected static final String HOME_PAGE = "/";
 
 	private static final long serialVersionUID = -3997970760950061976L;
 
-	public static Twitter getTwitterOrSetError (HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	protected void clearSession (HttpServletRequest req) {
+		req.getSession().removeAttribute(SESSION_TWITTER);
+		req.getSession().removeAttribute(SESSION_REQUEST_TOKEN);
+	}
+
+	protected void setSessionRequestToken (HttpServletRequest req, RequestToken token) {
+		req.getSession().setAttribute(SESSION_REQUEST_TOKEN, token);
+	}
+
+	protected RequestToken getSessionRequestToken (HttpServletRequest req) {
+		return (RequestToken) req.getSession().getAttribute(SESSION_REQUEST_TOKEN);
+	}
+
+	protected void clearSessionRequestToken (HttpServletRequest req) {
+		req.getSession().removeAttribute(SESSION_REQUEST_TOKEN);
+	}
+
+	protected void setSessionTwitter (HttpServletRequest req, Twitter twitter) {
+		req.getSession().setAttribute(SESSION_TWITTER, twitter);
+	}
+
+	public static Twitter getSessionTwitterOrSetError (HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		Object rawTwitter = req.getSession().getAttribute(SESSION_TWITTER);
 
 		if (rawTwitter != null) {
