@@ -15,7 +15,8 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import com.vaguehope.senkyou.reporter.JvmReporter;
 import com.vaguehope.senkyou.reporter.Reporter;
 import com.vaguehope.senkyou.reporter.SessionReporter;
-import com.vaguehope.senkyou.servlets.AuthServlet;
+import com.vaguehope.senkyou.servlets.AuthCallbackServlet;
+import com.vaguehope.senkyou.servlets.AuthSigninServlet;
 import com.vaguehope.senkyou.servlets.HttpProcessor;
 import com.vaguehope.senkyou.servlets.ProcessorServlet;
 import com.vaguehope.senkyou.servlets.TweetFeeds;
@@ -54,7 +55,8 @@ public class Main {
 		sessionManager.addEventListener(sessionReporter);
 
 		// Servlets.
-		servletHandler.addServlet(new ServletHolder(new AuthServlet()), AuthServlet.CONTEXT_SPEC);
+		servletHandler.addServlet(new ServletHolder(new AuthSigninServlet()), AuthSigninServlet.CONTEXT);
+		servletHandler.addServlet(new ServletHolder(new AuthCallbackServlet()), AuthCallbackServlet.CONTEXT);
 		servletHandler.addServlet(new ServletHolder(new UserServlet()), UserServlet.CONTEXT);
 		for (HttpProcessor proc : TweetFeeds.values()) {
 			ProcessorServlet tweetServlet = new ProcessorServlet(proc);

@@ -4,7 +4,7 @@ function _showPromptSignin () {
 	if ($('#signin').length < 1) {
 		$('#threads').append($('<div class="menu-holder">')
 				.append($('<div id="signin" class="menu-box">').append($('<p>')
-						.append($('<a href="/auth">').text("sign in")))));
+						.append($('<a href="/signin">').text("sign in")))));
 	}
 }
 
