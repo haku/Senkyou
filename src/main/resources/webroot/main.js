@@ -165,16 +165,17 @@ function _layoutThreads () {
 	// Only fire masonry when we have finished other animations.
 	// Lowest count gets in 1, not 0.
 	if ($(".tweet:animated").length !== 1) return;
-	
+
 	_sortThreads();
-	
+
 	if (!getUrlVars()['masonry']) return;
-	// TODO use Modernizr to allow fall-back to jquery animation?
-	$(function () {
+	$(function () { // Is this needed every time?
 		divThreads.masonry({
 			itemSelector : '#threads>.tweet'
+		// TODO use Modernizr to allow fall-back to jquery animation?
 		});
 	});
+	divThreads.masonry('reload');
 }
 
 function _sortThreads () {
