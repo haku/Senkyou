@@ -55,6 +55,11 @@ body {
 	opacity: 0.9;
 }
 
+#threads {
+	/* Stop Masonry from overlapping footer. */
+	z-index: -1;
+}
+
 .tweet { /* All tweets. */
 	padding: 0em;
 }

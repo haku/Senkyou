@@ -2,7 +2,7 @@ var _jobCount = 0;
 
 function _showPromptSignin () {
 	if ($('#signin').length < 1) {
-		$('#threads').append($('<div class="menu-holder">')
+		$('#threads').prepend($('<div class="menu-holder">')
 				.append($('<div id="signin" class="menu-box">').append($('<p>')
 						.append($('<a href="/signin">').text("sign in")))));
 	}
@@ -131,11 +131,11 @@ function _insertTweet (container, tweetXml) {
 		parentE.append(tweetE);
 		tweetE.data('replyId', parentDivId);
 		_promoteTweet(parentDivId, parentE);
-		tweetE.show('slow');
+		tweetE.show('slow', _layoutThreads);
 	}
 	else if (fresh) {
 		container.prepend(tweetE);
-		tweetE.stop().delay(500).show('slow');
+		tweetE.stop().delay(500).show('slow', _layoutThreads);
 
 		if (parentDivId != null) {
 			fetchTweet(_tweetParentId(tweetXml), tweetDivId);
@@ -148,7 +148,21 @@ function _promoteTweet (tweetId, tweetE) {
 	if (!(tweetE.data('replyId')) && $('#threads #' + tweetId).length < 1) {
 		tweetE.hide('slow', function () {
 			$('#threads').prepend(tweetE);
-			tweetE.show('slow');
+			tweetE.show('slow', _layoutThreads);
+		});
+	}
+}
+
+function _layoutThreads () {
+	// Only fire masonry when we have finished other animations.
+	// Lowest count gets in 1, not 0.
+	// TODO use Modernizr to allow fall-back to jquery animation?
+	if (!getUrlVars()['masonry']) return;
+	if ($(".tweet:animated").length === 1) {
+		$(function () {
+			$('#threads').masonry({
+				itemSelector : '#threads>.tweet'
+			});
 		});
 	}
 }
