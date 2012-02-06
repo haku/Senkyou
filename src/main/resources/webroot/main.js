@@ -173,10 +173,10 @@ function _layoutThreads () {
 	if (!getUrlVars()['masonry']) return;
 	$(function () { // TODO Is this needed every time?
 		divThreads.masonry({
-		itemSelector : '#threads>.tweet',
-		columnWidth : function (containerWidth) {
-			return Math.floor(containerWidth / Math.floor(containerWidth / columnMinWidth));
-		}
+			itemSelector : '#threads>.tweet'
+		//, columnWidth : function (containerWidth) {
+		//	return Math.floor(containerWidth / Math.floor(containerWidth / columnMinWidth));
+		//}
 		// TODO use Modernizr to allow fall-back to jquery animation?
 		});
 	});
