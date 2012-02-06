@@ -31,4 +31,8 @@ public final class TweetCacheFactory {
 		return CACHE.get(Long.valueOf(t.getId()));
 	}
 	
+	public static long getCount () {
+		return CACHE.size();
+	}
+	
 }

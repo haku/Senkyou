@@ -15,6 +15,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import com.vaguehope.senkyou.reporter.JvmReporter;
 import com.vaguehope.senkyou.reporter.Reporter;
 import com.vaguehope.senkyou.reporter.SessionReporter;
+import com.vaguehope.senkyou.reporter.UserReporter;
 import com.vaguehope.senkyou.servlets.AuthCallbackServlet;
 import com.vaguehope.senkyou.servlets.AuthSigninServlet;
 import com.vaguehope.senkyou.servlets.HttpProcessor;
@@ -42,7 +43,7 @@ public class Main {
 	public Main () throws Exception { // NOSONAR Exception is throw by Server.start().
 		// Reporting.
 		SessionReporter sessionReporter = new SessionReporter();
-		Reporter reporter = new Reporter(new JvmReporter(), sessionReporter);
+		Reporter reporter = new Reporter(new JvmReporter(), sessionReporter, new UserReporter());
 		reporter.start();
 		
 		// Servlet container.
