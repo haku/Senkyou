@@ -28,7 +28,7 @@ public class TweetCache {
 	private final Cache<Long, Tweet> tweetCache = CacheBuilder.newBuilder()
 			.maximumSize(Config.TWEET_CACHE_MAX_COUNT)
 			.softValues()
-			.expireAfterAccess(Config.TWEET_CACHE_MAX_AGE, TimeUnit.MINUTES)
+			.expireAfterAccess(Config.TWEET_CACHE_MAX_AGE_MIN, TimeUnit.MINUTES)
 			.build();
 
 	private final AtomicReference<TweetList> homeTimeline = new AtomicReference<TweetList>();
@@ -50,11 +50,11 @@ public class TweetCache {
 	}
 
 	public TweetList getHomeTimeline (Twitter t, int minCount) throws TwitterException {
-		return getTweetList(t, TwitterFeeds.HOME_TIMELINE, this.homeTimelineLock, this.homeTimeline, minCount, Config.HOME_TIMELINE_MAX_AGE);
+		return getTweetList(t, TwitterFeeds.HOME_TIMELINE, this.homeTimelineLock, this.homeTimeline, minCount, Config.HOME_TIMELINE_MAX_AGE_MS);
 	}
 
 	public TweetList getMentions (Twitter t, int minCount) throws TwitterException {
-		return getTweetList(t, TwitterFeeds.MENTIONS, this.mentionsTimelineLock, this.mentionsTimeline, minCount, Config.MENTIONS_MAX_AGE);
+		return getTweetList(t, TwitterFeeds.MENTIONS, this.mentionsTimelineLock, this.mentionsTimeline, minCount, Config.MENTIONS_MAX_AGE_MS);
 	}
 
 	public TweetList getTweet (Twitter t, long n) {
@@ -120,6 +120,7 @@ public class TweetCache {
 	}
 
 	private static Tweet fetchTweetViaCache (final Twitter twitter, final Long lid, Cache<Long, Tweet> cache) {
+		// Optimistic locking.
 		Tweet tweet = cache.getIfPresent(lid);
 		if (tweet == null || tweet.isExpiredPlaceholder()) {
 			tweet = fetchTweetOrErrObj(twitter, lid);

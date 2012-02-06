@@ -70,7 +70,7 @@ public class Tweet {
 	}
 	
 	public boolean isExpiredPlaceholder () {
-		return this.placeholder && (System.currentTimeMillis() - this.fetchtime) > Config.TWEET_FETCH_RETRY_WAIT;
+		return this.placeholder && (System.currentTimeMillis() - this.fetchtime) > Config.TWEET_FETCH_RETRY_WAIT_MS;
 	}
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

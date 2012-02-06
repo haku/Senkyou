@@ -8,13 +8,13 @@ public interface Config {
 	
 	// General feed fetching.
 	int TWEET_FETCH_PAGE_SIZE = 40;
-	long TWEET_FETCH_RETRY_WAIT = 60000L; // 60 seconds.
+	long TWEET_FETCH_RETRY_WAIT_MS = 60000L; // 60 seconds.
 	
 	// All per user.
-	long HOME_TIMELINE_MAX_AGE = 30000L; // 30 seconds.
-	long MENTIONS_MAX_AGE = 30000L; // 30 seconds.
+	long HOME_TIMELINE_MAX_AGE_MS = 30000L; // 30 seconds.
+	long MENTIONS_MAX_AGE_MS = 30000L; // 30 seconds.
 	int TWEET_CACHE_MAX_COUNT = 100;
-	int TWEET_CACHE_MAX_AGE = 60; // 60 minutes.
+	int TWEET_CACHE_MAX_AGE_MIN = 60; // 60 minutes.
 	
 	// Feed lengths.
 	int HOME_TIMELINE_LENGTH = 40;
