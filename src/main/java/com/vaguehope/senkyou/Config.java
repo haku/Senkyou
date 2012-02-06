@@ -4,7 +4,7 @@ public interface Config {
 	
 	// Users.
 	int USER_COUNT_MAX = 100;
-	int USER_AGE_MAX = 10; // 10 minutes.
+	int USER_AGE_MAX_MIN = 10; // 10 minutes.
 	
 	// General feed fetching.
 	int TWEET_FETCH_PAGE_SIZE = 40;

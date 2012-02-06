@@ -18,7 +18,7 @@ public final class TweetCacheFactory {
 	private static final LoadingCache<Long, TweetCache> CACHE = CacheBuilder.newBuilder()
 			.maximumSize(Config.USER_COUNT_MAX)
 			.softValues()
-			.expireAfterAccess(Config.USER_AGE_MAX, TimeUnit.MINUTES)
+			.expireAfterAccess(Config.USER_AGE_MAX_MIN, TimeUnit.MINUTES)
 			.build(new CacheLoader<Long, TweetCache>() {
 				@Override
 				public TweetCache load (Long id) throws ExecutionException {
