@@ -1,8 +1,6 @@
 package com.vaguehope.senkyou.twitter;
 
 import java.util.Date;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -18,7 +16,6 @@ import twitter4j.TwitterException;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.vaguehope.senkyou.Config;
 import com.vaguehope.senkyou.model.Tweet;
 import com.vaguehope.senkyou.model.TweetList;
@@ -123,28 +120,27 @@ public class TweetCache {
 	}
 
 	private static Tweet fetchTweetViaCache (final Twitter twitter, final Long lid, Cache<Long, Tweet> cache) {
-		try {
-			return cache.get(lid, new Callable<Tweet>() {
-				@Override
-				public Tweet call () throws TwitterException {
-					try {
-						return fetchTweet(twitter, lid.longValue());
-					}
-					catch (TwitterException e) {
-						String msg;
-						if (e.getStatusCode() == HttpServletResponse.SC_NOT_FOUND) {
-							msg = "[deleted]";
-						}
-						else {
-							msg = e.getMessage();
-						}
-						return deadTweet(lid.longValue(), "[unknown]", msg);
-					}
-				}
-			});
+		Tweet tweet = cache.getIfPresent(lid);
+		if (tweet == null || tweet.isExpiredPlaceholder()) {
+			tweet = fetchTweetOrErrObj(twitter, lid);
+			cache.put(lid, tweet);
 		}
-		catch (ExecutionException e) {
-			throw new UncheckedExecutionException(e);
+		return tweet;
+	}
+
+	private static Tweet fetchTweetOrErrObj (final Twitter twitter, final Long lid) {
+		try {
+			return fetchTweet(twitter, lid.longValue());
+		}
+		catch (TwitterException e) {
+			String msg;
+			if (e.getStatusCode() == HttpServletResponse.SC_NOT_FOUND) {
+				msg = "[deleted]";
+			}
+			else {
+				msg = e.getMessage();
+			}
+			return deadTweet(lid.longValue(), "[unknown]", msg);
 		}
 	}
 
@@ -165,6 +161,7 @@ public class TweetCache {
 
 	protected static Tweet deadTweet (long id, String user, String msg) {
 		Tweet t = new Tweet();
+		t.markAsPlaceholder();
 		t.setId(id);
 		t.setCreatedAt(new Date());
 		t.setBody(msg);

@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.common.primitives.Longs;
+import com.vaguehope.senkyou.Config;
 
 @XmlRootElement(name = "tweet")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -30,6 +31,9 @@ public class Tweet {
 	@XmlAttribute(name = "created") private volatile Date createdAt;
 	@XmlElement(name = "body") private volatile String body;
 	@XmlElement(name = "tweet") private volatile Set<Tweet> replies;
+	
+	private volatile boolean placeholder = false;
+	private volatile long fetchtime;
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
@@ -65,6 +69,10 @@ public class Tweet {
 		return this.replies;
 	}
 	
+	public boolean isExpiredPlaceholder () {
+		return this.placeholder && (System.currentTimeMillis() - this.fetchtime) > Config.TWEET_FETCH_RETRY_WAIT;
+	}
+	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
 	public void setId (long id) {
@@ -94,6 +102,11 @@ public class Tweet {
 	public boolean addReply (Tweet reply) {
 		if (this.replies == null) this.replies = Collections.synchronizedSet(new LinkedHashSet<Tweet>());
 		return this.replies.add(reply);
+	}
+	
+	public void markAsPlaceholder () {
+		this.placeholder = true;
+		this.fetchtime = System.currentTimeMillis();
 	}
 	
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

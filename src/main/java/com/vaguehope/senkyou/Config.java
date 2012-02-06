@@ -8,6 +8,7 @@ public interface Config {
 	
 	// General feed fetching.
 	int TWEET_FETCH_PAGE_SIZE = 40;
+	long TWEET_FETCH_RETRY_WAIT = 60000L; // 60 seconds.
 	
 	// All per user.
 	long HOME_TIMELINE_MAX_AGE = 30000L; // 30 seconds.
