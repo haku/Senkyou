@@ -1,0 +1,5 @@
+== Senkyou ==
+
+Proof-of-concept threaded Twitter client.
+Example can be seen running here: [http://faeryland.net]
+
