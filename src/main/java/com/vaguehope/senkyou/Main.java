@@ -28,7 +28,7 @@ public class Main {
 
 	private static final int ACCEPTORS = 2;
 	private static final int MAX_IDLE_TIME_MS = 25000; // 25 seconds in milliseconds.
-	private static final int SESSION_INACTIVE_TIMEOUT_SECONDS = 15 * 60; // 15 minutes in seconds.
+	private static final int SESSION_INACTIVE_TIMEOUT_SECONDS = 60 * 60; // 60 minutes in seconds.
 	private static final int LOW_RESOURCES_CONNECTIONS = 100;
 	private static final int LOW_RESOURCES_MAX_IDLE_TIME_MS = 5000; // 5 seconds in milliseconds.
 
