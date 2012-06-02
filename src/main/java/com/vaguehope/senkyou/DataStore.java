@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
 
 import redis.clients.jedis.Jedis;
@@ -18,6 +19,7 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
 import com.vaguehope.senkyou.model.UserData;
+import com.vaguehope.senkyou.servlets.CookieHelper;
 import com.vaguehope.senkyou.twitter.TwitterConfigHelper;
 
 public class DataStore {
@@ -52,14 +54,14 @@ public class DataStore {
 		}
 	}
 
-	public void putUserData (String sessionId, Twitter t) throws TwitterException {
+	public void putUserData (HttpServletRequest req, Twitter t) throws TwitterException {
 		JedisPool jedisPool = this.pool.get();
 		Jedis jedis = jedisPool.getResource();
 		try {
 			ByteArrayOutputStream data = new ByteArrayOutputStream();
 			PrintWriter dataPrinter = new PrintWriter(data);
 			new UserData(t.getOAuthAccessToken()).toXml(dataPrinter);
-			jedis.set(sessionId, data.toString());
+			jedis.set(req.getSession().getId(), data.toString());
 		}
 		catch (JAXBException e) {
 			throw new IllegalStateException(e);
@@ -69,7 +71,8 @@ public class DataStore {
 		}
 	}
 
-	public Twitter getUser (String sessionId) {
+	public Twitter getUser (HttpServletRequest req) {
+		String sessionId = CookieHelper.getExtraSessionId(req);
 		if (sessionId == null) return null;
 		JedisPool jedisPool = this.pool.get();
 		Jedis jedis = jedisPool.getResource();

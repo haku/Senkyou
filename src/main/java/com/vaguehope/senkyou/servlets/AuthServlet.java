@@ -53,7 +53,7 @@ public abstract class AuthServlet extends HttpServlet {
 		Object rawTwitter = req.getSession().getAttribute(SESSION_TWITTER);
 		if (rawTwitter != null) return (Twitter) rawTwitter;
 
-		Twitter twitter = ds.getUser(CookieHelper.getExtraSessionId(req));
+		Twitter twitter = ds.getUser(req);
 		if (twitter != null) return twitter;
 
 		error(resp, HttpServletResponse.SC_UNAUTHORIZED, "Not signed into Twitter.");

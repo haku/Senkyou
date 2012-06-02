@@ -29,7 +29,7 @@ public class AuthSigninServlet extends AuthServlet {
 
 		Twitter twitter = TwitterConfigHelper.getLocalUser();
 		if (twitter == null) {
-			twitter = this.dataStore.getUser(CookieHelper.getExtraSessionId(req));
+			twitter = this.dataStore.getUser(req);
 			if (twitter == null) {
 				twitter = TwitterConfigHelper.getTwitter();
 				

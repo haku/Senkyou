@@ -34,7 +34,7 @@ public class AuthCallbackServlet extends AuthServlet {
 			clearSessionRequestToken(req);
 			CookieHelper.addExtraSessionCookie(req, resp);
 			resp.sendRedirect(req.getContextPath() + HOME_PAGE);
-			this.dataStore.putUserData(req.getSession().getId(), twitter);
+			this.dataStore.putUserData(req, twitter);
 		}
 		catch (TwitterException e) {
 			throw new ServletException(e);
