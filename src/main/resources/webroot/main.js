@@ -265,7 +265,7 @@ function _newTweetElement (tweetXml) {
 	link.append(userSpan);
 	link.append(msgSpan);
 	link.click(function (event) {
-		event.preventDefault;
+		event.preventDefault();
 		alert("tweet clicked: " + tweetId);
 	});
 
