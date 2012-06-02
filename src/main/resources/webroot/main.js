@@ -259,9 +259,12 @@ function _newTweetElement (tweetXml) {
 	var userSpan = $('<span class="user">').text(tweetXml.attr('user') + ': ');
 	var msgSpan = $('<span class="msg">').text(tweetXml.children('body').text());
 
-	var text = $('<a>');
-	text.append(userSpan);
-	text.append(msgSpan);
+	var link = $('<a href="/">');
+	link.append(userSpan);
+	link.append(msgSpan);
+
+	var text = $('<p>');
+	text.append(link);
 
 	var tweetDiv = $('<div class="tweet" style="display: none">');
 	tweetDiv.attr('id', _tweetDivId(tweetXml));
