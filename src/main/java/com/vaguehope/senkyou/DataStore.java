@@ -56,8 +56,9 @@ public class DataStore {
 		JedisPool jedisPool = this.pool.get();
 		Jedis jedis = jedisPool.getResource();
 		try {
-			PrintWriter data = new PrintWriter(new ByteArrayOutputStream());
-			new UserData(t.getOAuthAccessToken()).toXml(data);
+			ByteArrayOutputStream data = new ByteArrayOutputStream();
+			PrintWriter dataPrinter = new PrintWriter(data);
+			new UserData(t.getOAuthAccessToken()).toXml(dataPrinter);
 			jedis.set(sessionId, data.toString());
 		}
 		catch (JAXBException e) {
