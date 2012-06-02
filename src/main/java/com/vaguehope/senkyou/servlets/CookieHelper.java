@@ -13,7 +13,9 @@ public class CookieHelper {
 	}
 
 	public static String getExtraSessionId (HttpServletRequest req) {
-		for (Cookie c : req.getCookies()) {
+		Cookie[] cookies = req.getCookies();
+		if (cookies == null) return null;
+		for (Cookie c : cookies) {
 			if (SENKYOU_SESSION.equals(c.getName())) return c.getValue();
 		}
 		return null;
