@@ -61,7 +61,9 @@ public class DataStore {
 			ByteArrayOutputStream data = new ByteArrayOutputStream();
 			PrintWriter dataPrinter = new PrintWriter(data);
 			new UserData(t.getOAuthAccessToken()).toXml(dataPrinter);
-			jedis.set(req.getSession().getId(), data.toString());
+			String key = req.getSession().getId();
+			jedis.set(key, data.toString());
+			jedis.expire(key, Config.DATASTORE_SESSION_EXPIRY);
 		}
 		catch (JAXBException e) {
 			throw new IllegalStateException(e);

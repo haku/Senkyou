@@ -31,6 +31,9 @@ public interface Config {
 
 	// Session cookie.
 	String COOKIE_SENKYOU_SESSION = "SenkyouSession";
-	int COOKIE_EXPIRY = 60 * 60 * 72; // 3 days.
+	int COOKIE_EXPIRY = 60 * 60 * 24 * 3; // 3 days in seconds.
+
+	// Session data store.
+	int DATASTORE_SESSION_EXPIRY = 60 * 60 * 24 * 3; // 3 days in seconds.
 
 }
