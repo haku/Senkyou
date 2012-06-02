@@ -53,7 +53,7 @@ public class DataStore {
 			jedisPool.returnResource(jedis);
 		}
 	}
-	
+
 	public Twitter getUserAuth (HttpSession httpSession) {
 		JedisPool jedisPool = this.pool.get();
 		Jedis jedis = jedisPool.getResource();
@@ -71,8 +71,6 @@ public class DataStore {
 		finally {
 			jedisPool.returnResource(jedis);
 		}
-		
-		
 	}
 
 }

@@ -51,12 +51,10 @@ public abstract class AuthServlet extends HttpServlet {
 
 	public static Twitter getSessionTwitterOrSetError (HttpServletRequest req, HttpServletResponse resp, DataStore ds) throws IOException {
 		Object rawTwitter = req.getSession().getAttribute(SESSION_TWITTER);
+		if (rawTwitter != null) return (Twitter) rawTwitter;
 
-		if (rawTwitter != null) {
-			return (Twitter) rawTwitter;
-		}
-
-		ds.getUserAuth(req.getSession());
+		Twitter twitter = ds.getUserAuth(req.getSession());
+		if (twitter != null) return twitter;
 
 		error(resp, HttpServletResponse.SC_UNAUTHORIZED, "Not signed into Twitter.");
 		return null;
