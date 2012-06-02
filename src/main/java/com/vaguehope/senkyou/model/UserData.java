@@ -11,21 +11,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import twitter4j.auth.AccessToken;
 
-@XmlRootElement(name = "userAuth")
+@XmlRootElement(name = "userData")
 @XmlAccessorType(XmlAccessType.NONE)
-public class UserAuth {
+public class UserData {
 
 	@XmlAttribute private long created;
-	@XmlAttribute private long userId;
 	@XmlAttribute private String screenName;
 	@XmlAttribute private String token;
 	@XmlAttribute private String tokenSecret;
 
-	public UserAuth () {}
+	public UserData () {}
 
-	public UserAuth (AccessToken at) {
+	public UserData (AccessToken at) {
 		this.created = System.currentTimeMillis();
-		this.userId = at.getUserId();
 		this.screenName = at.getScreenName();
 		this.token = at.getToken();
 		this.tokenSecret = at.getTokenSecret();
@@ -33,10 +31,6 @@ public class UserAuth {
 
 	public long getCreated () {
 		return this.created;
-	}
-
-	public long getUserId () {
-		return this.userId;
 	}
 
 	public String getScreenName () {
@@ -51,12 +45,12 @@ public class UserAuth {
 		Model.getMarshaller().marshal(this, writer);
 	}
 
-	public static UserAuth fromXml (String s) throws JAXBException {
+	public static UserData fromXml (String s) throws JAXBException {
 		return fromXml(Model.stringToInputStream(s));
 	}
 
-	public static UserAuth fromXml (InputStream is) throws JAXBException {
-		return UserAuth.class.cast(Model.getUnmarshaller().unmarshal(is));
+	public static UserData fromXml (InputStream is) throws JAXBException {
+		return UserData.class.cast(Model.getUnmarshaller().unmarshal(is));
 	}
 
 }

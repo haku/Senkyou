@@ -6,11 +6,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.vaguehope.senkyou.DataStore;
-
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.auth.RequestToken;
+
+import com.vaguehope.senkyou.DataStore;
 
 public class AuthCallbackServlet extends AuthServlet {
 
@@ -33,7 +33,8 @@ public class AuthCallbackServlet extends AuthServlet {
 			twitter.getOAuthAccessToken(requestToken, verifier);
 			clearSessionRequestToken(req);
 			resp.sendRedirect(req.getContextPath() + HOME_PAGE);
-			this.dataStore.putUserAuth(req.getSession(), twitter);
+			this.dataStore.putUserData(req.getSession().getId(), twitter);
+			CookieHelper.addExtraSessionCookie(req, resp);
 		}
 		catch (TwitterException e) {
 			throw new ServletException(e);

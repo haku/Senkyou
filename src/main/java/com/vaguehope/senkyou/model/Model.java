@@ -17,7 +17,7 @@ public final class Model {
 			TweetList.class,
 			Tweet.class,
 			User.class,
-			UserAuth.class
+			UserData.class
 	};
 
 	static final String ENCODING = "UTF-8";
