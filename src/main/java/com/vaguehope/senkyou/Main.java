@@ -12,6 +12,7 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+import com.vaguehope.senkyou.reporter.DataStoreReporter;
 import com.vaguehope.senkyou.reporter.JvmReporter;
 import com.vaguehope.senkyou.reporter.Reporter;
 import com.vaguehope.senkyou.reporter.SessionReporter;
@@ -44,19 +45,19 @@ public class Main {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	public Main () throws Exception { // NOSONAR Exception is throw by Server.start().
-		// Reporting.
-		SessionReporter sessionReporter = new SessionReporter();
-		Reporter reporter = new Reporter(new JvmReporter(), sessionReporter, new UserReporter());
-		reporter.start();
-		
 		// Data store.
 		DataStore ds = new DataStore();
 		ds.start();
-		
+
+		// Reporting.
+		SessionReporter sessionReporter = new SessionReporter();
+		Reporter reporter = new Reporter(new JvmReporter(), sessionReporter, new UserReporter(), new DataStoreReporter(ds));
+		reporter.start();
+
 		// Servlet container.
 		ServletContextHandler servletHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		servletHandler.setContextPath("/");
-		
+
 		// Session management.
 		SessionManager sessionManager = servletHandler.getSessionHandler().getSessionManager();
 		sessionManager.setMaxInactiveInterval(SESSION_INACTIVE_TIMEOUT_SECONDS);
@@ -101,7 +102,7 @@ public class Main {
 		this.server.start();
 		LOG.info("Server ready on port " + portString + ".");
 	}
-	
+
 	private void addProcessorServlet (ServletContextHandler servletHandler, HttpProcessor proc) {
 		ProcessorServlet tweetServlet = new ProcessorServlet(proc);
 		servletHandler.addServlet(new ServletHolder(tweetServlet), tweetServlet.getContext());
@@ -113,9 +114,10 @@ public class Main {
 
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-	public static void main (String[] args) throws Exception { // NOSONAR Exception is throw by Server.start().
+	public static void main (String[] args) throws Exception { // NOSONAR Exception is throw by
+// Server.start().
 		System.setProperty("twitter4j.http.useSSL", "true");
-		
+
 		Main m = new Main();
 		m.join();
 	}

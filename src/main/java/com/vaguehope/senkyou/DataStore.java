@@ -37,6 +37,17 @@ public class DataStore {
 			throw new IllegalStateException();
 		}
 	}
+	
+	public void report (StringBuilder r) {
+		JedisPool jedisPool = this.pool.get();
+		Jedis jedis = jedisPool.getResource();
+		try {
+			r.append(jedis.dbSize()).append(" Redis entries.");
+		}
+		finally {
+			jedisPool.returnResource(jedis);
+		}
+	}
 
 	public void putUserAuth (HttpSession httpSession, Twitter t) throws TwitterException {
 		JedisPool jedisPool = this.pool.get();
