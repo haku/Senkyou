@@ -105,11 +105,9 @@ public class DataStore {
 		Twitter twitter = TwitterConfigHelper.getTwitter();
 		twitter.setOAuthAccessToken(user.getAccessToken());
 		try {
-			synchronized (req.getSession(true)) { // FIXME is this valid?
-				if (twitter.verifyCredentials() != null) {
-					putUserData(req, twitter);
-					return twitter;
-				}
+			if (twitter.verifyCredentials() != null) {
+				putUserData(req, twitter);
+				return twitter;
 			}
 		}
 		catch (TwitterException e) {
