@@ -84,7 +84,11 @@ public class DataStore {
 				Twitter twitter = TwitterConfigHelper.getTwitter();
 				twitter.setOAuthAccessToken(user.getAccessToken());
 				try {
-					if (twitter.verifyCredentials() != null) return twitter;
+					if (twitter.verifyCredentials() != null) {
+						putUserData(req, twitter); // Write against new session.
+						jedis.del(sessionId);      // And delete old.
+						return twitter;
+					}
 				}
 				catch (TwitterException e) {
 					// Do not care.
