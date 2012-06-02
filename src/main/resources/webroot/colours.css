@@ -63,6 +63,14 @@ a:active,a:hover {
 	color: #8CD5FF;
 }
 
+#threads .tweet p:hover {
+	background: #2E2336;
+}
+
+#footer .tweet p:hover {
+	background: #1A2940;
+}
+
 #threads>.tweet { /* Top-level tweets. */
 	border-top: 1px solid #494780;
 	border-left: 1px solid #494780;
