@@ -162,10 +162,20 @@ function _promoteTweet (tweetId, tweetE) {
 	}
 }
 
+var _layoutThreadsWaiting = false;
 function _layoutThreads () {
+	if (_layoutThreadsWaiting) return;
+	_layoutThreadsWaiting = true;
+	setTimeout(function () {
+		_doLayoutThreads();
+		_layoutThreadsWaiting = false;
+	}, 2);
+}
+
+function _doLayoutThreads () {
 	// Only fire masonry when we have finished other animations.
 	// Lowest count gets in 1, not 0.
-	if ($(".tweet:animated").length !== 1) return;
+	if (jQuery.fx.off = false && $(".tweet:animated").length !== 1) return;
 
 	$('#threads .tweet').each(function () {
 		_sortThread($(this));
