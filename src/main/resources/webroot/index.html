@@ -14,10 +14,12 @@
 
 <script type="text/javascript">
 	$(document).ready(function () {
+		jQuery.fx.off = true;
 		initMain();
 		fetchFeeds(true);
 		fetchUsername();
 		setInterval(function () {
+			jQuery.fx.off = false;
 			fetchFeeds();
 		}, 60000);
 	});
