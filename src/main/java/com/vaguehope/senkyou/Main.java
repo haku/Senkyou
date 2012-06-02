@@ -18,9 +18,12 @@ import com.vaguehope.senkyou.reporter.SessionReporter;
 import com.vaguehope.senkyou.reporter.UserReporter;
 import com.vaguehope.senkyou.servlets.AuthCallbackServlet;
 import com.vaguehope.senkyou.servlets.AuthSigninServlet;
+import com.vaguehope.senkyou.servlets.HomeTimeLineFeed;
 import com.vaguehope.senkyou.servlets.HttpProcessor;
+import com.vaguehope.senkyou.servlets.MentionsFeed;
+import com.vaguehope.senkyou.servlets.MyRepliesFeed;
 import com.vaguehope.senkyou.servlets.ProcessorServlet;
-import com.vaguehope.senkyou.servlets.TweetFeeds;
+import com.vaguehope.senkyou.servlets.SingleTweetFeed;
 import com.vaguehope.senkyou.servlets.UserServlet;
 
 public class Main {
@@ -46,6 +49,10 @@ public class Main {
 		Reporter reporter = new Reporter(new JvmReporter(), sessionReporter, new UserReporter());
 		reporter.start();
 		
+		// Data store.
+		DataStore ds = new DataStore();
+		ds.start();
+		
 		// Servlet container.
 		ServletContextHandler servletHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		servletHandler.setContextPath("/");
@@ -58,13 +65,13 @@ public class Main {
 		sessionManager.addEventListener(sessionReporter);
 
 		// Servlets.
-		servletHandler.addServlet(new ServletHolder(new AuthSigninServlet()), AuthSigninServlet.CONTEXT);
-		servletHandler.addServlet(new ServletHolder(new AuthCallbackServlet()), AuthCallbackServlet.CONTEXT);
-		servletHandler.addServlet(new ServletHolder(new UserServlet()), UserServlet.CONTEXT);
-		for (HttpProcessor proc : TweetFeeds.values()) {
-			ProcessorServlet tweetServlet = new ProcessorServlet(proc);
-			servletHandler.addServlet(new ServletHolder(tweetServlet), tweetServlet.getContext());
-		}
+		servletHandler.addServlet(new ServletHolder(new AuthSigninServlet(ds)), AuthSigninServlet.CONTEXT);
+		servletHandler.addServlet(new ServletHolder(new AuthCallbackServlet(ds)), AuthCallbackServlet.CONTEXT);
+		servletHandler.addServlet(new ServletHolder(new UserServlet(ds)), UserServlet.CONTEXT);
+		addProcessorServlet(servletHandler, new HomeTimeLineFeed(ds));
+		addProcessorServlet(servletHandler, new MyRepliesFeed(ds));
+		addProcessorServlet(servletHandler, new MentionsFeed(ds));
+		addProcessorServlet(servletHandler, new SingleTweetFeed(ds));
 
 		// Static files on classpath.
 		ResourceHandler resourceHandler = new ResourceHandler();
@@ -93,6 +100,11 @@ public class Main {
 		this.server.addConnector(connector);
 		this.server.start();
 		LOG.info("Server ready on port " + portString + ".");
+	}
+	
+	private void addProcessorServlet (ServletContextHandler servletHandler, HttpProcessor proc) {
+		ProcessorServlet tweetServlet = new ProcessorServlet(proc);
+		servletHandler.addServlet(new ServletHolder(tweetServlet), tweetServlet.getContext());
 	}
 
 	public void join () throws InterruptedException {

@@ -10,6 +10,7 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.auth.RequestToken;
 
+import com.vaguehope.senkyou.DataStore;
 import com.vaguehope.senkyou.twitter.TwitterConfigHelper;
 
 public class AuthSigninServlet extends AuthServlet {
@@ -17,6 +18,10 @@ public class AuthSigninServlet extends AuthServlet {
 	public static final String CONTEXT = "/signin";
 
 	private static final long serialVersionUID = 3223481188324574439L;
+
+	public AuthSigninServlet (DataStore dataStore) {
+		super(dataStore);
+	}
 
 	@Override
 	protected void doGet (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

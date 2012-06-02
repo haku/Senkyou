@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.vaguehope.senkyou.DataStore;
+
 import twitter4j.Twitter;
 import twitter4j.auth.RequestToken;
 
@@ -19,6 +21,12 @@ public abstract class AuthServlet extends HttpServlet {
 	protected static final String HOME_PAGE = "/";
 
 	private static final long serialVersionUID = -3997970760950061976L;
+
+	protected final DataStore dataStore;
+
+	public AuthServlet (DataStore dataStore) {
+		this.dataStore = dataStore;
+	}
 
 	protected void clearSession (HttpServletRequest req) {
 		req.getSession().removeAttribute(SESSION_TWITTER);
@@ -41,12 +49,14 @@ public abstract class AuthServlet extends HttpServlet {
 		req.getSession().setAttribute(SESSION_TWITTER, twitter);
 	}
 
-	public static Twitter getSessionTwitterOrSetError (HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	public static Twitter getSessionTwitterOrSetError (HttpServletRequest req, HttpServletResponse resp, DataStore ds) throws IOException {
 		Object rawTwitter = req.getSession().getAttribute(SESSION_TWITTER);
 
 		if (rawTwitter != null) {
 			return (Twitter) rawTwitter;
 		}
+
+		ds.getUserAuth(req.getSession());
 
 		error(resp, HttpServletResponse.SC_UNAUTHORIZED, "Not signed into Twitter.");
 		return null;
