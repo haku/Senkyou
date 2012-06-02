@@ -32,9 +32,9 @@ public class AuthCallbackServlet extends AuthServlet {
 			String verifier = req.getParameter("oauth_verifier");
 			twitter.getOAuthAccessToken(requestToken, verifier);
 			clearSessionRequestToken(req);
+			CookieHelper.addExtraSessionCookie(req, resp);
 			resp.sendRedirect(req.getContextPath() + HOME_PAGE);
 			this.dataStore.putUserData(req.getSession().getId(), twitter);
-			CookieHelper.addExtraSessionCookie(req, resp);
 		}
 		catch (TwitterException e) {
 			throw new ServletException(e);
