@@ -15,7 +15,7 @@ import com.vaguehope.senkyou.model.TweetList;
 import com.vaguehope.senkyou.twitter.TweetCache;
 import com.vaguehope.senkyou.twitter.TweetFeed;
 
-public class MyRepliesFeed extends TweetFeeds implements HttpProcessor, TweetFeed {
+public class MyRepliesFeed extends AbstractTweetFeed implements HttpProcessor, TweetFeed {
 
 	public MyRepliesFeed (DataStore dataStore) {
 		super(dataStore);

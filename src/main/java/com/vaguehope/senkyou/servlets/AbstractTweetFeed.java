@@ -16,13 +16,13 @@ import com.vaguehope.senkyou.twitter.TweetCache;
 import com.vaguehope.senkyou.twitter.TweetCacheFactory;
 import com.vaguehope.senkyou.twitter.TweetFeed;
 
-public abstract class TweetFeeds implements HttpProcessor, TweetFeed {
+public abstract class AbstractTweetFeed implements HttpProcessor, TweetFeed {
 
 	protected static final String CONTEXT_FEEDS_BASE = "/feeds/";
 
 	private final DataStore dataStore;
 
-	public TweetFeeds (DataStore dataStore) {
+	public AbstractTweetFeed (DataStore dataStore) {
 		this.dataStore = dataStore;
 	}
 
