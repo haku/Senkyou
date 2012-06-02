@@ -197,7 +197,7 @@ function _sortThread (tweetE) {
 }
 
 function _sortChildrenAlpha (a, b) {
-	return $(a).data('date') > $(b).data('date') ? -1 : 1;
+	return $(a).data('date') > $(b).data('date') ? 1 : -1;
 };
 
 function _dateThread (headTweet) {
