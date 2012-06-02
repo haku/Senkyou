@@ -1,6 +1,4 @@
-package com.vaguehope.senkyou.servlets;
-
-import static com.vaguehope.senkyou.servlets.ServletHelper.validatePositiveLongParam;
+package com.vaguehope.senkyou.twitter;
 
 import java.io.IOException;
 
@@ -11,32 +9,30 @@ import javax.servlet.http.HttpServletResponse;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
+import com.vaguehope.senkyou.Config;
 import com.vaguehope.senkyou.DataStore;
 import com.vaguehope.senkyou.model.TweetList;
-import com.vaguehope.senkyou.twitter.TweetCache;
-import com.vaguehope.senkyou.twitter.TweetFeed;
+import com.vaguehope.senkyou.servlets.HttpProcessor;
 
-public class SingleTweetFeed extends AbstractTweetFeed implements HttpProcessor, TweetFeed {
+public class MyRepliesFeed extends AbstractTweetFeed implements HttpProcessor, TweetFeed {
 
-	public SingleTweetFeed (DataStore dataStore) {
+	public MyRepliesFeed (DataStore dataStore) {
 		super(dataStore);
 	}
 
 	@Override
 	public void processRequest (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		long n = validatePositiveLongParam(req, resp, "n");
-		if (n < 1) return;
-		procFeed(this, n, req, resp);
+		procFeed(this, Config.MY_REPLIES_LENGTH, req, resp);
 	}
 
 	@Override
 	public String getContext () {
-		return CONTEXT_FEEDS_BASE + "tweet";
+		return CONTEXT_FEEDS_BASE + "myreplies";
 	}
 
 	@Override
 	public TweetList getTweets (Twitter t, TweetCache tc, long n) throws TwitterException {
-		return tc.getTweet(t, n);
+		return tc.getMyReplies(t, (int) n);
 	}
 
 }

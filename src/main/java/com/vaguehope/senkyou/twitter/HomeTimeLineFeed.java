@@ -1,4 +1,4 @@
-package com.vaguehope.senkyou.servlets;
+package com.vaguehope.senkyou.twitter;
 
 import java.io.IOException;
 
@@ -12,28 +12,27 @@ import twitter4j.TwitterException;
 import com.vaguehope.senkyou.Config;
 import com.vaguehope.senkyou.DataStore;
 import com.vaguehope.senkyou.model.TweetList;
-import com.vaguehope.senkyou.twitter.TweetCache;
-import com.vaguehope.senkyou.twitter.TweetFeed;
+import com.vaguehope.senkyou.servlets.HttpProcessor;
 
-public class MentionsFeed extends AbstractTweetFeed implements HttpProcessor, TweetFeed {
+public class HomeTimeLineFeed extends AbstractTweetFeed implements HttpProcessor, TweetFeed {
 
-	public MentionsFeed (DataStore dataStore) {
+	public HomeTimeLineFeed (DataStore dataStore) {
 		super(dataStore);
 	}
 
 	@Override
 	public void processRequest (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		procFeed(this, Config.MENTIONS_LENGTH, req, resp);
+		procFeed(this, Config.HOME_TIMELINE_LENGTH, req, resp);
 	}
-
+	
 	@Override
 	public String getContext () {
-		return CONTEXT_FEEDS_BASE + "mentions";
+		return CONTEXT_FEEDS_BASE + "home";
 	}
-
+	
 	@Override
 	public TweetList getTweets (Twitter t, TweetCache tc, long n) throws TwitterException {
-		return tc.getMentions(t, (int) n);
+		return tc.getHomeTimeline(t, (int) n);
 	}
-
+	
 }

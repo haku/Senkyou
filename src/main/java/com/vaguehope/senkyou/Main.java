@@ -19,13 +19,13 @@ import com.vaguehope.senkyou.reporter.SessionReporter;
 import com.vaguehope.senkyou.reporter.UserReporter;
 import com.vaguehope.senkyou.servlets.AuthCallbackServlet;
 import com.vaguehope.senkyou.servlets.AuthSigninServlet;
-import com.vaguehope.senkyou.servlets.HomeTimeLineFeed;
 import com.vaguehope.senkyou.servlets.HttpProcessor;
-import com.vaguehope.senkyou.servlets.MentionsFeed;
-import com.vaguehope.senkyou.servlets.MyRepliesFeed;
 import com.vaguehope.senkyou.servlets.ProcessorServlet;
-import com.vaguehope.senkyou.servlets.SingleTweetFeed;
 import com.vaguehope.senkyou.servlets.UserServlet;
+import com.vaguehope.senkyou.twitter.HomeTimeLineFeed;
+import com.vaguehope.senkyou.twitter.MentionsFeed;
+import com.vaguehope.senkyou.twitter.MyRepliesFeed;
+import com.vaguehope.senkyou.twitter.SingleTweetFeed;
 
 public class Main {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

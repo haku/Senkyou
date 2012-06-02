@@ -1,4 +1,4 @@
-package com.vaguehope.senkyou.servlets;
+package com.vaguehope.senkyou.twitter;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -12,9 +12,8 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
 import com.vaguehope.senkyou.DataStore;
-import com.vaguehope.senkyou.twitter.TweetCache;
-import com.vaguehope.senkyou.twitter.TweetCacheFactory;
-import com.vaguehope.senkyou.twitter.TweetFeed;
+import com.vaguehope.senkyou.servlets.AuthServlet;
+import com.vaguehope.senkyou.servlets.HttpProcessor;
 
 public abstract class AbstractTweetFeed implements HttpProcessor, TweetFeed {
 
