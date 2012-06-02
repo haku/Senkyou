@@ -261,7 +261,7 @@ function _newTweetElement (tweetXml) {
 
 	var tweetId = _tweetDivId(tweetXml);
 
-	var link = $('<a href="/">');
+	var link = $('<a href="#">');
 	link.append(userSpan);
 	link.append(msgSpan);
 	link.click(function (event) {
