@@ -45,7 +45,7 @@ public abstract class AuthServlet extends HttpServlet {
 		req.getSession().removeAttribute(SESSION_REQUEST_TOKEN);
 	}
 
-	protected void setSessionTwitter (HttpServletRequest req, Twitter twitter) {
+	protected static void setSessionTwitter (HttpServletRequest req, Twitter twitter) {
 		req.getSession().setAttribute(SESSION_TWITTER, twitter);
 	}
 
@@ -54,7 +54,10 @@ public abstract class AuthServlet extends HttpServlet {
 		if (rawTwitter != null) return (Twitter) rawTwitter;
 
 		Twitter twitter = ds.getUser(req, resp);
-		if (twitter != null) return twitter;
+		if (twitter != null) {
+			setSessionTwitter(req, twitter);
+			return twitter;
+		}
 
 		error(resp, HttpServletResponse.SC_UNAUTHORIZED, "Not signed into Twitter.");
 		return null;
