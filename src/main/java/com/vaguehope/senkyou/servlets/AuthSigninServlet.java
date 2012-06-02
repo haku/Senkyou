@@ -29,18 +29,24 @@ public class AuthSigninServlet extends AuthServlet {
 
 		Twitter twitter = TwitterConfigHelper.getLocalUser();
 		if (twitter == null) {
-			twitter = TwitterConfigHelper.getTwitter();
-
-			StringBuffer callbackUrl = req.getRequestURL();
-			callbackUrl.replace(callbackUrl.lastIndexOf("/"), callbackUrl.length(), "").append(AuthCallbackServlet.CONTEXT);
-
-			try {
-				RequestToken token = twitter.getOAuthRequestToken(callbackUrl.toString());
-				setSessionRequestToken(req, token);
-				resp.sendRedirect(token.getAuthenticationURL());
+			twitter = this.dataStore.getUser(CookieHelper.getExtraSessionId(req));
+			if (twitter == null) {
+				twitter = TwitterConfigHelper.getTwitter();
+				
+				StringBuffer callbackUrl = req.getRequestURL();
+				callbackUrl.replace(callbackUrl.lastIndexOf("/"), callbackUrl.length(), "").append(AuthCallbackServlet.CONTEXT);
+				
+				try {
+					RequestToken token = twitter.getOAuthRequestToken(callbackUrl.toString());
+					setSessionRequestToken(req, token);
+					resp.sendRedirect(token.getAuthenticationURL());
+				}
+				catch (TwitterException e) {
+					throw new ServletException(e);
+				}
 			}
-			catch (TwitterException e) {
-				throw new ServletException(e);
+			else {
+				resp.sendRedirect(req.getContextPath() + HOME_PAGE);
 			}
 		}
 		else {

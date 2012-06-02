@@ -36,7 +36,7 @@ public class DataStore {
 			throw new IllegalStateException();
 		}
 	}
-	
+
 	public void report (StringBuilder r) {
 		JedisPool jedisPool = this.pool.get();
 		Jedis jedis = jedisPool.getResource();
@@ -74,7 +74,14 @@ public class DataStore {
 			UserData user = UserData.fromXml(data);
 			Twitter twitter = TwitterConfigHelper.getTwitter();
 			twitter.setOAuthAccessToken(user.getAccessToken());
-			return twitter;
+			try {
+				if (twitter.verifyCredentials() != null) return twitter;
+			}
+			catch (TwitterException e) {
+				// Do not care.
+			}
+			jedis.del(sessionId);
+			return null;
 		}
 		catch (JAXBException e) {
 			throw new IllegalStateException(e);
