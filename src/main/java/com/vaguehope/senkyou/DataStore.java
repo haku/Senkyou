@@ -84,7 +84,8 @@ public class DataStore {
 			return null;
 		}
 		catch (JAXBException e) {
-			throw new IllegalStateException(e);
+			jedis.del(sessionId);
+			return null;
 		}
 		finally {
 			jedisPool.returnResource(jedis);
