@@ -27,7 +27,7 @@ function _processUser (xml) {
 	$('#user').text(user);
 }
 
-function fetchFeeds () {
+function fetchFeeds (first) {
 	if (_jobCount > 0) {
 		console.log('fetchers in progress', _jobCount);
 		return;
@@ -35,7 +35,7 @@ function fetchFeeds () {
 
 	_fetchAajx('/feeds/home', _processFeed);
 	_fetchAajx('/feeds/mentions', _processThreadFeed);
-	_fetchAajx('/feeds/myreplies', _processThreadFeed);
+	if (first === true) _fetchAajx('/feeds/myreplies', _processThreadFeed);
 }
 
 function fetchTweet (tweetId, childDiv) {
