@@ -13,11 +13,13 @@ public interface Config {
 	// All per user.
 	long HOME_TIMELINE_MAX_AGE_MS = 30000L; // 30 seconds.
 	long MENTIONS_MAX_AGE_MS = 30000L; // 30 seconds.
+	long ME_MAX_AGE_MS = 30000L; // 30 seconds.
 	int TWEET_CACHE_MAX_COUNT = 100;
 	int TWEET_CACHE_MAX_AGE_MIN = 60; // 60 minutes.
 	
 	// Feed lengths.
 	int HOME_TIMELINE_LENGTH = 40;
 	int MENTIONS_LENGTH = 15;
+	long MY_REPLIES_LENGTH = 10;
 	
 }

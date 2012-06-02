@@ -19,6 +19,17 @@ public enum TwitterFeeds implements TwitterFeed {
 			return t.getHomeTimeline(paging);
 		}
 	},
+	ME {
+		@Override
+		public String getName () {
+			return "me";
+		}
+
+		@Override
+		public ResponseList<Status> getTweets (Twitter t, Paging paging) throws TwitterException {
+			return t.getUserTimeline(paging);
+		}
+	},
 	MENTIONS {
 		@Override
 		public String getName () {

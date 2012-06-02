@@ -52,6 +52,22 @@ public enum TweetFeeds implements HttpProcessor, TweetFeed {
 			return tc.getMentions(t, (int) n);
 		}
 	},
+	MY_REPLIES {
+		@Override
+		public void processRequest (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			procFeed(this, Config.MY_REPLIES_LENGTH, req, resp);
+		}
+
+		@Override
+		public String getContext () {
+			return CONTEXT_FEEDS_BASE + "myreplies";
+		}
+
+		@Override
+		public TweetList getTweets (Twitter t, TweetCache tc, long n) throws TwitterException {
+			return tc.getMyReplies(t, (int) n);
+		}
+	},
 	TWEET {
 		@Override
 		public void processRequest (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

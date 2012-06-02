@@ -35,6 +35,7 @@ function fetchFeeds () {
 
 	_fetchAajx('/feeds/home', _processFeed);
 	_fetchAajx('/feeds/mentions', _processThreadFeed);
+	_fetchAajx('/feeds/myreplies', _processThreadFeed);
 }
 
 function fetchTweet (tweetId, childDiv) {

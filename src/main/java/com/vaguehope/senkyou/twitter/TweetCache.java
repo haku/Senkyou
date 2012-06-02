@@ -36,6 +36,9 @@ public class TweetCache {
 
 	private final AtomicReference<TweetList> mentionsTimeline = new AtomicReference<TweetList>();
 	private final ReadWriteLock mentionsTimelineLock = new ReentrantReadWriteLock();
+	
+	private final AtomicReference<TweetList> meTimeline = new AtomicReference<TweetList>();
+	private final ReadWriteLock meTimelineLock = new ReentrantReadWriteLock();
 
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -56,12 +59,26 @@ public class TweetCache {
 	public TweetList getMentions (Twitter t, int minCount) throws TwitterException {
 		return getTweetList(t, TwitterFeeds.MENTIONS, this.mentionsTimelineLock, this.mentionsTimeline, minCount, Config.MENTIONS_MAX_AGE_MS);
 	}
+	
+	public TweetList getMe (Twitter t, int minCount) throws TwitterException {
+		return getTweetList(t, TwitterFeeds.ME, this.meTimelineLock, this.meTimeline, minCount, Config.ME_MAX_AGE_MS);
+	}
 
 	public TweetList getTweet (Twitter t, long n) {
 		Tweet tweet = fetchTweetViaCache(t, Long.valueOf(n), this.tweetCache);
 		TweetList ret = new TweetList();
 		ret.addTweet(tweet);
 		return ret;
+	}
+
+	public TweetList getMyReplies (Twitter t, int minCount) throws TwitterException {
+		TweetList me = getMe(t, minCount);
+		// TODO move this logic lower down?
+		TweetList myReplies = new TweetList();
+		for (Tweet tweet : me.getTweets()) {
+			if (tweet.getInReplyId() > 0L) myReplies.addTweet(tweet);
+		}
+		return myReplies;
 	}
 
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
