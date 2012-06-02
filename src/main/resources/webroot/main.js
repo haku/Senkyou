@@ -131,10 +131,7 @@ function _insertTweet (tweetXml, addFnc) {
 		parentE.append(tweetE);
 		tweetE.data('replyId', parentId);
 		_promoteTweet(parentId, parentE);
-		tweetE.show('slow', function () {
-			_sortThread(parentE);
-			_layoutThreads();
-		});
+		tweetE.show('slow', _layoutThreads);
 	}
 	else if (fresh) {
 		addFnc(tweetE);
@@ -170,6 +167,9 @@ function _layoutThreads () {
 	// Lowest count gets in 1, not 0.
 	if ($(".tweet:animated").length !== 1) return;
 
+	$('#threads .tweet').each(function (tweetE) {
+		_sortThread(tweetE);
+	});
 	_sortThreads();
 
 	if (!getUrlVars()['masonry']) return;
