@@ -259,15 +259,21 @@ function _newTweetElement (tweetXml) {
 	var userSpan = $('<span class="user">').text(tweetXml.attr('user') + ': ');
 	var msgSpan = $('<span class="msg">').text(tweetXml.children('body').text());
 
+	var tweetId = _tweetDivId(tweetXml);
+
 	var link = $('<a href="/">');
 	link.append(userSpan);
 	link.append(msgSpan);
+	link.click(function (event) {
+		event.preventDefault;
+		alert("tweet clicked: " + tweetId);
+	});
 
 	var text = $('<p>');
 	text.append(link);
 
 	var tweetDiv = $('<div class="tweet" style="display: none">');
-	tweetDiv.attr('id', _tweetDivId(tweetXml));
+	tweetDiv.attr('id', tweetId);
 	tweetDiv.data('date', _tweetDate(tweetXml));
 	tweetDiv.append(text);
 
