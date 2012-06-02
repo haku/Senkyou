@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
 
 import redis.clients.jedis.Jedis;
@@ -73,40 +74,49 @@ public class DataStore {
 		}
 	}
 
-	public Twitter getUser (HttpServletRequest req) {
-		String sessionId = CookieHelper.getExtraSessionId(req);
+	public Twitter getUser (HttpServletRequest req, HttpServletResponse resp) {
+		String sessionId = CookieHelper.getExtraSessionId(req, resp);
 		if (sessionId == null) return null;
 		JedisPool jedisPool = this.pool.get();
 		Jedis jedis = jedisPool.getResource();
 		try {
-			String data = jedis.get(sessionId);
-			if (data == null) return null;
-			try {
-				UserData user = UserData.fromXml(data);
-				Twitter twitter = TwitterConfigHelper.getTwitter();
-				twitter.setOAuthAccessToken(user.getAccessToken());
-				try {
-					if (twitter.verifyCredentials() != null) {
-						putUserData(req, twitter); // Write against new session.
-						jedis.del(sessionId);      // And delete old.
-						return twitter;
-					}
-				}
-				catch (TwitterException e) {
-					// Do not care.
-				}
-				jedis.del(sessionId);
-				return null;
-			}
-			catch (JAXBException e) {
-				LOG.log(Level.WARNING, "Failed to parse data: '" + data + "'.", e);
-				jedis.del(sessionId);
-				return null;
-			}
+			return getUser(req, sessionId, jedis);
 		}
 		finally {
 			jedisPool.returnResource(jedis);
 		}
+	}
+
+	private Twitter getUser (HttpServletRequest req, String sessionId, Jedis jedis) {
+		String data = jedis.get(sessionId);
+		if (data == null) return null;
+		try {
+			UserData user = UserData.fromXml(data);
+			return getUser(req, sessionId, jedis, user);
+		}
+		catch (JAXBException e) {
+			LOG.log(Level.WARNING, "Failed to parse data: '" + data + "'.", e);
+			jedis.del(sessionId);
+			return null;
+		}
+	}
+
+	private Twitter getUser (HttpServletRequest req, String sessionId, Jedis jedis, UserData user) {
+		Twitter twitter = TwitterConfigHelper.getTwitter();
+		twitter.setOAuthAccessToken(user.getAccessToken());
+		try {
+			synchronized (req.getSession(true)) { // FIXME is this valid?
+				if (twitter.verifyCredentials() != null) {
+					putUserData(req, twitter);
+					return twitter;
+				}
+			}
+		}
+		catch (TwitterException e) {
+			// Do not care.
+		}
+		jedis.del(sessionId);
+		return null;
 	}
 
 }

@@ -14,12 +14,13 @@ public class CookieHelper {
 		resp.addCookie(cookie);
 	}
 
-	public static String getExtraSessionId (HttpServletRequest req) {
+	public static String getExtraSessionId (HttpServletRequest req, HttpServletResponse resp) {
 		Cookie[] cookies = req.getCookies();
 		if (cookies == null) return null;
 		for (Cookie c : cookies) {
 			if (Config.COOKIE_SENKYOU_SESSION.equals(c.getName())) return c.getValue();
 		}
+		CookieHelper.addExtraSessionCookie(req, resp);
 		return null;
 	}
 
