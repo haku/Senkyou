@@ -7,10 +7,11 @@ import javax.servlet.http.HttpServletResponse;
 public class CookieHelper {
 
 	private static final String SENKYOU_SESSION = "SenkyouSession";
+	private static final int EXPIRY = 60 * 60 * 72; // 3 days.
 
 	public static void addExtraSessionCookie (HttpServletRequest req, HttpServletResponse resp) {
 		Cookie cookie = new Cookie(SENKYOU_SESSION, req.getSession().getId());
-		cookie.setMaxAge(60 * 60 * 72); // 3 days.  TODO extract var.
+		cookie.setMaxAge(EXPIRY);
 		resp.addCookie(cookie);
 	}
 
