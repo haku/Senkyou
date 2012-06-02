@@ -55,7 +55,7 @@ a:active,a:hover {
 	background: #211B25;
 }
 
-.tweet {
+.tweet p,.tweet a {
 	color: #B5B3FF;
 }
 
@@ -64,8 +64,8 @@ a:active,a:hover {
 }
 
 .tweet a { text-decoration: none; }
-#threads .tweet a:hover, #threads .tweet a:active { background: #2E2336; }
-#footer .tweet a:hover, #footer .tweet a:active { background: #1A2940; }
+#threads .tweet a:hover,#threads .tweet a:active { background: #2E2336; }
+#footer .tweet a:hover,#footer .tweet a:active { background: #1A2940; }
 
 #threads>.tweet { /* Top-level tweets. */
 	border-top: 1px solid #494780;
