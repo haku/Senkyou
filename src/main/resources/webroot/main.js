@@ -131,11 +131,12 @@ function _insertTweet (tweetXml, addFnc) {
 		parentE.append(tweetE);
 		tweetE.data('replyId', parentId);
 		_promoteTweet(parentId, parentE);
-		tweetE.show('slow', _layoutThreads);
+		_scheduleReveal(tweetE);
 	}
 	else if (fresh) {
 		addFnc(tweetE);
-		tweetE.stop().delay(500).show('slow', _layoutThreads);
+		tweetE.stop();
+		_scheduleReveal(tweetE);
 
 		if (parentId != null) {
 			fetchTweet(_tweetParentId(tweetXml), tweetE);
@@ -159,6 +160,30 @@ function _promoteTweet (tweetId, tweetE) {
 			_addThread(tweetE);
 			tweetE.show('slow', _layoutThreads);
 		});
+	}
+}
+
+var _toRevealQueue = [];
+
+function _scheduleReveal (element) {
+	_toRevealQueue.push(element);
+	_reveal();
+}
+
+var _revealWaiting = false;
+function _reveal () {
+	if (_revealWaiting) return;
+	_revealWaiting = true;
+	setTimeout(function () {
+		_doReveal();
+		_revealWaiting = false;
+	}, 2);
+}
+
+function _doReveal () {
+	var e;
+	while (e = _revealWaiting.pop()) {
+		e.show('slow', _layoutThreads);
 	}
 }
 
