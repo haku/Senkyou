@@ -259,7 +259,7 @@ function _newTweetElement (tweetXml) {
 	var userSpan = $('<span class="user">').text(tweetXml.attr('user') + ': ');
 	var msgSpan = $('<span class="msg">').text(tweetXml.children('body').text());
 
-	var text = $('<p>');
+	var text = $('<a>');
 	text.append(userSpan);
 	text.append(msgSpan);
 
