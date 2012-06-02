@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
@@ -19,6 +21,8 @@ import com.vaguehope.senkyou.model.UserData;
 import com.vaguehope.senkyou.twitter.TwitterConfigHelper;
 
 public class DataStore {
+
+	private static final Logger LOG = Logger.getLogger(DataStore.class.getName());
 
 	private final AtomicReference<JedisPool> pool = new AtomicReference<JedisPool>();
 
@@ -71,21 +75,24 @@ public class DataStore {
 		try {
 			String data = jedis.get(sessionId);
 			if (data == null) return null;
-			UserData user = UserData.fromXml(data);
-			Twitter twitter = TwitterConfigHelper.getTwitter();
-			twitter.setOAuthAccessToken(user.getAccessToken());
 			try {
-				if (twitter.verifyCredentials() != null) return twitter;
+				UserData user = UserData.fromXml(data);
+				Twitter twitter = TwitterConfigHelper.getTwitter();
+				twitter.setOAuthAccessToken(user.getAccessToken());
+				try {
+					if (twitter.verifyCredentials() != null) return twitter;
+				}
+				catch (TwitterException e) {
+					// Do not care.
+				}
+				jedis.del(sessionId);
+				return null;
 			}
-			catch (TwitterException e) {
-				// Do not care.
+			catch (JAXBException e) {
+				LOG.log(Level.WARNING, "Failed to parse data: '" + data + "'.", e);
+				jedis.del(sessionId);
+				return null;
 			}
-			jedis.del(sessionId);
-			return null;
-		}
-		catch (JAXBException e) {
-			jedis.del(sessionId);
-			return null;
 		}
 		finally {
 			jedisPool.returnResource(jedis);
