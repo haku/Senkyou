@@ -30,12 +30,6 @@ import com.vaguehope.senkyou.servlets.UserServlet;
 public class Main {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-	private static final int ACCEPTORS = 2;
-	private static final int MAX_IDLE_TIME_MS = 25000; // 25 seconds in milliseconds.
-	private static final int SESSION_INACTIVE_TIMEOUT_SECONDS = 60 * 60; // 60 minutes in seconds.
-	private static final int LOW_RESOURCES_CONNECTIONS = 100;
-	private static final int LOW_RESOURCES_MAX_IDLE_TIME_MS = 5000; // 5 seconds in milliseconds.
-
 	private static final Logger LOG = Logger.getLogger(Main.class.getName());
 
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -60,8 +54,8 @@ public class Main {
 
 		// Session management.
 		SessionManager sessionManager = servletHandler.getSessionHandler().getSessionManager();
-		sessionManager.setMaxInactiveInterval(SESSION_INACTIVE_TIMEOUT_SECONDS);
-		sessionManager.setMaxCookieAge(SESSION_INACTIVE_TIMEOUT_SECONDS);
+		sessionManager.setMaxInactiveInterval(Config.SERVER_SESSION_INACTIVE_TIMEOUT_SECONDS);
+		sessionManager.setMaxCookieAge(Config.SERVER_SESSION_INACTIVE_TIMEOUT_SECONDS);
 		sessionManager.setSessionIdPathParameterName(null);
 		sessionManager.addEventListener(sessionReporter);
 
@@ -88,11 +82,11 @@ public class Main {
 		// Listening connector.
 		String portString = System.getenv("PORT"); // Heroko pattern.
 		SelectChannelConnector connector = new SelectChannelConnector();
-		connector.setMaxIdleTime(MAX_IDLE_TIME_MS);
-		connector.setAcceptors(ACCEPTORS);
+		connector.setMaxIdleTime(Config.SERVER_MAX_IDLE_TIME_MS);
+		connector.setAcceptors(Config.SERVER_ACCEPTORS);
 		connector.setStatsOn(false);
-		connector.setLowResourcesConnections(LOW_RESOURCES_CONNECTIONS);
-		connector.setLowResourcesMaxIdleTime(LOW_RESOURCES_MAX_IDLE_TIME_MS);
+		connector.setLowResourcesConnections(Config.SERVER_LOW_RESOURCES_CONNECTIONS);
+		connector.setLowResourcesMaxIdleTime(Config.SERVER_LOW_RESOURCES_MAX_IDLE_TIME_MS);
 		connector.setPort(Integer.parseInt(portString));
 
 		// Start server.

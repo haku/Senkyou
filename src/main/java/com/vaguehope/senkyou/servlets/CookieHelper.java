@@ -4,14 +4,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.vaguehope.senkyou.Config;
+
 public class CookieHelper {
 
-	private static final String SENKYOU_SESSION = "SenkyouSession";
-	private static final int EXPIRY = 60 * 60 * 72; // 3 days.
-
 	public static void addExtraSessionCookie (HttpServletRequest req, HttpServletResponse resp) {
-		Cookie cookie = new Cookie(SENKYOU_SESSION, req.getSession().getId());
-		cookie.setMaxAge(EXPIRY);
+		Cookie cookie = new Cookie(Config.COOKIE_SENKYOU_SESSION, req.getSession().getId());
+		cookie.setMaxAge(Config.COOKIE_EXPIRY);
 		resp.addCookie(cookie);
 	}
 
@@ -19,7 +18,7 @@ public class CookieHelper {
 		Cookie[] cookies = req.getCookies();
 		if (cookies == null) return null;
 		for (Cookie c : cookies) {
-			if (SENKYOU_SESSION.equals(c.getName())) return c.getValue();
+			if (Config.COOKIE_SENKYOU_SESSION.equals(c.getName())) return c.getValue();
 		}
 		return null;
 	}
