@@ -43,7 +43,6 @@ body {
 
 .menu-holder {
 	text-align: center;
-	width: 100%;
 	padding: 5em;
 }
 
@@ -54,6 +53,10 @@ body {
 	padding: 0.25em 3em;
 	border-radius: 10px;
 	opacity: 0.9;
+}
+
+.menu-box p {
+	font-size: 1.5em;
 }
 
 .tweet { /* All tweets. */
