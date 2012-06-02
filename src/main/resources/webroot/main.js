@@ -129,10 +129,12 @@ function _insertTweet (tweetXml, addFnc) {
 	var parentE = parentId != null ? _existingTweetElement(parentId) : null;
 	if (parentE != null && parentE.length > 0 && !tweetE.is(parentE.children())) {
 		parentE.append(tweetE);
-		_sortThread(parentE);
 		tweetE.data('replyId', parentId);
 		_promoteTweet(parentId, parentE);
-		tweetE.show('slow', _layoutThreads);
+		tweetE.show('slow', function () {
+			_sortThread(parentE);
+			_layoutThreads();
+		});
 	}
 	else if (fresh) {
 		addFnc(tweetE);
@@ -191,7 +193,7 @@ function _sortThreadsAlpha (a, b) {
 	return $(a).data('sortDate') > $(b).data('sortDate') ? -1 : 1;
 };
 
-// Sort a tweet's children'
+// Sort a tweet's children.
 function _sortThread (tweetE) {
 	tweetE.children('.tweet').sort(_sortChildrenAlpha).appendTo(tweetE);
 }
