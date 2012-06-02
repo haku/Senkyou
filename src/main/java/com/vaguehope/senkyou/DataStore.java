@@ -107,6 +107,7 @@ public class DataStore {
 		try {
 			if (twitter.verifyCredentials() != null) {
 				putUserData(req, twitter);
+				LOG.info("Recovered session for " + twitter.getId());
 				return twitter;
 			}
 		}
