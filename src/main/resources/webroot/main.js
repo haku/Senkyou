@@ -167,8 +167,8 @@ function _layoutThreads () {
 	// Lowest count gets in 1, not 0.
 	if ($(".tweet:animated").length !== 1) return;
 
-	$('#threads .tweet').each(function (tweetE) {
-		_sortThread(tweetE);
+	$('#threads .tweet').each(function () {
+		_sortThread($(this));
 	});
 	_sortThreads();
 
