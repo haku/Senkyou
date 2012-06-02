@@ -9,7 +9,9 @@ public class CookieHelper {
 	private static final String SENKYOU_SESSION = "SenkyouSession";
 
 	public static void addExtraSessionCookie (HttpServletRequest req, HttpServletResponse resp) {
-		resp.addCookie(new Cookie(SENKYOU_SESSION, req.getSession().getId()));
+		Cookie cookie = new Cookie(SENKYOU_SESSION, req.getSession().getId());
+		cookie.setMaxAge(60 * 60 * 72); // 3 days.  TODO extract var.
+		resp.addCookie(cookie);
 	}
 
 	public static String getExtraSessionId (HttpServletRequest req) {
