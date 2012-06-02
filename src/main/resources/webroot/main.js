@@ -182,7 +182,7 @@ function _reveal () {
 
 function _doReveal () {
 	var e;
-	while (e = _revealWaiting.pop()) {
+	while (e = _toRevealQueue.pop()) {
 		e.show('slow', _layoutThreads);
 	}
 }
