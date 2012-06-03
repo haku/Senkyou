@@ -8,6 +8,7 @@ function initMain () {
 	pStatusBar = $('#statbar');
 	divThreads = $('#threads');
 	divFooter = $('#footer');
+	_initComposeDlg();
 }
 
 function _showPromptSignin () {
@@ -344,6 +345,6 @@ function _tweetClicked (tweetId, userName, msgBody) {
 	caption.append(intro);
 	caption.append(tweet);
 
-	dlg_compose.dlg_compose('option', 'replyId', tweetId);
+	dlg_compose.dialog('option', 'replyId', tweetId);
 	dlg_compose.dialog('open');
 }
