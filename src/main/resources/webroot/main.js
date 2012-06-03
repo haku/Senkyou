@@ -309,9 +309,10 @@ function _tweetDate (tweetXml) {
 	return parseDate(tweetXml.attr('created'));
 }
 
-var dlg_compose = $('#dlgcompose');
+var dlg_compose;
 
 function _initComposeDlg () {
+	dlg_compose = $('#dlgcompose');
 	dlg_compose.dialog({
 		autoOpen: false,
 		modal: true,
