@@ -102,3 +102,17 @@ body {
 	max-width: 20em;
 	margin: 0.25em;
 }
+
+/* ~~~ dialogue ~~~
+*/
+
+.ui-dialog fieldset {
+	padding: 0;
+	border: 0;
+}
+
+#dlgcompose .tweetbody {
+	width: 100%;
+	height: 3em;
+	padding: 0.5em;
+}

@@ -317,15 +317,17 @@ function _initComposeDlg () {
 		autoOpen: false,
 		modal: true,
 		width: 800,
-		height: 600,
+		height: 400,
 		buttons: {
 			"Tweet": function () {
-				var tweetBody = $('.tweetbody', dlg_compose).val();
+				var bodyTextbox = $('.tweetbody', dlg_compose);
+				var tweetBody = bodyTextbox.val();
 				var replyTo = dlg_compose.dlg_compose('option', 'replyId');
 				$.post("tweet", {replyTo: replyTo, tweetBody: tweetBody}, function () {
 					dlg_compose.dialog('close');
-					// TODO error handling?
+					bodyTextbox.val('');
 				});
+				// TODO error handling?
 			},
 			"Cancel": function () {
 				$(this).dialog('close');
@@ -341,6 +343,8 @@ function _tweetClicked (tweetId, userName, msgBody) {
 	var caption = $('.caption', dlg_compose).first();
 	caption.empty();
 	caption.append(tweet);
+
+	$('.tweetbody', dlg_compose).text('@' + userName + ' ');
 
 	dlg_compose.dialog('option', 'title', 'Reply to ' + userName);
 	dlg_compose.dialog('option', 'replyId', tweetId);

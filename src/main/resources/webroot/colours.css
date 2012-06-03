@@ -72,3 +72,35 @@ a:active,a:hover {
 	border-left: 1px solid #494780;
 	border-radius: 10px;
 }
+/* ~~~ Dialog ~~~
+*/
+
+.ui-widget-content {
+	background-color: #111;
+	border-color: #494780;
+	color: #B5B3FF;
+}
+
+.ui-widget-header {
+	background-color: #000;
+	border: none;
+	color: #8380E6;
+}
+
+#dlgcompose .tweetbody {
+	background-color: #000;
+}
+
+.ui-state-default, .ui-widget-content .ui-state-default {
+	background-color: #000;
+	border-color: #494780;
+	color: #B5B3FF;
+}
+
+.ui-state-hover, .ui-widget-content .ui-state-hover {
+	background-color: #222;
+}
+
+.ui-state-active, .ui-widget-content .ui-state-active {
+	background-color: #444;
+}
