@@ -315,9 +315,8 @@ function _initComposeDlg () {
 	dlg_compose = $('#dlgcompose');
 	dlg_compose.dialog({
 		autoOpen: false,
-		modal: true,
-		width: 800,
-		height: 400,
+		width: 700,
+		height: 350,
 		buttons: {
 			"Tweet": function () {
 				var bodyTextbox = $('.tweetbody', dlg_compose);
