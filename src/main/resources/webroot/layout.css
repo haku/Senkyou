@@ -106,7 +106,19 @@ body {
 /* ~~~ dialogue ~~~
 */
 
+.ui-dialog p {
+	margin: 0 0 1em 0;
+	padding: 0;
+}
+
+.ui-dialog form {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
 .ui-dialog fieldset {
+	margin: 1em 0 0 0;
 	padding: 0;
 	border: 0;
 }
