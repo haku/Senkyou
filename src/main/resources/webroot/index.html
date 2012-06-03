@@ -6,6 +6,7 @@
 	content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
 <script type="text/javascript" src="vendor/jquery-1.7.1.js"></script>
 <script type="text/javascript" src="vendor/jquery.masonry.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
 <script type="text/javascript" src="util.js"></script>
 <script type="text/javascript" src="main.js"></script>
 <link href="vendor/masonary.css" type="text/css" rel="stylesheet">
@@ -41,5 +42,14 @@
 			<div id="footer"></div>
 		</div>
 	</div>
+
+	<div id="dlgcompose" title="Compose tweet" style="display: none;">
+		<div class="caption"></div>
+		<form><fieldset>
+			<label for="message">Name</label>
+			<input type="text" name="message" class="tweetbody text ui-widget-content ui-corner-all" />
+		</fieldset></form>
+	</div>
+
 </body>
 </html>

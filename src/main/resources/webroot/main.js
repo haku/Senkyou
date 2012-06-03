@@ -257,17 +257,19 @@ function _existingTweetElement (tweetId) {
 }
 
 function _newTweetElement (tweetXml) {
-	var userSpan = $('<span class="user">').text(tweetXml.attr('user') + ': ');
-	var msgSpan = $('<span class="msg">').text(tweetXml.children('body').text());
-
 	var tweetId = _tweetDivId(tweetXml);
+	var userName = tweetXml.attr('user');
+	var msgBody = tweetXml.children('body').text();
+
+	var userSpan = $('<span class="user">').text(userName + ': ');
+	var msgSpan = $('<span class="msg">').text(msgBody);
 
 	var link = $('<a href="#">');
 	link.append(userSpan);
 	link.append(msgSpan);
 	link.click(function (event) {
 		event.preventDefault();
-		alert("tweet clicked: " + tweetId);
+		_tweetClicked(tweetId, userName, msgBody);
 	});
 
 	var text = $('<p>');
@@ -304,4 +306,44 @@ function _tweetParentId (tweetXml) {
 
 function _tweetDate (tweetXml) {
 	return parseDate(tweetXml.attr('created'));
+}
+
+var dlg_compose = $('#dlgcompose');
+
+function _initComposeDlg () {
+	dlg_compose.dialog({
+		autoOpen: false,
+		modal: true,
+		width: 400,
+		height: 250,
+		buttons: {
+			"Tweet": function () {
+				var tweetBody = $('.tweetbody', dlg_compose).val();
+				var replyTo = dlg_compose.dlg_compose('option', 'replyId');
+				$.post("tweet", {replyTo: replyTo, tweetBody: tweetBody}, function () {
+					dlg_compose.dialog('close');
+					// TODO error handling?
+				});
+			},
+			"Cancel": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
+}
+
+function _tweetClicked (tweetId, userName, msgBody) {
+	var intro = $('<p>');
+	intro.text('Tweet in reply to ' + userName + ':');
+
+	var tweet = $('<p>');
+	tweet.text(msgBody);
+
+	var caption = $('.caption', dlg_compose).first();
+	caption.empty();
+	caption.append(intro);
+	caption.append(tweet);
+
+	dlg_compose.dlg_compose('option', 'replyId', tweetId);
+	dlg_compose.dialog('open');
 }
