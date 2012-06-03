@@ -25,6 +25,7 @@ function fetchUsername () {
 function _processUser (xml) {
 	var user = $(xml).find('user').attr('screenname');
 	$('#user').text(user);
+	document.title = user + " in faeryland";
 }
 
 function fetchFeeds (first) {
