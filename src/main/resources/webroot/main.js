@@ -344,7 +344,7 @@ function _tweetClicked (tweetId, userName, msgBody) {
 	caption.empty();
 	caption.append(tweet);
 
-	$('.tweetbody', dlg_compose).text('@' + userName + ' ');
+	$('.tweetbody', dlg_compose).val('@' + userName + ' ');
 
 	dlg_compose.dialog('option', 'title', 'Reply to ' + userName);
 	dlg_compose.dialog('option', 'replyId', tweetId);
