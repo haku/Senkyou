@@ -316,8 +316,8 @@ function _initComposeDlg () {
 	dlg_compose.dialog({
 		autoOpen: false,
 		modal: true,
-		width: 400,
-		height: 250,
+		width: 800,
+		height: 600,
 		buttons: {
 			"Tweet": function () {
 				var tweetBody = $('.tweetbody', dlg_compose).val();
@@ -335,17 +335,14 @@ function _initComposeDlg () {
 }
 
 function _tweetClicked (tweetId, userName, msgBody) {
-	var intro = $('<p>');
-	intro.text('Tweet in reply to ' + userName + ':');
-
 	var tweet = $('<p>');
 	tweet.text(msgBody);
 
 	var caption = $('.caption', dlg_compose).first();
 	caption.empty();
-	caption.append(intro);
 	caption.append(tweet);
 
+	dlg_compose.dialog('option', 'title', 'Reply to ' + userName);
 	dlg_compose.dialog('option', 'replyId', tweetId);
 	dlg_compose.dialog('open');
 }
