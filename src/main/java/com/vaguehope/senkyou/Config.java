@@ -2,6 +2,9 @@ package com.vaguehope.senkyou;
 
 public interface Config {
 
+	// Layout.
+	String HOME_PAGE = "/";
+
 	// Server.
 	int SERVER_ACCEPTORS = 2;
 	int SERVER_MAX_IDLE_TIME_MS = 25000; // 25 seconds in milliseconds.

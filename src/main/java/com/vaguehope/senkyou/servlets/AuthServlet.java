@@ -18,8 +18,6 @@ public abstract class AuthServlet extends HttpServlet {
 	private static final String SESSION_TWITTER = "twitter";
 	private static final String SESSION_REQUEST_TOKEN = "requestToken";
 
-	protected static final String HOME_PAGE = "/";
-
 	private static final long serialVersionUID = -3997970760950061976L;
 
 	private transient final DataStore dataStore;

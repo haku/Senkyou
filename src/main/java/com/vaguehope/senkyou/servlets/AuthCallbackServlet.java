@@ -10,6 +10,7 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.auth.RequestToken;
 
+import com.vaguehope.senkyou.Config;
 import com.vaguehope.senkyou.DataStore;
 
 public class AuthCallbackServlet extends AuthServlet {
@@ -33,7 +34,7 @@ public class AuthCallbackServlet extends AuthServlet {
 			twitter.getOAuthAccessToken(requestToken, verifier);
 			clearSessionRequestToken(req);
 			CookieHelper.addExtraSessionCookie(req, resp);
-			resp.sendRedirect(req.getContextPath() + HOME_PAGE);
+			resp.sendRedirect(req.getContextPath() + Config.HOME_PAGE);
 			getDataStore().putUserData(req, twitter);
 		}
 		catch (TwitterException e) {

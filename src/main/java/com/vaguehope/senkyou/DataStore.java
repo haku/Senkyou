@@ -74,6 +74,18 @@ public class DataStore {
 		}
 	}
 
+	public void deleteUser (HttpServletRequest req) {
+		JedisPool jedisPool = this.pool.get();
+		Jedis jedis = jedisPool.getResource();
+		try {
+			String key = req.getSession().getId();
+			jedis.del(key);
+		}
+		finally {
+			jedisPool.returnResource(jedis);
+		}
+	}
+
 	public Twitter getUser (HttpServletRequest req, HttpServletResponse resp) {
 		String sessionId = CookieHelper.getExtraSessionId(req, resp);
 		if (sessionId == null) return null;
@@ -108,14 +120,16 @@ public class DataStore {
 			if (twitter.verifyCredentials() != null) {
 				putUserData(req, twitter);
 				LOG.info("Recovered session for " + twitter.getId());
-				return twitter;
+			}
+			else {
+				twitter = null;
 			}
 		}
 		catch (TwitterException e) {
-			// Do not care.
+			twitter = null;
 		}
 		jedis.del(sessionId);
-		return null;
+		return twitter;
 	}
 
 }

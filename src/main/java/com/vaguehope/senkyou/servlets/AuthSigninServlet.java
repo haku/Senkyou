@@ -10,6 +10,7 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.auth.RequestToken;
 
+import com.vaguehope.senkyou.Config;
 import com.vaguehope.senkyou.DataStore;
 import com.vaguehope.senkyou.twitter.TwitterConfigHelper;
 
@@ -46,11 +47,11 @@ public class AuthSigninServlet extends AuthServlet {
 				}
 			}
 			else {
-				resp.sendRedirect(req.getContextPath() + HOME_PAGE);
+				resp.sendRedirect(req.getContextPath() + Config.HOME_PAGE);
 			}
 		}
 		else {
-			resp.sendRedirect(req.getContextPath() + HOME_PAGE);
+			resp.sendRedirect(req.getContextPath() + Config.HOME_PAGE);
 		}
 
 		setSessionTwitter(req, twitter);

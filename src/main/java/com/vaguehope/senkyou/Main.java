@@ -64,7 +64,7 @@ public class Main {
 		servletHandler.addServlet(new ServletHolder(new ThreadServlet(ds)), ThreadServlet.CONTEXT);
 		servletHandler.addServlet(new ServletHolder(new HomeTimelineServlet(ds)), HomeTimelineServlet.CONTEXT);
 		servletHandler.addServlet(new ServletHolder(new TweetServlet(ds)), TweetServlet.CONTEXT);
-		servletHandler.addServlet(new ServletHolder(new SignoutServlet()), SignoutServlet.CONTEXT);
+		servletHandler.addServlet(new ServletHolder(new SignoutServlet(ds)), SignoutServlet.CONTEXT);
 
 		// Static files on classpath.
 		ResourceHandler resourceHandler = new ResourceHandler();
