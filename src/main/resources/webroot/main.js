@@ -103,11 +103,14 @@ function _fetchAajx (url, procFnc, arg) {
 }
 
 function _processThreadFeed (xml) {
-	// TODO sort list oldest-fist?
-	$(xml).find('tweet').each(function () {
+	$(xml).find('tweet').sort(_tweetSortDateAscending).each(function () {
 		_insertTweet($(this), _addThread);
 	});
 }
+
+function _tweetSortDateAscending (a, b) {
+	return _tweetDate($(a)) > _tweetDate($(b)) ? 1 : -1;
+};
 
 function _processFeed (xml) {
 	$($(xml).find('tweet').get().reverse()).each(function () {
