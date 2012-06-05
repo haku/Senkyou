@@ -37,6 +37,6 @@ public interface Config {
 	int COOKIE_EXPIRY = 60 * 60 * 24 * 3; // 3 days in seconds.
 
 	// Session data store.
-	int DATASTORE_SESSION_EXPIRY = 60 * 60 * 24 * 3; // 3 days in seconds.
+	int DATASTORE_SESSION_EXPIRY = 60 * 60 * 24; // 1 day in seconds.
 
 }
