@@ -258,7 +258,7 @@ function _newTweetElement (tweetXml) {
 	link.append(msgSpan);
 	link.click(function (event) {
 		event.preventDefault();
-		_tweetClicked(tweetId, userName, msgBody);
+		_tweetClicked(tweetId.substring(1), userName, msgBody); // Note tweetId has leading 't'.
 	});
 
 	var text = $('<p>');
