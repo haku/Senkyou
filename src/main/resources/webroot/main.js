@@ -324,6 +324,7 @@ function _initComposeDlg () {
 							bodyTextbox.val('');
 						},
 						error : function (xhr) {
+							// TODO show this to the user.
 							console.log('Sending tweet fiailed.', xhr);
 						},
 						complete : function (jqXHR, textStatus) {
