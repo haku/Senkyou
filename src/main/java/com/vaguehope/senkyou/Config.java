@@ -27,7 +27,7 @@ public interface Config {
 	// Feed lengths.
 	int HOME_TIMELINE_LENGTH = 40;
 	int MENTIONS_LENGTH = 15;
-	long MY_REPLIES_LENGTH = 10;
+	int MY_REPLIES_LENGTH = 10;
 
 	// Session cookie.
 	String COOKIE_SENKYOU_SESSION = "SenkyouSession";
