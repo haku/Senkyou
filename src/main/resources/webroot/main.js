@@ -39,10 +39,6 @@ function fetchFeeds () {
 	_fetchAajx('/feeds/threads', _processThreadFeed);
 }
 
-//function fetchTweet (tweetId, childDiv) {
-//	_fetchAajx('/feeds/tweet?n=' + tweetId, _processTweet, childDiv);
-//}
-
 function _startJob () {
 	_jobCount++;
 	_updateStatus();
@@ -118,13 +114,6 @@ function _processFeed (xml) {
 	});
 }
 
-//function _processTweet (xml, childDiv) {
-//	$(xml).find('tweet').each(function () {
-//		var tweetDiv = _insertTweet($(this), _addThread);
-//		tweetDiv.append(childDiv);
-//	});
-//}
-
 function _insertTweet (tweetXml, addFnc) {
 	var tweetE = _existingTweetElement(_tweetId(tweetXml));
 	var fresh = tweetE ? false : true;
@@ -142,10 +131,6 @@ function _insertTweet (tweetXml, addFnc) {
 		addFnc(tweetE);
 		tweetE.stop();
 		_scheduleReveal(tweetE);
-
-//		if (parentId != null) {
-//			fetchTweet(_tweetParentId(tweetXml), tweetE);
-//		}
 	}
 	return tweetE;
 }
