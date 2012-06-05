@@ -64,8 +64,8 @@ public class DataStore {
 			new UserData(t.getOAuthAccessToken()).toXml(dataPrinter);
 			String key = req.getSession().getId();
 			jedis.set(key, data.toString());
-			Long timeoutSet = jedis.expire(key, Config.DATASTORE_SESSION_EXPIRY);
-			if (timeoutSet.longValue() != 1L) LOG.warning("Failed to set Redis expiry. Response was: " + timeoutSet);
+			Long set = jedis.expire(key, Config.DATASTORE_SESSION_EXPIRY);
+			if (set == null || set.longValue() != 1L) LOG.warning("Failed to set Redis expiry. Response was: " + set);
 		}
 		catch (JAXBException e) {
 			throw new IllegalStateException(e);
