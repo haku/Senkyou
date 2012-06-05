@@ -21,6 +21,7 @@ import com.vaguehope.senkyou.servlets.AuthCallbackServlet;
 import com.vaguehope.senkyou.servlets.AuthSigninServlet;
 import com.vaguehope.senkyou.servlets.HttpProcessor;
 import com.vaguehope.senkyou.servlets.ProcessorServlet;
+import com.vaguehope.senkyou.servlets.ThreadServlet;
 import com.vaguehope.senkyou.servlets.UserServlet;
 import com.vaguehope.senkyou.twitter.HomeTimeLineFeed;
 import com.vaguehope.senkyou.twitter.MentionsFeed;
@@ -63,10 +64,11 @@ public class Main {
 		servletHandler.addServlet(new ServletHolder(new AuthSigninServlet(ds)), AuthSigninServlet.CONTEXT);
 		servletHandler.addServlet(new ServletHolder(new AuthCallbackServlet(ds)), AuthCallbackServlet.CONTEXT);
 		servletHandler.addServlet(new ServletHolder(new UserServlet(ds)), UserServlet.CONTEXT);
+		servletHandler.addServlet(new ServletHolder(new ThreadServlet(ds)), ThreadServlet.CONTEXT);
 		addProcessorServlet(servletHandler, new HomeTimeLineFeed(ds));
-		addProcessorServlet(servletHandler, new MyRepliesFeed(ds));
-		addProcessorServlet(servletHandler, new MentionsFeed(ds));
-		addProcessorServlet(servletHandler, new SingleTweetFeed(ds));
+		addProcessorServlet(servletHandler, new MyRepliesFeed(ds)); // TODO replaced by ThreadServlet?
+		addProcessorServlet(servletHandler, new MentionsFeed(ds)); // TODO replaced by ThreadServlet?
+		addProcessorServlet(servletHandler, new SingleTweetFeed(ds)); // TODO replaced by ThreadServlet?
 
 		// Static files on classpath.
 		ResourceHandler resourceHandler = new ResourceHandler();
@@ -97,7 +99,7 @@ public class Main {
 		LOG.info("Server ready on port " + portString + ".");
 	}
 
-	private void addProcessorServlet (ServletContextHandler servletHandler, HttpProcessor proc) {
+	private static void addProcessorServlet (ServletContextHandler servletHandler, HttpProcessor proc) {
 		ProcessorServlet tweetServlet = new ProcessorServlet(proc);
 		servletHandler.addServlet(new ServletHolder(tweetServlet), tweetServlet.getContext());
 	}

@@ -35,7 +35,7 @@ public class SingleTweetFeed extends AbstractTweetFeed implements HttpProcessor,
 
 	@Override
 	public TweetList getTweets (Twitter t, TweetCache tc, long n) throws TwitterException {
-		return tc.getTweet(t, n);
+		return tc.getTweetWrappedInList(t, n);
 	}
 
 }
