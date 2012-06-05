@@ -25,7 +25,7 @@ import com.vaguehope.senkyou.twitter.TweetCacheFactory;
 
 public class ThreadServlet extends HttpServlet {
 
-	public static final String CONTEXT = "/threads";
+	public static final String CONTEXT = "/feeds/threads";
 
 	private static final long serialVersionUID = 7600513438072003737L;
 
