@@ -305,21 +305,41 @@ function _initComposeDlg () {
 		autoOpen: false,
 		width: 700,
 		height: 350,
-		buttons: {
-			"Tweet": function () {
-				var bodyTextbox = $('.tweetbody', dlg_compose);
-				var tweetBody = bodyTextbox.val();
-				var replyTo = dlg_compose.dlg_compose('option', 'replyId');
-				$.post("tweet", {replyTo: replyTo, tweetBody: tweetBody}, function () {
-					dlg_compose.dialog('close');
-					bodyTextbox.val('');
-				});
-				// TODO error handling?
+		buttons: [
+			{
+				id: 'dlgbtn-tweet',
+				text: 'Tweet',
+				click: function () {
+					var bodyTextbox = $('.tweetbody', dlg_compose);
+					var body = bodyTextbox.val();
+					var replyTo = dlg_compose.dlg_compose('option', 'replyId');
+					$.ajax({
+						type : 'POST', url : '/tweet',
+						data : {replyTo: replyTo, body: body},
+						beforeSend : function () {
+							$('#dlgbtn-tweet').button('disable');
+						},
+						success : function (response) {
+							dlg_compose.dialog('close');
+							bodyTextbox.val('');
+						},
+						error : function (xhr) {
+							console.log('Sending tweet fiailed.', xhr);
+						},
+						complete : function (jqXHR, textStatus) {
+							$('#dlgbtn-tweet').button('enable');
+						}
+					});
+				}
 			},
-			"Cancel": function () {
-				$(this).dialog('close');
+			{
+				id: 'dlgbtn-cancel',
+				text: 'Cancel',
+				click: function () {
+					$(this).dialog('close');
+				}
 			}
-		}
+		]
 	});
 }
 

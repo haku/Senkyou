@@ -21,6 +21,7 @@ import com.vaguehope.senkyou.servlets.AuthCallbackServlet;
 import com.vaguehope.senkyou.servlets.AuthSigninServlet;
 import com.vaguehope.senkyou.servlets.HomeTimelineServlet;
 import com.vaguehope.senkyou.servlets.ThreadServlet;
+import com.vaguehope.senkyou.servlets.TweetServlet;
 import com.vaguehope.senkyou.servlets.UserServlet;
 
 public class Main {
@@ -61,6 +62,7 @@ public class Main {
 		servletHandler.addServlet(new ServletHolder(new UserServlet(ds)), UserServlet.CONTEXT);
 		servletHandler.addServlet(new ServletHolder(new ThreadServlet(ds)), ThreadServlet.CONTEXT);
 		servletHandler.addServlet(new ServletHolder(new HomeTimelineServlet(ds)), HomeTimelineServlet.CONTEXT);
+		servletHandler.addServlet(new ServletHolder(new TweetServlet(ds)), TweetServlet.CONTEXT);
 
 		// Static files on classpath.
 		ResourceHandler resourceHandler = new ResourceHandler();
