@@ -29,20 +29,19 @@ function _processUser (xml) {
 	document.title = user + " in faeryland";
 }
 
-function fetchFeeds (first) {
+function fetchFeeds () {
 	if (_jobCount > 0) {
 		console.log('fetchers in progress', _jobCount);
 		return;
 	}
 
 	_fetchAajx('/feeds/home', _processFeed);
-	_fetchAajx('/feeds/mentions', _processThreadFeed);
-	if (first === true) _fetchAajx('/feeds/myreplies', _processThreadFeed);
+	_fetchAajx('/feeds/threads', _processThreadFeed);
 }
 
-function fetchTweet (tweetId, childDiv) {
-	_fetchAajx('/feeds/tweet?n=' + tweetId, _processTweet, childDiv);
-}
+//function fetchTweet (tweetId, childDiv) {
+//	_fetchAajx('/feeds/tweet?n=' + tweetId, _processTweet, childDiv);
+//}
 
 function _startJob () {
 	_jobCount++;
@@ -104,6 +103,7 @@ function _fetchAajx (url, procFnc, arg) {
 }
 
 function _processThreadFeed (xml) {
+	// TODO sort list oldest-fist?
 	$(xml).find('tweet').each(function () {
 		_insertTweet($(this), _addThread);
 	});
@@ -115,12 +115,12 @@ function _processFeed (xml) {
 	});
 }
 
-function _processTweet (xml, childDiv) {
-	$(xml).find('tweet').each(function () {
-		var tweetDiv = _insertTweet($(this), _addThread);
-		tweetDiv.append(childDiv);
-	});
-}
+//function _processTweet (xml, childDiv) {
+//	$(xml).find('tweet').each(function () {
+//		var tweetDiv = _insertTweet($(this), _addThread);
+//		tweetDiv.append(childDiv);
+//	});
+//}
 
 function _insertTweet (tweetXml, addFnc) {
 	var tweetE = _existingTweetElement(_tweetId(tweetXml));
@@ -140,9 +140,9 @@ function _insertTweet (tweetXml, addFnc) {
 		tweetE.stop();
 		_scheduleReveal(tweetE);
 
-		if (parentId != null) {
-			fetchTweet(_tweetParentId(tweetXml), tweetE);
-		}
+//		if (parentId != null) {
+//			fetchTweet(_tweetParentId(tweetXml), tweetE);
+//		}
 	}
 	return tweetE;
 }
