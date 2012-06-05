@@ -26,4 +26,15 @@ public final class CookieHelper {
 		return null;
 	}
 
+	public static void deleteCookies (HttpServletRequest req, HttpServletResponse resp) {
+		Cookie[] cookies = req.getCookies();
+		if (cookies != null) {
+			for (int i = 0; i < cookies.length; i++) {
+				cookies[i].setMaxAge(0);
+				resp.addCookie(cookies[i]);
+			}
+		}
+		req.getSession().invalidate();
+	}
+
 }
