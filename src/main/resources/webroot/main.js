@@ -312,7 +312,7 @@ function _initComposeDlg () {
 				click: function () {
 					var bodyTextbox = $('.tweetbody', dlg_compose);
 					var body = bodyTextbox.val();
-					var replyTo = dlg_compose.dlg_compose('option', 'replyId');
+					var replyTo = dlg_compose.dialog('option', 'replyId');
 					$.ajax({
 						type : 'POST', url : '/tweet',
 						data : {replyTo: replyTo, body: body},
