@@ -1,9 +1,10 @@
-package com.vaguehope.senkyou.twitter;
+package com.vaguehope.senkyou.servlets;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
@@ -11,28 +12,29 @@ import javax.xml.bind.JAXBException;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
+import com.vaguehope.senkyou.Config;
 import com.vaguehope.senkyou.DataStore;
-import com.vaguehope.senkyou.servlets.AuthServlet;
-import com.vaguehope.senkyou.servlets.HttpProcessor;
+import com.vaguehope.senkyou.twitter.TweetCacheFactory;
 
-public abstract class AbstractTweetFeed implements HttpProcessor, TweetFeed {
+public class HomeTimelineServlet extends HttpServlet {
 
-	protected static final String CONTEXT_FEEDS_BASE = "/feeds/";
+	public static final String CONTEXT = "/feeds/home";
+
+	private static final long serialVersionUID = -8269125436984112817L;
 
 	private final DataStore dataStore;
 
-	public AbstractTweetFeed (DataStore dataStore) {
+	public HomeTimelineServlet (DataStore dataStore) {
 		this.dataStore = dataStore;
 	}
 
-	protected void procFeed (TweetFeed feed, long count, HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+	@Override
+	protected void doGet (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		Twitter twitter = AuthServlet.getSessionTwitterOrSetError(req, resp, this.dataStore);
 		if (twitter == null) return;
-
 		try {
-			TweetCache tweetCache = TweetCacheFactory.getTweetCache(twitter);
 			resp.setContentType("text/xml;charset=UTF-8");
-			feed.getTweets(twitter, tweetCache, count).toXml(resp.getWriter());
+			TweetCacheFactory.getTweetCache(twitter).getHomeTimeline(twitter, Config.HOME_TIMELINE_LENGTH).toXml(resp.getWriter());
 		}
 		catch (ExecutionException e) {
 			throw new ServletException(e);
@@ -44,8 +46,5 @@ public abstract class AbstractTweetFeed implements HttpProcessor, TweetFeed {
 			throw new ServletException(e);
 		}
 	}
-
-	@Override
-	public abstract void processRequest (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException;
 
 }

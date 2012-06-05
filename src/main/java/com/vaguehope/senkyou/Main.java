@@ -19,14 +19,9 @@ import com.vaguehope.senkyou.reporter.SessionReporter;
 import com.vaguehope.senkyou.reporter.UserReporter;
 import com.vaguehope.senkyou.servlets.AuthCallbackServlet;
 import com.vaguehope.senkyou.servlets.AuthSigninServlet;
-import com.vaguehope.senkyou.servlets.HttpProcessor;
-import com.vaguehope.senkyou.servlets.ProcessorServlet;
+import com.vaguehope.senkyou.servlets.HomeTimelineServlet;
 import com.vaguehope.senkyou.servlets.ThreadServlet;
 import com.vaguehope.senkyou.servlets.UserServlet;
-import com.vaguehope.senkyou.twitter.HomeTimeLineFeed;
-import com.vaguehope.senkyou.twitter.MentionsFeed;
-import com.vaguehope.senkyou.twitter.MyRepliesFeed;
-import com.vaguehope.senkyou.twitter.SingleTweetFeed;
 
 public class Main {
 //	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -65,10 +60,7 @@ public class Main {
 		servletHandler.addServlet(new ServletHolder(new AuthCallbackServlet(ds)), AuthCallbackServlet.CONTEXT);
 		servletHandler.addServlet(new ServletHolder(new UserServlet(ds)), UserServlet.CONTEXT);
 		servletHandler.addServlet(new ServletHolder(new ThreadServlet(ds)), ThreadServlet.CONTEXT);
-		addProcessorServlet(servletHandler, new HomeTimeLineFeed(ds));
-		addProcessorServlet(servletHandler, new MyRepliesFeed(ds)); // TODO replaced by ThreadServlet?
-		addProcessorServlet(servletHandler, new MentionsFeed(ds)); // TODO replaced by ThreadServlet?
-		addProcessorServlet(servletHandler, new SingleTweetFeed(ds)); // TODO replaced by ThreadServlet?
+		servletHandler.addServlet(new ServletHolder(new HomeTimelineServlet(ds)), HomeTimelineServlet.CONTEXT);
 
 		// Static files on classpath.
 		ResourceHandler resourceHandler = new ResourceHandler();
@@ -97,11 +89,6 @@ public class Main {
 		this.server.addConnector(connector);
 		this.server.start();
 		LOG.info("Server ready on port " + portString + ".");
-	}
-
-	private static void addProcessorServlet (ServletContextHandler servletHandler, HttpProcessor proc) {
-		ProcessorServlet tweetServlet = new ProcessorServlet(proc);
-		servletHandler.addServlet(new ServletHolder(tweetServlet), tweetServlet.getContext());
 	}
 
 	public void join () throws InterruptedException {
