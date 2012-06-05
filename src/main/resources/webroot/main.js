@@ -322,6 +322,7 @@ function _initComposeDlg () {
 						success : function (response) {
 							dlg_compose.dialog('close');
 							bodyTextbox.val('');
+							fetchFeeds();
 						},
 						error : function (xhr) {
 							// TODO show this to the user.
