@@ -6,7 +6,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.vaguehope.senkyou.Config;
 
-public class CookieHelper {
+public final class CookieHelper {
+
+	private CookieHelper () {}
 
 	public static void addExtraSessionCookie (HttpServletRequest req, HttpServletResponse resp) {
 		Cookie cookie = new Cookie(Config.COOKIE_SENKYOU_SESSION, req.getSession().getId());

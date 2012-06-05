@@ -29,7 +29,7 @@ public class ThreadServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 7600513438072003737L;
 
-	private final DataStore dataStore;
+	private transient final DataStore dataStore;
 
 	public ThreadServlet (DataStore dataStore) {
 		this.dataStore = dataStore;

@@ -29,13 +29,13 @@ public class AuthSigninServlet extends AuthServlet {
 
 		Twitter twitter = TwitterConfigHelper.getLocalUser();
 		if (twitter == null) {
-			twitter = this.dataStore.getUser(req, resp);
+			twitter = getDataStore().getUser(req, resp);
 			if (twitter == null) {
 				twitter = TwitterConfigHelper.getTwitter();
-				
+
 				StringBuffer callbackUrl = req.getRequestURL();
 				callbackUrl.replace(callbackUrl.lastIndexOf("/"), callbackUrl.length(), "").append(AuthCallbackServlet.CONTEXT);
-				
+
 				try {
 					RequestToken token = twitter.getOAuthRequestToken(callbackUrl.toString());
 					setSessionRequestToken(req, token);

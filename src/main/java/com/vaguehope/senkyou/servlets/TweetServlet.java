@@ -19,7 +19,7 @@ public class TweetServlet extends HttpServlet {
 	private static final long serialVersionUID = -5606626611510620577L;
 	private static final Logger LOG = Logger.getLogger(TweetServlet.class.getName());
 
-	private final DataStore dataStore;
+	private transient final DataStore dataStore;
 
 	public TweetServlet (DataStore dataStore) {
 		this.dataStore = dataStore;

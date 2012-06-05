@@ -16,7 +16,7 @@ import twitter4j.auth.AccessToken;
 public class UserData {
 
 	@XmlAttribute private long created;
-	@XmlAttribute private String screenName;
+	@XmlAttribute private String screenname;
 	@XmlAttribute private String token;
 	@XmlAttribute private String tokenSecret;
 
@@ -24,7 +24,7 @@ public class UserData {
 
 	public UserData (AccessToken at) {
 		this.created = System.currentTimeMillis();
-		this.screenName = at.getScreenName();
+		this.screenname = at.getScreenName();
 		this.token = at.getToken();
 		this.tokenSecret = at.getTokenSecret();
 	}
@@ -33,8 +33,8 @@ public class UserData {
 		return this.created;
 	}
 
-	public String getScreenName () {
-		return this.screenName;
+	public String getScreenname () {
+		return this.screenname;
 	}
 
 	public AccessToken getAccessToken () {

@@ -24,7 +24,7 @@ public class AuthCallbackServlet extends AuthServlet {
 
 	@Override
 	protected void doGet (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		Twitter twitter = getSessionTwitterOrSetError(req, resp, this.dataStore);
+		Twitter twitter = getSessionTwitterOrSetError(req, resp, getDataStore());
 		if (twitter == null) return;
 
 		try {
@@ -34,7 +34,7 @@ public class AuthCallbackServlet extends AuthServlet {
 			clearSessionRequestToken(req);
 			CookieHelper.addExtraSessionCookie(req, resp);
 			resp.sendRedirect(req.getContextPath() + HOME_PAGE);
-			this.dataStore.putUserData(req, twitter);
+			getDataStore().putUserData(req, twitter);
 		}
 		catch (TwitterException e) {
 			throw new ServletException(e);

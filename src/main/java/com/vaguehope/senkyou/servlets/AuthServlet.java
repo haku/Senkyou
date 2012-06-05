@@ -8,10 +8,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.vaguehope.senkyou.DataStore;
-
 import twitter4j.Twitter;
 import twitter4j.auth.RequestToken;
+
+import com.vaguehope.senkyou.DataStore;
 
 public abstract class AuthServlet extends HttpServlet {
 
@@ -22,10 +22,14 @@ public abstract class AuthServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -3997970760950061976L;
 
-	protected final DataStore dataStore;
+	private transient final DataStore dataStore;
 
 	public AuthServlet (DataStore dataStore) {
 		this.dataStore = dataStore;
+	}
+
+	protected DataStore getDataStore () {
+		return this.dataStore;
 	}
 
 	protected void clearSession (HttpServletRequest req) {
