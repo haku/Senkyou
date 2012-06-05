@@ -301,6 +301,15 @@ var dlg_compose;
 
 function _initComposeDlg () {
 	dlg_compose = $('#dlgcompose');
+
+	$('input', dlg_compose).keydown(function(e) {
+		if (e.keyCode == $.ui.keyCode.ENTER) {
+			e.preventDefault();
+			$('#dlgbtn-tweet').click();
+			return false;
+		}
+	});
+
 	dlg_compose.dialog({
 		autoOpen: false,
 		width: 700,
