@@ -22,7 +22,7 @@ public class HomeTimelineServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -8269125436984112817L;
 
-	private transient final DataStore dataStore;
+	private final DataStore dataStore;
 
 	public HomeTimelineServlet (DataStore dataStore) {
 		this.dataStore = dataStore;

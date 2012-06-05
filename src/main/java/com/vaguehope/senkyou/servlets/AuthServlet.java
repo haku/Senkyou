@@ -20,7 +20,7 @@ public abstract class AuthServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -3997970760950061976L;
 
-	private transient final DataStore dataStore;
+	private final DataStore dataStore;
 
 	public AuthServlet (DataStore dataStore) {
 		this.dataStore = dataStore;

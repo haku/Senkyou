@@ -20,7 +20,7 @@ public class UserServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 2523156667833296569L;
 
-	private transient final DataStore dataStore;
+	private final DataStore dataStore;
 
 	public UserServlet (DataStore dataStore) {
 		this.dataStore = dataStore;

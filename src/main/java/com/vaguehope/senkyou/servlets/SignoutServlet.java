@@ -16,7 +16,7 @@ public class SignoutServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -4925000182388313054L;
 
-	private transient final DataStore dataStore;
+	private final DataStore dataStore;
 
 	public SignoutServlet (DataStore dataStore) {
 		this.dataStore = dataStore;

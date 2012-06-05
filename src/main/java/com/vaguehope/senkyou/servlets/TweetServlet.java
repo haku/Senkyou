@@ -19,7 +19,7 @@ public class TweetServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -5606626611510620577L;
 
-	private transient final DataStore dataStore;
+	private final DataStore dataStore;
 
 	public TweetServlet (DataStore dataStore) {
 		this.dataStore = dataStore;
